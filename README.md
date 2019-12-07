@@ -18,6 +18,7 @@ To Do:
 - Automated testing
 - Docker container for cloud deployment
 - Security
+- Authentication
 
 Tools Used:
 - Eclipse

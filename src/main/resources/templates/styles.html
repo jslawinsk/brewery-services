@@ -6,9 +6,23 @@
 </head>
 <body>
 <div class="container">
+    <div th:if="${#lists.isEmpty(styles)}">
+    	<a th:href="@{/style/add}" class="btn btn-primary btn-lg">Add Style</a>
+    </div>
     <div th:if="${not #lists.isEmpty(styles)}">
-        <h2>All Styles</h2>
         <table class="table table-striped">
+    		<tr>
+				<td><h2>Styles</h2></td>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td>
+					<div>
+						<a th:href="@{/style/add}" class="btn btn-primary">Add</a>
+					</div>
+				</td>
+			</tr>				
             <tr>
                 <th>Id</th>
                 <th>Name</th>
