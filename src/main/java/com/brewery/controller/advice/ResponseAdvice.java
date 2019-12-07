@@ -1,6 +1,6 @@
-package com.brewery.api.controller.advice;
+package com.brewery.controller.advice;
 
-import com.brewery.api.dto.MessageDTO;
+import com.brewery.dto.MessageDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

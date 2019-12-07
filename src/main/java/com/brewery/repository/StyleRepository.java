@@ -1,6 +1,6 @@
-package com.brewery.api.repository;
+package com.brewery.repository;
 
-import com.brewery.api.model.Style;
+import com.brewery.model.Style;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

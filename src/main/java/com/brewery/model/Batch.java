@@ -1,4 +1,4 @@
-package com.brewery.api.model;
+package com.brewery.model;
 
 import java.util.Date;
 

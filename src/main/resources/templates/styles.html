@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Styles</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+    <div th:if="${not #lists.isEmpty(styles)}">
+        <h2>All Styles</h2>
+        <table class="table table-striped">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>BJCP Category</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            <tr th:each="style : ${styles}">
+                <td th:text="${style.id}">Id</td>
+                <td th:text="${style.name}">Name</td>
+                <td th:text="${style.description}">Description</td>
+                <td th:text="${style.bjcpCategory}">BJCP Category</td>
+                <td><a th:href="${'/style/edit/' + style.id}" class="btn btn-default">Edit</a></td>
+                <td><a th:href="${'/style/delete/' + style.id}" class="btn btn-danger">Delete</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

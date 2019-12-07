@@ -1,6 +1,6 @@
-package com.brewery.api.config;
+package com.brewery.config;
 
-import com.brewery.api.controller.BreweryController;
+import com.brewery.controller.RestApiController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @PropertySource("classpath:swagger.properties")
-@ComponentScan(basePackageClasses = BreweryController.class)
+@ComponentScan(basePackageClasses = RestApiController.class)
 @Configuration
 public class SwaggerConfig {
 

@@ -1,15 +1,15 @@
-package com.brewery.api;
+package com.brewery;
 
-import com.brewery.api.model.Style;
-import com.brewery.api.model.Batch;
-import com.brewery.api.model.Process;
-import com.brewery.api.model.Measurement;
-import com.brewery.api.model.MeasureType;
-import com.brewery.api.repository.StyleRepository;
-import com.brewery.api.repository.BatchRepository;
-import com.brewery.api.repository.ProcessRepository;
-import com.brewery.api.repository.MeasurementRepository;
-import com.brewery.api.repository.MeasureTypeRepository;
+import com.brewery.model.Style;
+import com.brewery.model.Batch;
+import com.brewery.model.Process;
+import com.brewery.model.Measurement;
+import com.brewery.model.MeasureType;
+import com.brewery.repository.StyleRepository;
+import com.brewery.repository.BatchRepository;
+import com.brewery.repository.ProcessRepository;
+import com.brewery.repository.MeasurementRepository;
+import com.brewery.repository.MeasureTypeRepository;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestapiApplication implements CommandLineRunner {
+public class BreweryApplication implements CommandLineRunner {
 
 	private StyleRepository styleRepository;
 	@Autowired
@@ -52,7 +52,7 @@ public class RestapiApplication implements CommandLineRunner {
 	}
 	
 	public static void main(String[] args) {
-		SpringApplication.run(RestapiApplication.class, args);
+		SpringApplication.run(BreweryApplication.class, args);
 	}
 
 	@Override

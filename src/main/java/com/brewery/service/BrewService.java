@@ -1,15 +1,17 @@
-package com.brewery.api.service;
+package com.brewery.service;
 
-import com.brewery.api.model.Style;
-import com.brewery.api.model.Process;
-import com.brewery.api.model.MeasureType;
-import com.brewery.api.model.Batch;
-import com.brewery.api.model.Measurement;
-import com.brewery.api.repository.StyleRepository;
-import com.brewery.api.repository.ProcessRepository;
-import com.brewery.api.repository.MeasureTypeRepository;
-import com.brewery.api.repository.BatchRepository;
-import com.brewery.api.repository.MeasurementRepository;
+import com.brewery.model.Style;
+import com.brewery.model.Process;
+import com.brewery.model.MeasureType;
+import com.brewery.model.Batch;
+import com.brewery.model.Measurement;
+import com.brewery.repository.StyleRepository;
+import com.brewery.repository.ProcessRepository;
+import com.brewery.repository.MeasureTypeRepository;
+import com.brewery.repository.BatchRepository;
+import com.brewery.repository.MeasurementRepository;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,10 @@ public class BrewService {
     public Style getStyle( Long id ) {
         LOG.info("Getting Stype, id:" + id);
         return styleRepository.findOne(id);
+    }
+    
+    public List<Style> getAllStyles() {
+    	return styleRepository.findAll();
     }
 
     public Style saveStyle( Style style ) {

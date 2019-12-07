@@ -1,4 +1,4 @@
-package com.brewery.api.model;
+package com.brewery.model;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,25 +10,25 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class MeasureType {
+public class Process {
 	
 	@Id
 	private String code;
 	private String name;
 	
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
     private Set<Measurement> measurements;	
 
-    public MeasureType(String name, Measurement... measurements) {
+    public Process(String name, Measurement... measurements) {
         this.measurements = Stream.of(measurements).collect(Collectors.toSet());
-        this.measurements.forEach(x -> x.setType(this));
+        this.measurements.forEach(x -> x.setProcess(this));
     }    
     
-	public MeasureType() {
+	public Process() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public MeasureType(String code, String name) {
+	public Process(String code, String name) {
 		super();
 		this.code = code;
 		this.name = name;
@@ -50,6 +50,6 @@ public class MeasureType {
 
 	@Override
 	public String toString() {
-		return "MeasureType [code=" + code + ", name=" + name + "]";
+		return "Process [code=" + code + ", name=" + name + "]";
 	}
 }

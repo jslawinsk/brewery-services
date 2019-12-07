@@ -1,11 +1,11 @@
-package com.brewery.api.controller;
+package com.brewery.controller;
 
-import com.brewery.api.model.Style;
-import com.brewery.api.model.Process;
-import com.brewery.api.model.MeasureType;
-import com.brewery.api.model.Batch;
-import com.brewery.api.model.Measurement;
-import com.brewery.api.service.BrewService;
+import com.brewery.model.Style;
+import com.brewery.model.Process;
+import com.brewery.model.MeasureType;
+import com.brewery.model.Batch;
+import com.brewery.model.Measurement;
+import com.brewery.service.BrewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/api/")
 @Api(value = "BreweryControllerAPI", produces = MediaType.APPLICATION_JSON_VALUE)
-public class BreweryController {
+public class RestApiController {
 
     private BrewService brewService;
 
-    private Logger LOG = LoggerFactory.getLogger(BreweryController.class);
+    private Logger LOG = LoggerFactory.getLogger(RestApiController.class);
 
     @Autowired
     public void setProductsService(BrewService brewService) {

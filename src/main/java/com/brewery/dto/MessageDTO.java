@@ -1,4 +1,4 @@
-package com.brewery.api.dto;
+package com.brewery.dto;
 
 public class MessageDTO {
 
