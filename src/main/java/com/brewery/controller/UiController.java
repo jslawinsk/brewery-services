@@ -32,7 +32,7 @@ public class UiController {
     @RequestMapping(path = "/style/add", method = RequestMethod.GET)
     public String createStyle(Model model) {
         model.addAttribute("style", new Style());
-        return "edit";
+        return "styleEdit";
     }
 
     @RequestMapping(path = "/style", method = RequestMethod.POST)
@@ -51,7 +51,7 @@ public class UiController {
     @RequestMapping(path = "/style/edit/{id}", method = RequestMethod.GET)
     public String editStyle(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("style", brewService.getStyle(id) );
-        return "edit";
+        return "styleEdit";
     }
 
     @RequestMapping(path = "/style/delete/{id}", method = RequestMethod.GET)

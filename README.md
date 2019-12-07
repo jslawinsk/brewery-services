@@ -17,6 +17,7 @@ To Do:
 - Charts and analytics
 - Automated testing
 - Docker container for cloud deployment
+- Security
 
 Tools Used:
 - Eclipse
