@@ -154,6 +154,10 @@ public class DataService {
         return measureTypeRepository.findOne( code );
     }
 
+    public List<MeasureType> getAllMeasureTypes() {
+    	return measureTypeRepository.findAll();
+    }
+
     public MeasureType saveMeasureType( MeasureType measureType ) {
     	MeasureType measureTypeToSave;
         try {

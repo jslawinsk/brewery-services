@@ -37,7 +37,7 @@ public class MeasureType {
 	public String getCode() {
 		return code;
 	}
-	public void setId(String code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 

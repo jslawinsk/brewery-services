@@ -9,6 +9,14 @@ Consists of the following tables.
 - Measurement Type
 - Measurement
 
+#Architecture Design
+
+The Brewery Services application is a Java Spring Application. In the below diagram the encapsulated green boxes indicate enviroments where it could run. 
+
+Environments include the following:
+- Local Server or PC, Mac OS, Linux or Windows
+- Raspberry PI, Any OS which supports Java
+- Cloud Instance, For this option a local instance should be used to curate and relay data
 
  ![Architecture Diagram](https://github.com/jslawinsk/brewery-services/blob/master/documentation/BrewTechDiagSpringApp.png)
 

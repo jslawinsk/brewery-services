@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Measurement Types</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+    <div th:if="${#lists.isEmpty(measureTypes)}">
+    	<a th:href="@{/measureType/add}" class="btn btn-primary btn-lg">Add Measurement Type</a>
+    </div>
+    <div th:if="${not #lists.isEmpty(measureTypes)}">
+        <table class="table table-striped">
+    		<tr>
+				<td><h2>Measure Types</h2></td>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td>
+					<div>
+						<a th:href="@{/measureType/add}" class="btn btn-primary">Add</a>
+					</div>
+				</td>
+			</tr>				
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            <tr th:each="measureType : ${measureTypes}">
+                <td th:text="${measureType.code}">Code</td>
+                <td th:text="${measureType.name}">Name</td>
+                <td><a th:href="${'/measureType/edit/' + measureType.code}" class="btn btn-default">Edit</a></td>
+                <td><a th:href="${'/measureType/delete/' + measureType.code}" class="btn btn-danger">Delete</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
