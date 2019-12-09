@@ -19,9 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BrewService {
+public class DataService {
 
-    private Logger LOG = LoggerFactory.getLogger(BrewService.class);
+    private Logger LOG = LoggerFactory.getLogger(DataService.class);
 
 	private StyleRepository styleRepository;
 	@Autowired
@@ -73,7 +73,7 @@ public class BrewService {
             styleToSave = styleRepository.save(style);
             return styleToSave;
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: saveStyle: " + e.getMessage());
+            LOG.error("DataService: Exception: saveStyle: " + e.getMessage());
         }
         return new Style();
     }
@@ -86,7 +86,7 @@ public class BrewService {
         	foundStyle.setDescription( styleToUpdate.getDescription() );
             return styleRepository.save( foundStyle );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: updateStyle: " + e.getMessage());
+            LOG.error("DataService: Exception: updateStyle: " + e.getMessage());
         }
         return styleToUpdate;
     }
@@ -95,7 +95,7 @@ public class BrewService {
         try {
         	styleRepository.delete( id );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: deleteStyle: " + e.getMessage());
+            LOG.error("DataService: Exception: deleteStyle: " + e.getMessage());
         }
     }
 
@@ -107,26 +107,32 @@ public class BrewService {
         LOG.info("Getting Process, code:" + code);
         return processRepository.findOne( code );
     }
+    
+    public List<Process> getAllProcesses() {
+    	return processRepository.findAll();
+    }
 
     public Process saveProcess( Process process ) {
     	Process processToSave;
+        LOG.info("Saving Process:" + process);
         try {
             LOG.info("Saving Process: " + process );
             processToSave = processRepository.save( process );
             return processToSave;
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: saveProcess: " + e.getMessage());
+            LOG.error("DataService: Exception: saveProcess: " + e.getMessage());
         }
         return new Process();
     }
 
     public Process updateProcess( Process processToUpdate ) {
+        LOG.info("Update Process:" + processToUpdate);
     	Process foundProcess = processRepository.findOne( processToUpdate.getCode() );
         try {
         	foundProcess.setName( processToUpdate.getName() );
             return processRepository.save( foundProcess );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: updateProcess: " + e.getMessage());
+            LOG.error("DataService: Exception: updateProcess: " + e.getMessage());
         }
         return processToUpdate;
     }
@@ -135,7 +141,7 @@ public class BrewService {
         try {
         	processRepository.delete( code );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: deleteProcess: " + e.getMessage());
+            LOG.error("DataService: Exception: deleteProcess: " + e.getMessage());
         }
     }
 
@@ -155,7 +161,7 @@ public class BrewService {
             measureTypeToSave = measureTypeRepository.save( measureType );
             return measureTypeToSave;
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: saveMeasureType: " + e.getMessage());
+            LOG.error("DataService: Exception: saveMeasureType: " + e.getMessage());
         }
         return new MeasureType();
     }
@@ -166,7 +172,7 @@ public class BrewService {
         	foundMeasureType.setName( measureTypeToUpdate.getName() );
             return measureTypeRepository.save( foundMeasureType );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: updateMeasureType: " + e.getMessage());
+            LOG.error("DataService: Exception: updateMeasureType: " + e.getMessage());
         }
         return measureTypeToUpdate;
     }
@@ -175,7 +181,7 @@ public class BrewService {
         try {
         	measureTypeRepository.delete( code );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: deleteMeasureType: " + e.getMessage());
+            LOG.error("DataService: Exception: deleteMeasureType: " + e.getMessage());
         }
     }
 
@@ -195,7 +201,7 @@ public class BrewService {
             batchToSave = batchRepository.save( batch );
             return batchToSave;
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: saveBatch: " + e.getMessage());
+            LOG.error("DataService: Exception: saveBatch: " + e.getMessage());
         }
         return new Batch();
     }
@@ -209,7 +215,7 @@ public class BrewService {
         	foundBatch.setStartTime( batchToUpdate.getStartTime() );
             return batchRepository.save( foundBatch );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: updateBatch: " + e.getMessage());
+            LOG.error("DataService: Exception: updateBatch: " + e.getMessage());
         }
         return batchToUpdate;
     }
@@ -218,7 +224,7 @@ public class BrewService {
         try {
         	batchRepository.delete( id );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: deleteBatch: " + e.getMessage());
+            LOG.error("DataService: Exception: deleteBatch: " + e.getMessage());
         }
     }
 
@@ -238,7 +244,7 @@ public class BrewService {
             measurementToSave = measurementRepository.save( measurement );
             return measurementToSave;
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: saveMeasurement: " + e.getMessage());
+            LOG.error("DataService: Exception: saveMeasurement: " + e.getMessage());
         }
         return new Measurement();
     }
@@ -254,7 +260,7 @@ public class BrewService {
         	foundMeasurement.setMeasurementTime( measurementToUpdate.getMeasurementTime() );
             return measurementRepository.save( foundMeasurement );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: updateMeasurement: " + e.getMessage());
+            LOG.error("DataService: Exception: updateMeasurement: " + e.getMessage());
         }
         return measurementToUpdate;
     }
@@ -263,7 +269,7 @@ public class BrewService {
         try {
         	measurementRepository.delete( id );
         } catch (Exception e) {
-            LOG.error("BrewService: Exception: deleteMeasurement: " + e.getMessage());
+            LOG.error("DataService: Exception: deleteMeasurement: " + e.getMessage());
         }
     }
     
