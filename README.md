@@ -9,6 +9,9 @@ Consists of the following tables.
 - Measurement Type
 - Measurement
 
+
+ ![Architecture Diagram](https://github.com/jslawinsk/brewery-services/blob/master/documentation/BrewTechDiagSpringApp.png)
+
 To Do:
 - [ ] Bluetooth interface to to receive data from temperature controller
 - [ ] CRUD UI Web layer
