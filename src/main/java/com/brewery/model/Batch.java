@@ -1,6 +1,7 @@
 package com.brewery.model;
 
 import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -32,8 +35,11 @@ public class Batch {
 	@Column(name = "startTime", columnDefinition="DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date startTime;
 
+//	    private LocalDateTime dateTime;	
+	
 	public Batch() {
 		super();
 		// TODO Auto-generated constructor stub

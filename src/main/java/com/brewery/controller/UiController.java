@@ -3,7 +3,10 @@ package com.brewery.controller;
 import com.brewery.model.Style;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
+import com.brewery.model.Batch;
 import com.brewery.service.DataService;
+
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +153,46 @@ public class UiController {
     public String deleteMeasureType(@PathVariable(name = "code") String code) {
     	dataService.deleteMeasureType(code);
         return "redirect:/measureType";
+    }
+
+    //
+    //	Batch table UI routines
+    //
+    //
+    @RequestMapping(path = "/batch/add", method = RequestMethod.GET)
+    public String createBatch(Model model) {
+    	Batch batch = new Batch();
+    	batch.setId( 0L );
+    	batch.setStartTime( new Date() );
+        model.addAttribute("batch", batch );
+        model.addAttribute("styles",  dataService.getAllStyles() );
+        return "batchEdit";
+    }
+
+    @RequestMapping(path = "/batch", method = RequestMethod.POST)
+    public String saveBatch( Batch batch ) {
+        LOG.info("UiController: saveBatch Batch: " + batch );   
+    	dataService.saveBatch(batch);
+        return "redirect:/batch";
+    }
+    
+    @RequestMapping(path = "/batch", method = RequestMethod.GET)
+    public String getAllBatches(Model model) {
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        return "batches";
+    }
+
+    @RequestMapping(path = "/batch/edit/{id}", method = RequestMethod.GET)
+    public String editBatch(Model model, @PathVariable(value = "id") Long id) {
+        model.addAttribute("batch", dataService.getBatch(id) );
+        model.addAttribute("styles",  dataService.getAllStyles() );
+        return "batchEdit";
+    }
+
+    @RequestMapping(path = "/batch/delete/{id}", method = RequestMethod.GET)
+    public String deleteBatch(@PathVariable(name = "id") Long id) {
+    	dataService.deleteBatch( id );
+        return "redirect:/batch";
     }
     
 }

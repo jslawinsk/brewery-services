@@ -198,6 +198,10 @@ public class DataService {
         return batchRepository.findOne( id );
     }
 
+    public List<Batch> getAllBatches() {
+    	return batchRepository.findAll();
+    }
+
     public Batch saveBatch( Batch batch ) {
     	Batch batchToSave;
         try {

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Batches</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+    <div th:if="${#lists.isEmpty(batches)}">
+    	<a th:href="@{/batch/add}" class="btn btn-primary btn-lg">Add Batch</a>
+    </div>
+    <div th:if="${not #lists.isEmpty(batches)}">
+        <table class="table table-striped">
+    		<tr>
+				<td><h2>Batches</h2></td>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td>
+					<div>
+						<a th:href="@{/batch/add}" class="btn btn-primary">Add</a>
+					</div>
+				</td>
+			</tr>				
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Style</th>
+                <th>Start Time</th>
+                <th>Description</th>                
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            <tr th:each="batch : ${batches}">
+                <td th:text="${batch.id}">Id</td>
+                <td th:text="${batch.name}">Name</td>
+                <td th:text="${batch.style.name}">Style</td>
+                <td th:text="${batch.startTime}">Start Time</td>
+                <td th:text="${batch.description}">Description</td>
+                <td><a th:href="${'/batch/edit/' + batch.id}" class="btn btn-default">Edit</a></td>
+                <td><a th:href="${'/batch/delete/' + batch.id}" class="btn btn-danger">Delete</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
