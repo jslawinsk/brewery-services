@@ -4,6 +4,7 @@ import com.brewery.model.Style;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
+import com.brewery.model.Measurement;
 import com.brewery.service.DataService;
 
 import java.util.Date;
@@ -194,5 +195,52 @@ public class UiController {
     	dataService.deleteBatch( id );
         return "redirect:/batch";
     }
+
+    //
+    //	Measurement table UI routines
+    //
+    //
+    @RequestMapping(path = "/measurement/add/{id}", method = RequestMethod.GET)
+    public String createMeasurement( Model model, @PathVariable(name = "id") Long id) {
+    	Batch batch = dataService.getBatch( id );
+    	Measurement measurement = new Measurement();
+    	measurement.setId( 0L );
+    	measurement.setMeasurementTime( new Date() );
+    	measurement.setBatch( batch );
+        model.addAttribute("measurement", measurement );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "measurementEdit";
+    }
     
+    @RequestMapping(path = "/measurement", method = RequestMethod.POST)
+    public String saveMeasurement( Measurement measurement ) {
+        LOG.info("UiController: saveMeasurement Measurement: " + measurement );   
+    	dataService.saveMeasurement( measurement );
+        return "redirect:/measurement/batch/" + measurement.getBatch().getId();
+    }
+    
+    @RequestMapping(path = "/measurement/batch/{id}", method = RequestMethod.GET)
+    public String getMeasurementForBatch(Model model, @PathVariable(value = "id") long id ) {
+        model.addAttribute("measurements", dataService.getMeasurementsByBatch( id ) );
+        model.addAttribute("batch", dataService.getBatch(id) );
+        return "measurements";
+    }
+
+    @RequestMapping(path = "/measurement/edit/{id}", method = RequestMethod.GET)
+    public String editMeasurement(Model model, @PathVariable(value = "id") Long id) {
+        model.addAttribute("measurement", dataService.getMeasurement(id) );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "measurementEdit";
+    }
+
+    @RequestMapping(path = "/measurement/delete/{id}", method = RequestMethod.GET)
+    public String deleteMeasurement(@PathVariable(name = "id") Long id) {
+    	dataService.deleteMeasurement( id );
+        return "redirect:/";
+    }
+
 }

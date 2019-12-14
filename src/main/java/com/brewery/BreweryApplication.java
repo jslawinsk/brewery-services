@@ -63,20 +63,38 @@ public class BreweryApplication implements CommandLineRunner {
 
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		styleRepository.save( testStyle );
-		
+
 		Batch testBatch = new Batch( "Joe's IPA", "Old School IPA", testStyle, new Date() );
 		batchRepository.save( testBatch );
 		
 		Process process = new Process( "FRM", "Fermentation" );
 		processRepository.save( process );
 		
+		process = new Process( "MSH", "Mash" );
+		processRepository.save( process );		
+		
 		MeasureType measureType = new MeasureType( "TMP", "Temprature" );
+		measureTypeRepository.save(measureType);
+
+		measureType = new MeasureType( "PH", "PH" );
+		measureTypeRepository.save(measureType);
+		
+		measureType = new MeasureType( "TA", "Total Achilinity" );
 		measureTypeRepository.save(measureType);
 		
 		Measurement measurement = new Measurement( 70.3, null, testBatch, process, measureType, new Date() );
 		measurementRepository.save( measurement );
 		
 		measurement = new Measurement( 70.5, null, testBatch, process, measureType, new Date() );
+		measurementRepository.save( measurement );
+
+		Style testStyle2 = new Style( "Stout", "21", "Malty" );
+		styleRepository.save( testStyle2 );
+		
+		Batch testBatch2 = new Batch( "Joe's Stout", "Old School Stout", testStyle2, new Date() );
+		batchRepository.save( testBatch2 );
+		
+		measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );
 		measurementRepository.save( measurement );
 		
 	}

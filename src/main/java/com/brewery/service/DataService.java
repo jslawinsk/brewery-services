@@ -245,6 +245,10 @@ public class DataService {
         return measurementRepository.findOne( id );
     }
 
+    public List<Measurement> getMeasurementsByBatch( Long id ) {
+    	return measurementRepository.findByBatchId( id );
+    }
+    
     public Measurement saveMeasurement( Measurement measurement ) {
     	Measurement measurementToSave;
         try {
@@ -260,8 +264,8 @@ public class DataService {
     public Measurement updateMeasurement( Measurement measurementToUpdate ) {
     	Measurement foundMeasurement = measurementRepository.findOne( measurementToUpdate.getId() );
         try {
-        	foundMeasurement.setMeasurement( measurementToUpdate.getMeasurement() );
-        	foundMeasurement.setObservation( measurementToUpdate.getObservation() );
+        	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
+        	foundMeasurement.setValueText( measurementToUpdate.getValueText() );
         	foundMeasurement.setBatch( measurementToUpdate.getBatch() );
         	foundMeasurement.setProcess( measurementToUpdate.getProcess() );
         	foundMeasurement.setType(measurementToUpdate.getType() );
