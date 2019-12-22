@@ -15,18 +15,13 @@
             <div class="container-fluid">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#" th:href="@{/}">Home</a>
-                    <ul class="nav navbar-nav">
+	                <ul class="nav navbar-nav">
+		                <li><a th:href="@{/sensor}">Sensors</a></li>
                         <li><a th:href="@{/batch}">Batches</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav">
                         <li><a th:href="@{/style}">Styles</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav">
                         <li><a th:href="@{/process}">Processes</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav">
                         <li><a th:href="@{/measureType}">Measure Types</a></li>
-                    </ul>
+	                </ul>
                 </div>
             </div>
         </nav>

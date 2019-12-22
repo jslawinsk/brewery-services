@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Sensors</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+	<h2>Sensors</h2>
+    <div th:if="${#lists.isEmpty(sensors)}">
+    	<a th:href="${'/sensor/add/'}" class="btn btn-primary btn-lg">Add Sensor</a>
+    	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary btn-lg">Scan Bluetooth</a>
+    </div>
+    <div th:if="${not #lists.isEmpty(sensors)}">
+        <table class="table table-striped">
+    		<tr>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td/>
+				<td>
+					<div>
+						<a th:href="${'/sensor/add/'}" class="btn btn-primary">Add</a>
+					</div>
+				</td>
+				<td>
+					<div>
+						<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary">Bluetooth</a>
+					</div>
+				</td>
+			</tr>				
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Interface</th>
+                <th>Batch Id</th>
+                <th>Process</th>                
+                <th>Sensor Type</th>
+                <th>Update Time</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            <tr th:each="sensor : ${sensors}">
+                <td th:text="${sensor.id}">Id</td>
+                <td th:text="${sensor.name}">Name</td>
+                <td th:text="${sensor.communicationType}">Interface</td>
+                <td th:text="${sensor.batch.id}">Batch Id</td>
+                <td th:text="${sensor.process.name}">Process Code</td>
+                <td th:text="${sensor.measureType.name}">Type</td>
+                <td th:text="${sensor.updateTime}">Time</td>
+                <td><a th:href="${'/sensor/edit/' + sensor.id}" class="btn btn-default">Edit</a></td>
+                <td><a th:href="${'/sensor/delete/' + sensor.id}" class="btn btn-danger">Delete</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

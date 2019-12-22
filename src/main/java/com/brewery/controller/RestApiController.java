@@ -5,6 +5,7 @@ import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
+import com.brewery.model.Sensor;
 import com.brewery.service.DataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -161,5 +162,32 @@ public class RestApiController {
     public void deleteMeasurement(@PathVariable(name = "id") Long id) {
     	dataService.deleteMeasurement( id );
     }
+
+    //
+    // Sensor table API service methods
+    //
+    //    
+    @RequestMapping(path = "sensor/{id}", method = RequestMethod.GET)
+    @ApiOperation("Gets the sensor with specific id")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Sensor.class)})
+    public Sensor getSensor(@PathVariable(name = "id") Long id ) {
+        return dataService.getSensor( id );
+    }
+
+    @RequestMapping( path = "sensor", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Sensor saveSensor( @RequestBody Sensor sensorToSave ) {
+        return dataService.saveSensor( sensorToSave );
+    }
+
+    @RequestMapping(path = "sensor", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Sensor updateSensor( @RequestBody Sensor sensorToUpdate ) {
+        return dataService.updateSensor( sensorToUpdate );
+    }
+
+    @RequestMapping(path = "sensor/{id}", method = RequestMethod.DELETE)
+    public void deleteSensor(@PathVariable( name = "id" ) Long id ) {
+    	dataService.deleteSensor( id );
+    }
+    
     
 }

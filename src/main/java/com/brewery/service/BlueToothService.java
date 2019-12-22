@@ -1,0 +1,293 @@
+package com.brewery.service;
+
+import java.util.Enumeration;
+import java.util.Vector;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
+import javax.bluetooth.*;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.microedition.io.StreamConnectionNotifier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.intel.bluetooth.RemoteDeviceHelper;
+
+/**
+* Class that implements an SPP Server which accepts single line of
+* message from an SPP client and sends a single line of response to the client.
+*/
+@Component
+public class BlueToothService implements CommandLineRunner {
+    //private static LocalDevice localDevice;
+    static LocalDevice localDevice;
+    DiscoveryAgent agent;
+
+    private Logger LOG = LoggerFactory.getLogger( BlueToothService.class );
+    
+    @Value("${blueTooth.enabled}")
+    private boolean blueToothEnabled;
+    
+    //start server
+    private void startServer() throws IOException{
+ 
+        //Create a UUID for SPP
+        UUID uuid = new UUID(0x1101);
+        //Create the service url
+        String connectionString = "btspp://localhost:" + uuid +";name=SampleSPPServer";        
+        
+        LOG.info("SampleSPPServer: startServer " );   	
+        
+        //open server url
+        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier)Connector.open( connectionString );
+       
+        //Wait for client connection
+        System.out.println("\nServer Started. Waiting for clients to connect...");
+        StreamConnection connection=streamConnNotifier.acceptAndOpen();
+         
+        RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
+        System.out.println("Remote device address: "+dev.getBluetoothAddress());
+        System.out.println("Remote device name: "+dev.getFriendlyName(true));
+       
+        //read string from spp client
+        /* InputStream inStream=connection.openInputStream();
+        BufferedReader bReader=new BufferedReader(new InputStreamReader(inStream));
+        String lineRead=bReader.readLine();
+        System.out.println(lineRead);   
+        */
+ 
+    }
+ 
+ 
+    @Override
+    public void run(String... strings) throws Exception {
+        //display local device address and name
+        LOG.info("SampleSPPServer: run: " + blueToothEnabled );   	
+        if( blueToothEnabled ) {
+	        try{
+	            localDevice = LocalDevice.getLocalDevice();
+	            System.out.println("Address: "+localDevice.getBluetoothAddress());
+	            System.out.println("Name: "+localDevice.getFriendlyName());
+	        }catch(Exception e){            
+	            LOG.error("SampleSPPServer: Exception: run: " + e.getMessage());
+	            System.err.println(e.toString());
+	            System.err.println(e.getStackTrace());
+	            e.printStackTrace();}        
+	        try{
+	            BlueToothService sampleSPPServer=new BlueToothService();
+	            // sampleSPPServer.startServer();
+	            //discoverDevices();
+	            //discoverServices();
+	            //connect( "btspp://000666DA0B89:1;authenticate=false;encrypt=false;master=false" );
+	        }catch(Exception e){
+	            System.err.println(e.toString());
+	            System.err.println(e.getStackTrace());
+	            e.printStackTrace();
+	        }
+        }       
+    }
+    
+    
+    /**
+     * Minimal Device Discovery example.
+     */
+    public final Vector<RemoteDevice> devicesDiscovered = new Vector<RemoteDevice>();
+
+    public static final Vector<String> serviceFound = new Vector<String>();
+    
+    public void discoverDevices(  ) throws IOException, InterruptedException 
+    {
+    	final Object inquiryCompletedEvent = new Object();
+
+    	devicesDiscovered.clear();
+    	serviceFound.clear();
+        
+    	DiscoveryListener listener = new DiscoveryListener() {
+
+    		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
+    			System.out.println("Device " + btDevice.getBluetoothAddress() + " found");
+    			devicesDiscovered.addElement(btDevice);
+    			try {
+    				System.out.println("     name " + btDevice.getFriendlyName(false));
+    				if( "RNBT-0B89".equals( btDevice.getFriendlyName(false ) ) ){
+                        boolean paired = RemoteDeviceHelper.authenticate( btDevice, "1234" );
+                        LOG.info("Pair with " + btDevice.getFriendlyName(false ) + (paired ? " succesfull" : " failed"));    					
+    				}
+                } catch (IOException cantGetDeviceName) {
+                }
+    		}
+
+    		public void inquiryCompleted(int discType) {
+    			System.out.println("Device Inquiry completed!");
+    			synchronized(inquiryCompletedEvent){
+    				inquiryCompletedEvent.notifyAll();
+    			}
+    		}
+
+            public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
+            }
+            public void serviceSearchCompleted(int transID, int respCode) {
+            }   		
+    	};
+    	
+    	synchronized(inquiryCompletedEvent) {
+    		boolean started = LocalDevice.getLocalDevice().getDiscoveryAgent().startInquiry(DiscoveryAgent.GIAC, listener);
+    		if (started) {
+    			System.out.println("wait for device inquiry to complete...");
+    			inquiryCompletedEvent.wait();
+    			System.out.println(devicesDiscovered.size() +  " device(s) found");
+    		}
+    	}   	
+    	
+    }    
+
+    /**
+    *
+    * Minimal Services Search example.
+    */
+    public void discoverServices(  ) throws IOException, InterruptedException 
+    {
+    	final UUID UUID_SDP = new UUID(0x0001);
+    	final UUID UUID_RFCOMM = new UUID(0x0003);
+    	final UUID UUID_OBEX = new UUID(0x0008);
+    	final UUID UUID_HTTP = new UUID(0x000C);
+    	final UUID UUID_L2CAP = new UUID(0x0100);
+    	final UUID UUID_BNEP = new UUID(0x000F);
+    	final UUID UUID_SERIAL = new UUID(0x1101);
+    	final UUID UUID_SERVICE_DISCOVERY_SERVER = new UUID(0x1000);
+    	final UUID UUID_BROWSE_GROUP = new UUID(0x1001);
+    	final UUID UUID_PUBLIC_BROWSE_GROUP = new UUID(0x1002);
+    	final UUID UUID_OBEX_OBJECT_PUSH = new UUID(0x1105);
+    	final UUID UUID_OBEX_FILE_TRANSFER = new UUID(0x1106);
+    	final UUID UUID_PERSONAL_NETWORK = new UUID(0x1115);
+    	final UUID UUID_ACCESS_POINT = new UUID(0x1116);
+    	final UUID UUID_GROUP_NETWORK = new UUID(0x1117);
+    	
+    	serviceFound.clear();
+
+    	final Object serviceSearchCompletedEvent = new Object();
+    	
+    	DiscoveryListener listener = new DiscoveryListener() {
+
+    		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
+    		}
+
+    		public void inquiryCompleted(int discType) {
+    		}
+
+            public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
+
+                System.out.println( "servicesDiscovered " );
+                for (int i = 0; i < servRecord.length; i++) {
+                    String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+                    if (url == null) {
+                        continue;
+                    }
+                    serviceFound.add(url);
+                    DataElement serviceName = servRecord[i].getAttributeValue(0x0100);
+                    if (serviceName != null) {
+                        System.out.println("service " + serviceName.getValue() + " found " + url);
+                    } else {
+                        System.out.println("service found " + url);
+                    }
+                }
+            }
+
+            public void serviceSearchCompleted(int transID, int respCode) {
+                System.out.println("service search completed!");
+    			System.out.println(serviceFound.size() +  " service(s) found");
+    			switch (respCode) {
+                  case DiscoveryListener.SERVICE_SEARCH_COMPLETED:
+                	  System.out.println( "The service search completed normally");
+                	  break;
+                  case DiscoveryListener.SERVICE_SEARCH_TERMINATED:
+                	  System.out.println( "The service search request was cancelled by a call to DiscoveryAgent.cancelServiceSearch(int)");
+                	  break;
+                  case DiscoveryListener.SERVICE_SEARCH_ERROR:
+                	  System.out.println( "An error occurred while processing the request");
+                	  break;
+                  case DiscoveryListener.SERVICE_SEARCH_NO_RECORDS:
+                	  System.out.println( "No records were found during the service search");
+                	  break;
+                  case DiscoveryListener.SERVICE_SEARCH_DEVICE_NOT_REACHABLE:
+                	  System.out.println( "The device specified in the search request could not be reached or the local device could not establish a connection to the remote device");
+                	  break;
+                  default:
+                	  System.out.println( "Unknown Response Code - " + respCode);
+                	  break;
+    			}    			
+                synchronized(serviceSearchCompletedEvent){
+                    serviceSearchCompletedEvent.notifyAll();
+                }
+            }   		
+    	};
+
+        UUID[] searchUuidSet = new UUID[] { UUID_SDP, 
+        		UUID_RFCOMM, 
+        		UUID_OBEX, 
+        		UUID_HTTP,
+        		UUID_L2CAP,
+        		UUID_BNEP,
+        		UUID_SERIAL,
+        		UUID_SERVICE_DISCOVERY_SERVER,
+        		UUID_BROWSE_GROUP,
+        		UUID_PUBLIC_BROWSE_GROUP,
+        		UUID_OBEX_OBJECT_PUSH,
+        		UUID_OBEX_FILE_TRANSFER,
+        		UUID_PERSONAL_NETWORK,
+        		UUID_ACCESS_POINT,
+        		UUID_GROUP_NETWORK
+        	};
+        UUID[] searchUuidSet2 = new UUID[] { 
+        		UUID_RFCOMM 
+        	};
+        int[] attrIDs =  new int[] {
+                0x0100 // Service name
+        };
+    	
+        for(Enumeration<RemoteDevice> en = devicesDiscovered.elements(); en.hasMoreElements(); ) {
+            RemoteDevice btDevice = (RemoteDevice)en.nextElement();
+
+            synchronized(serviceSearchCompletedEvent) {
+            	System.out.println("search services on " + btDevice.getBluetoothAddress() + " " + btDevice.getFriendlyName(false));
+            	LocalDevice.getLocalDevice().getDiscoveryAgent().searchServices(attrIDs, searchUuidSet2, btDevice, listener);
+            	serviceSearchCompletedEvent.wait();
+            }
+        }
+    }    
+    
+    
+    
+    public static void connect( String connectUrl ) throws IOException, InterruptedException 
+    {
+    	System.out.println("Connecting to " + connectUrl);
+
+    	StreamConnection streamConnection=(StreamConnection)Connector.open(connectUrl);
+
+    	Thread.sleep(500);
+    	
+    	OutputStream outStream=streamConnection.openOutputStream();
+        PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
+        pWriter.write("Brew Services\n\r");
+        pWriter.flush();
+
+
+        //read response
+        InputStream inStream=streamConnection.openInputStream();
+        BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
+        String lineRead=bReader2.readLine();
+        System.out.println(lineRead);    	
+    	
+    }    
+    
+}

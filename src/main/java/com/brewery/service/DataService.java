@@ -5,12 +5,15 @@ import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
+import com.brewery.model.Sensor;
 import com.brewery.repository.StyleRepository;
 import com.brewery.repository.ProcessRepository;
 import com.brewery.repository.MeasureTypeRepository;
 import com.brewery.repository.BatchRepository;
 import com.brewery.repository.MeasurementRepository;
+import com.brewery.repository.SensorRepository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -52,6 +55,13 @@ public class DataService {
 	public void  measurementRepository( MeasurementRepository measurementRepository ) {
 		this.measurementRepository = measurementRepository;
 	}
+
+	private SensorRepository sensorRepository;
+	@Autowired
+	public void sensorRepository( SensorRepository sensorRepository ) {
+		this.sensorRepository = sensorRepository;
+	}
+
 	
 	//
 	//	Style table access methods
@@ -282,6 +292,59 @@ public class DataService {
         	measurementRepository.delete( id );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteMeasurement: " + e.getMessage());
+        }
+    }
+
+	//
+	//	Sensor table access methods
+	//
+	//
+    public Sensor getSensor( Long id ) {
+        LOG.info("Getting Sensor, id:" + id);
+        return sensorRepository.findOne(id);
+    }
+    
+    public List<Sensor> getAllSensors() {
+    	return sensorRepository.findAll();
+    }
+
+    public Sensor saveSensor( Sensor sensor ) {
+    	Sensor sensorToSave;
+        try {
+            LOG.info("Saving Sensor...");
+            sensor.setUpdateTime( new Date() );
+            sensorToSave = sensorRepository.save(sensor);
+            return sensorToSave;
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: saveSensor: " + e.getMessage());
+        }
+        return new Sensor();
+    }
+
+    public Sensor updateSensor( Sensor sensorToUpdate ) {
+    	Sensor foundSensor = sensorRepository.findOne( sensorToUpdate.getId() );
+        try {
+        	foundSensor.setName( sensorToUpdate.getName() );
+        	foundSensor.setUrl( sensorToUpdate.getUrl() );
+        	foundSensor.setUserId( sensorToUpdate.getUserId() );
+        	foundSensor.setPin( sensorToUpdate.getPin() );
+        	foundSensor.setCommunicationType( sensorToUpdate.getCommunicationType() );
+        	foundSensor.setBatch( sensorToUpdate.getBatch() );
+        	foundSensor.setProcess( sensorToUpdate.getProcess() );
+        	foundSensor.setMeasureType( sensorToUpdate.getMeasureType() );
+        	foundSensor.setUpdateTime( new Date() );
+            return sensorRepository.save( foundSensor );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: updateSensor: " + e.getMessage());
+        }
+        return sensorToUpdate;
+    }
+
+    public void deleteSensor( Long id ) {
+        try {
+        	sensorRepository.delete( id );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: deleteSensor: " + e.getMessage());
         }
     }
     

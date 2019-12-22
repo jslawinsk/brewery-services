@@ -5,6 +5,7 @@ import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
+import com.brewery.model.Sensor;
 import com.brewery.service.DataService;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +33,11 @@ public class UiController {
         this.dataService = dataService;
     }
 
+    @Value("${blueTooth.enabled}")
+    private boolean blueToothEnabled;
 	
     @RequestMapping(path = "/")
-    public String index() {
+    public String index( Model model ) {
         return "index";
     }
 
@@ -243,4 +247,49 @@ public class UiController {
         return "redirect:/";
     }
 
+    //
+    //	Sensor table UI routines
+    //
+    //
+    @RequestMapping(path = "/sensor/add", method = RequestMethod.GET)
+    public String createSensor( Model model ) {
+    	Sensor sensor = new Sensor();
+    	sensor.setId( 0L );
+    	sensor.setUpdateTime( new Date() );
+        model.addAttribute("sensor", sensor );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "sensorEdit";
+    }
+    
+    @RequestMapping(path = "/sensor", method = RequestMethod.POST)
+    public String saveSensor( Sensor sensor ) {
+        LOG.info("UiController: saveSensor: " + sensor );   
+    	dataService.saveSensor( sensor );
+        return "redirect:/sensor/";
+    }
+    
+    @RequestMapping(path = "/sensor", method = RequestMethod.GET)
+    public String getAllSensors( Model model ) {
+        model.addAttribute("sensors", dataService.getAllSensors() );
+        model.addAttribute("blueToothEnabled", blueToothEnabled );
+      return "sensors";
+    }
+
+    @RequestMapping(path = "/sensor/edit/{id}", method = RequestMethod.GET)
+    public String editSensor(Model model, @PathVariable(value = "id") Long id) {
+        model.addAttribute("sensor", dataService.getSensor( id ) );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "sensorEdit";
+    }
+
+    @RequestMapping(path = "/sensor/delete/{id}", method = RequestMethod.GET)
+    public String deleteSensor(@PathVariable(name = "id") Long id) {
+    	dataService.deleteSensor( id );
+        return "redirect:/sensor/";
+    }
+    
 }

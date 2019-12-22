@@ -77,6 +77,26 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/net.sf.bluecove/bluecove -->
+<!--  		<dependency>
+		    <groupId>net.sf.bluecove</groupId>
+		    <artifactId>bluecove</artifactId>
+		    <version>2.1.0</version>
+		</dependency>
+-->		
+		<dependency>
+		    <groupId>io.ultreia</groupId>
+		    <artifactId>bluecove</artifactId>
+		    <version>2.1.1</version>
+		</dependency>
+        <!-- If you plan to test your application in emulated Bluetooth mode -->
+        <dependency>
+            <groupId>net.sf.bluecove</groupId>
+            <artifactId>bluecove-emu</artifactId>
+            <version>2.1.0</version>
+            <scope>test</scope>
+        </dependency>          		
 	</dependencies>
 
 	<build>
