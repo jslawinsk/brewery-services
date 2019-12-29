@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Edit Sensor</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body onload="setBtUrl()">
+<div class="container">
+    <h2>Edit Sensor</h2>
+    <div>
+        <form class="form-horizontal" th:object="${sensor}" th:action="@{/sensor}" method="post">
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Select Sensor:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{name}" name="sensorSelect" onchange="setBtUrl()" id="btSelect">
+	    				<option th:each="sensor : ${sensors}" th:value="${sensor.name}" th:text="${sensor.name}"></option>
+	    			</select>
+                </div>
+			</div>            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">URL:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{url}" id="urlText" />
+                </div>
+            </div>
+
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Interface:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{communicationType}">
+	    			 	<option value="None">None</option>
+	    			 	<option value="Bluetooth">Bluetooth</option>
+	    			</select>
+                </div>
+			</div>            
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">User ID:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{userId}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">PIN:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{pin}" />
+                </div>
+            </div>
+
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Batch Id:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{batch.id}">
+	    				<option th:each="batch : ${batches}" th:value="${batch.id}" th:text="${batch.id}"></option>
+	    			</select>
+                </div>
+			</div>            
+
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Process:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{process.code}">
+	    				<option th:each="process : ${processes}" th:value="${process.code}" th:text="${process.name}"></option>
+	    			</select>
+                </div>
+			</div>            
+
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Measurement Type:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{measureType.code}">
+	    				<option th:each="measureType : ${measureTypes}" th:value="${measureType.code}" th:text="${measureType.name}"></option>
+	    			</select>
+                </div>
+			</div>            
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Update Time:</label>
+                <div class="col-sm-10">
+                    <input type="datetime-local" step="1" class="form-control" th:field="*{updateTime}" />
+                </div>
+            </div>
+ 
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	function setBtUrl() {
+		var urlVar = document.getElementById("urlText");
+		var btVar = document.getElementById("btSelect");
+		
+        var sensorObjs = /*[[${sensors}]]*/;
+        for (var i = 0; i < sensorObjs.length; i++) {
+			if( sensorObjs[i].name == btVar.value ){
+				urlVar.value = sensorObjs[i].url;
+			}
+        }
+
+ 	}
+ 	/*]]>*/
+</script>
+
+</body>
+</html>

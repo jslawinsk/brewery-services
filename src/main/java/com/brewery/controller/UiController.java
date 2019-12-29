@@ -6,8 +6,10 @@ import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Sensor;
+import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -33,6 +35,12 @@ public class UiController {
         this.dataService = dataService;
     }
 
+    private BlueToothService blueToothService;
+    @Autowired
+    public void setProductsService(BlueToothService blueToothService) {
+        this.blueToothService = blueToothService;
+    }
+    
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
 	
@@ -274,9 +282,33 @@ public class UiController {
     public String getAllSensors( Model model ) {
         model.addAttribute("sensors", dataService.getAllSensors() );
         model.addAttribute("blueToothEnabled", blueToothEnabled );
-      return "sensors";
+        return "sensors";
     }
 
+    @RequestMapping(path = "/sensor/scan", method = RequestMethod.GET)
+    public String discoverSensors( Model model )  {
+        try {
+			model.addAttribute("sensors", blueToothService.discoverSensors() );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        model.addAttribute("blueToothEnabled", blueToothEnabled );
+
+        Sensor sensor = new Sensor();
+    	sensor.setId( 0L );
+    	sensor.setCommunicationType("Bluetooth");
+    	sensor.setUpdateTime( new Date() );
+        model.addAttribute("sensor", sensor );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "sensorSelect";
+    }
+    
     @RequestMapping(path = "/sensor/edit/{id}", method = RequestMethod.GET)
     public String editSensor(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("sensor", dataService.getSensor( id ) );

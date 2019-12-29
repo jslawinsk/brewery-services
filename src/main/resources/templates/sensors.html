@@ -9,7 +9,7 @@
 	<h2>Sensors</h2>
     <div th:if="${#lists.isEmpty(sensors)}">
     	<a th:href="${'/sensor/add/'}" class="btn btn-primary btn-lg">Add Sensor</a>
-    	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary btn-lg">Scan Bluetooth</a>
+    	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary btn-lg">Discover Bluetooth</a>
     </div>
     <div th:if="${not #lists.isEmpty(sensors)}">
         <table class="table table-striped">
