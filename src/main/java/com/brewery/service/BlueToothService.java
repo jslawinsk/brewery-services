@@ -91,8 +91,8 @@ public class BlueToothService implements CommandLineRunner {
 	            for( RemoteDevice remoteDevice : remoteDevices ) {
 	            	LOG.info( "Device Discovered: " + remoteDevice.getFriendlyName(false) );
 	            }
-	            List<Sensor> sensors = discoverSensors( );
 */	            
+//	            List<Sensor> sensors = discoverSensors( );	            
 	            //connect( "btspp://000666DA0B89:1;authenticate=false;encrypt=false;master=false" );
 	        }catch(Exception e){
 	            System.err.println(e.toString());
@@ -111,6 +111,23 @@ public class BlueToothService implements CommandLineRunner {
         List<Sensor> sensors = discoverServices( remoteDevices );
         return sensors;
     }
+
+    public boolean pairSensor( String deviceName, String pin  ) throws IOException, InterruptedException 
+    {
+    	boolean paired = false; 
+    	LOG.info( "Pairing Sensors: " +  deviceName );
+        List<RemoteDevice> remoteDevices = discoverDevices();
+        for( RemoteDevice remoteDevice : remoteDevices ) {
+        	String remoteName = remoteDevice.getFriendlyName(false);
+        	LOG.info( "Device Discovered: " +  remoteName );
+        	if( deviceName.equals( remoteName ) ) {
+                paired = RemoteDeviceHelper.authenticate( remoteDevice, pin );
+                LOG.info("Pair with " + remoteName + (paired ? " successful" : " failed"));   	
+                break;
+        	}
+        }
+        return paired;
+    }
     
     /**
      * Device Discovery
@@ -128,11 +145,6 @@ public class BlueToothService implements CommandLineRunner {
 				remoteDevices.add( btDevice );
     			try {
     				LOG.info("     name " + btDevice.getFriendlyName(false));
-/*    				if( "RNBT-0B89".equals( btDevice.getFriendlyName(false ) ) ){
-                        boolean paired = RemoteDeviceHelper.authenticate( btDevice, "1234" );
-                        LOG.info("Pair with " + btDevice.getFriendlyName(false ) + (paired ? " succesfull" : " failed"));    					
-    				}
-*/    				
                 } catch (IOException e ) {
 					e.printStackTrace();
                 }

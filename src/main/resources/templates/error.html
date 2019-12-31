@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Error</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body marginwidth="0" marginheight="0">
+  <div class="container">
+    <div class="row">
+      <h1>Error Page</h1>
+    </div>
+    <div class="row">It apperrs Either something went wrong or the page
+      doesn't exist anymore.....</div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Date</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${timestamp}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Path</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${path}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Error</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${error}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Status</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${status}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Message</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${message}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Exception</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${exception}"></span>
+      </div>
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+        <span class="legend">Trace</span>
+      </div>
+      <div class="col-md-8">
+        <span th:text="${trace}"></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

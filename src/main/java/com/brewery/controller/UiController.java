@@ -308,6 +308,25 @@ public class UiController {
         model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
         return "sensorSelect";
     }
+
+    @RequestMapping(path = "/sensor/pair/{id}", method = RequestMethod.GET)
+    public String pairSensor(Model model, @PathVariable(value = "id") Long id) {
+        Sensor sensor = dataService.getSensor( id );
+        model.addAttribute("title", sensor.getName() + " Pairing" );
+        boolean result = false;
+		try {
+			result = blueToothService.pairSensor( sensor.getName(), sensor.getPin() );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        model.addAttribute("message",  "Pair " +  (result ? "successful" : "failed") );
+        return "results";
+    }
+
     
     @RequestMapping(path = "/sensor/edit/{id}", method = RequestMethod.GET)
     public String editSensor(Model model, @PathVariable(value = "id") Long id) {
@@ -315,6 +334,7 @@ public class UiController {
         model.addAttribute("batches",  dataService.getAllBatches() );
         model.addAttribute("processes",  dataService.getAllProcesses() );
         model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        model.addAttribute("blueToothEnabled", blueToothEnabled );
         return "sensorEdit";
     }
 

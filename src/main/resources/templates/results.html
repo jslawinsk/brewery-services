@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Error</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body marginwidth="0" marginheight="0">
+  <div class="container">
+    <div class="row">
+    </div>
+    <div class="row rowDesign">
+      <div class="col-md-4 ml-auto">
+      	<h1 th:text="${title}">Result</h1>
+      </div>
+      <div class="col-md-8">
+      	<h1 th:text="${message}">Result</h1>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
