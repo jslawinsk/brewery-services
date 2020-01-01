@@ -23,21 +23,21 @@ public class Style {
 	private String description;
 	private String bjcpCategory;
 	
-	@OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
+/*	@OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
     private Set<Batch> batches;	
-
+*/
     public Style( String name, String bjcpCategory, String description) {
     	this.name = name;
     	this.bjcpCategory = bjcpCategory;
     	this.description = description;
     }
     
-    public Style(String name, Batch... batches) {
+/*    public Style(String name, Batch... batches) {
         this.name = name;
         this.batches = Stream.of(batches).collect(Collectors.toSet());
         this.batches.forEach(x -> x.setStyle(this));
     }    
-    
+  */  
 	public Style() {
 		// TODO Auto-generated constructor stub
 	}
@@ -69,8 +69,7 @@ public class Style {
 
     @Override
 	public String toString() {
-		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory
-				+ ", batches=" + batches + "]";
+		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory + "]";
 	}
 	
 }

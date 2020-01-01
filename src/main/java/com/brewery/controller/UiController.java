@@ -31,13 +31,13 @@ public class UiController {
 	
     private DataService dataService;
     @Autowired
-    public void setProductsService(DataService dataService) {
+    public void setDataService(DataService dataService) {
         this.dataService = dataService;
     }
 
     private BlueToothService blueToothService;
     @Autowired
-    public void setProductsService(BlueToothService blueToothService) {
+    public void setBlueToothService(BlueToothService blueToothService) {
         this.blueToothService = blueToothService;
     }
     

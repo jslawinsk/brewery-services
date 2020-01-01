@@ -27,7 +27,7 @@ public class RestApiController {
     private Logger LOG = LoggerFactory.getLogger(RestApiController.class);
 
     @Autowired
-    public void setProductsService(DataService dataService) {
+    public void setDataService(DataService dataService) {
         this.dataService = dataService;
     }
 
