@@ -19,13 +19,16 @@ import javax.microedition.io.StreamConnectionNotifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.intel.bluetooth.RemoteDeviceHelper;
-
+import com.brewery.core.BluetoothThread;
 import com.brewery.model.Sensor;
 
 
@@ -43,6 +46,13 @@ public class BlueToothService implements CommandLineRunner {
     
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
+    
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+    
     
     //start server
     private void startServer() throws IOException{
@@ -321,6 +331,12 @@ public class BlueToothService implements CommandLineRunner {
         String lineRead=bReader2.readLine();
         LOG.info(lineRead);    	
     	
+    }    
+    
+    public void connectAsynchronously( Sensor sensor ) {
+    	BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
+    	btThread.setSensor( sensor );
+        taskExecutor.execute( btThread );
     }    
     
 }

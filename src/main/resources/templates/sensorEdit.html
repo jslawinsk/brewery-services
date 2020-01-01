@@ -90,6 +90,9 @@
                 <div class="col-sm-2">
 	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/pair/' + sensor.id}" class="btn btn-primary">Pair Bluetooth</a>
                 </div>
+                <div class="col-sm-2">
+	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/connect/' + sensor.id}" class="btn btn-primary">Connect Bluetooth</a>
+                </div>
             </div>
         </form>
     </div>

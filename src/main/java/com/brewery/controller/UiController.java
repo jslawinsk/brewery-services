@@ -327,6 +327,15 @@ public class UiController {
         return "results";
     }
 
+    @RequestMapping(path = "/sensor/connect/{id}", method = RequestMethod.GET)
+    public String connectSensor(Model model, @PathVariable(value = "id") Long id) {
+        Sensor sensor = dataService.getSensor( id );
+        model.addAttribute("title", sensor.getName() + " Connecting" );
+        boolean result = true;
+		blueToothService.connectAsynchronously( sensor );
+        model.addAttribute("message",  "Connect " +  (result ? "successful" : "failed") );
+        return "results";
+    }
     
     @RequestMapping(path = "/sensor/edit/{id}", method = RequestMethod.GET)
     public String editSensor(Model model, @PathVariable(value = "id") Long id) {
