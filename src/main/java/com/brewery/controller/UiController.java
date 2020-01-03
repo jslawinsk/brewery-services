@@ -176,6 +176,7 @@ public class UiController {
     public String createBatch(Model model) {
     	Batch batch = new Batch();
     	batch.setId( 0L );
+    	batch.setActive( false );
     	batch.setStartTime( new Date() );
         model.addAttribute("batch", batch );
         model.addAttribute("styles",  dataService.getAllStyles() );
@@ -263,6 +264,7 @@ public class UiController {
     public String createSensor( Model model ) {
     	Sensor sensor = new Sensor();
     	sensor.setId( 0L );
+    	sensor.setEnabled( false );
     	sensor.setUpdateTime( new Date() );
         model.addAttribute("sensor", sensor );
         model.addAttribute("batches",  dataService.getAllBatches() );
@@ -300,6 +302,7 @@ public class UiController {
 
         Sensor sensor = new Sensor();
     	sensor.setId( 0L );
+    	sensor.setEnabled( false );
     	sensor.setCommunicationType("Bluetooth");
     	sensor.setUpdateTime( new Date() );
         model.addAttribute("sensor", sensor );

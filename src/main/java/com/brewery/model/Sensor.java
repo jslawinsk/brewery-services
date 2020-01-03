@@ -24,6 +24,8 @@ public class Sensor {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
+
+	private boolean enabled;
 	
 	private String name;
 	private String url;
@@ -54,10 +56,11 @@ public class Sensor {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Sensor(Long id, String name, String url, String userId, String pin, String communicationType, Batch batch,
+	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, Batch batch,
 			Process process, MeasureType measureType, Date updateTime) {
 		super();
 		this.id = id;
+		this.enabled = enabled;
 		this.name = name;
 		this.url = url;
 		this.userId = userId;
@@ -74,6 +77,14 @@ public class Sensor {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public String getName() {
@@ -145,7 +156,7 @@ public class Sensor {
 
 	@Override
 	public String toString() {
-		return "Sensor [id=" + id + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
+		return "Sensor [id=" + id + ", enabled=" + enabled + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
 				+ ", communicationType=" + communicationType + ", batch=" + batch + ", process=" + process
 				+ ", measureType=" + measureType + ", updateTime=" + updateTime + "]";
 	}

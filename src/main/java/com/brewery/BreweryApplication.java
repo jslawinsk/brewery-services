@@ -64,7 +64,7 @@ public class BreweryApplication implements CommandLineRunner {
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		styleRepository.save( testStyle );
 
-		Batch testBatch = new Batch( "Joe's IPA", "Old School IPA", testStyle, new Date() );
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 		batchRepository.save( testBatch );
 		
 		Process process = new Process( "FRM", "Fermentation" );
@@ -91,7 +91,7 @@ public class BreweryApplication implements CommandLineRunner {
 		Style testStyle2 = new Style( "Stout", "21", "Malty" );
 		styleRepository.save( testStyle2 );
 		
-		Batch testBatch2 = new Batch( "Joe's Stout", "Old School Stout", testStyle2, new Date() );
+		Batch testBatch2 = new Batch( false, "Joe's Stout", "Old School Stout", testStyle2, new Date() );
 		batchRepository.save( testBatch2 );
 		
 		measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );

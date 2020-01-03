@@ -34,6 +34,7 @@
 			</tr>				
             <tr>
                 <th>Id</th>
+                <th>Enabled</th>
                 <th>Name</th>
                 <th>Interface</th>
                 <th>Batch Id</th>
@@ -45,6 +46,7 @@
             </tr>
             <tr th:each="sensor : ${sensors}">
                 <td th:text="${sensor.id}">Id</td>
+                <td th:text="${sensor.enabled}">Enabled</td>
                 <td th:text="${sensor.name}">Name</td>
                 <td th:text="${sensor.communicationType}">Interface</td>
                 <td th:text="${sensor.batch.id}">Batch Id</td>

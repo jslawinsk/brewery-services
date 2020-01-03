@@ -27,6 +27,7 @@
 			</tr>				
             <tr>
                 <th>Id</th>
+                <th>Active</th>
                 <th>Name</th>
                 <th>Style</th>
                 <th>Start Time</th>
@@ -37,6 +38,7 @@
             </tr>
             <tr th:each="batch : ${batches}">
                 <td th:text="${batch.id}">Id</td>
+                <td th:text="${batch.active}">Active</td>
                 <td th:text="${batch.name}">Name</td>
                 <td th:text="${batch.style.name}">Style</td>
                 <td th:text="${batch.startTime}">Start Time</td>

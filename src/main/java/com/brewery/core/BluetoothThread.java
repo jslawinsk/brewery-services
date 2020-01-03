@@ -48,7 +48,6 @@ public class BluetoothThread implements Runnable {
     	StreamConnection streamConnection;
 		try {
 			streamConnection = (StreamConnection)Connector.open( sensor.getUrl() );
-
 	    	Thread.sleep(500);
 	    	
 	    	OutputStream outStream=streamConnection.openOutputStream();
@@ -73,7 +72,7 @@ public class BluetoothThread implements Runnable {
 		    	measurement.setProcess( sensor.getProcess() );
 		    	measurement.setType( sensor.getMeasureType() );
 		    	measurement.setValueNumber( sensorData.getTemperature() );
-		    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() );
+		    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() + "}");
 		        dataService.saveMeasurement( measurement );
 	        }
 		} catch (IOException e) {

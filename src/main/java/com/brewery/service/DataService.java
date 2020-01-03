@@ -212,6 +212,10 @@ public class DataService {
     	return batchRepository.findAll();
     }
 
+    public List<Batch> getActiveBatches() {
+    	return batchRepository.findActiveBatches();
+    }
+    
     public Batch saveBatch( Batch batch ) {
     	Batch batchToSave;
         try {
@@ -227,6 +231,7 @@ public class DataService {
     public Batch updateBatch( Batch batchToUpdate ) {
     	Batch foundBatch = batchRepository.findOne( batchToUpdate.getId() );
         try {
+        	foundBatch.setActive( batchToUpdate.isActive() );
         	foundBatch.setName( batchToUpdate.getName() );
         	foundBatch.setDescription( batchToUpdate.getDescription() );
         	foundBatch.setStyle( batchToUpdate.getStyle() );
@@ -308,6 +313,10 @@ public class DataService {
     	return sensorRepository.findAll();
     }
 
+    public List<Sensor> getEnabledSensors() {
+    	return sensorRepository.findEnabledSensors();
+    }
+    
     public Sensor saveSensor( Sensor sensor ) {
     	Sensor sensorToSave;
         try {
@@ -324,6 +333,7 @@ public class DataService {
     public Sensor updateSensor( Sensor sensorToUpdate ) {
     	Sensor foundSensor = sensorRepository.findOne( sensorToUpdate.getId() );
         try {
+        	foundSensor.setEnabled( sensorToUpdate.isEnabled() );
         	foundSensor.setName( sensorToUpdate.getName() );
         	foundSensor.setUrl( sensorToUpdate.getUrl() );
         	foundSensor.setUserId( sensorToUpdate.getUserId() );

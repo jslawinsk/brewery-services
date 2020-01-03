@@ -25,6 +25,7 @@ public class Batch {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
+	private boolean active;
 	private String name;
 	private String description;
 	
@@ -45,8 +46,9 @@ public class Batch {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Batch(String name, String description, Style style, Date startTime) {
+	public Batch( boolean active, String name, String description, Style style, Date startTime) {
 		super();
+		this.active = active;
 		this.name = name;
 		this.description = description;
 		this.style = style;
@@ -59,6 +61,14 @@ public class Batch {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -87,7 +97,7 @@ public class Batch {
 	}
 	@Override
 	public String toString() {
-		return "Batch [name=" + name + ", id=" + id + ", description=" + description + ", style=" + style + ", startTime=" + startTime
+		return "Batch [active=" + active + ", name=" + name + ", id=" + id + ", description=" + description + ", style=" + style + ", startTime=" + startTime
 				+ "]";
 	}
 
