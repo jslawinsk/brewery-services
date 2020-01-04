@@ -335,7 +335,6 @@ public class BlueToothService implements CommandLineRunner {
     
     public void connectAsynchronously( Sensor sensor ) {
     	BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
-    	btThread.setSensor( sensor );
         taskExecutor.execute( btThread );
     }    
     

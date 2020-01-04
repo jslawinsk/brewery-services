@@ -1,6 +1,7 @@
 package com.brewery;
 
 import com.brewery.model.Style;
+import com.brewery.core.BluetoothThread;
 import com.brewery.model.Batch;
 import com.brewery.model.Process;
 import com.brewery.model.Measurement;
@@ -17,9 +18,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskExecutor;
 
 @SpringBootApplication
 public class BreweryApplication implements CommandLineRunner {
@@ -53,6 +57,15 @@ public class BreweryApplication implements CommandLineRunner {
 	public void  measureTypeRepository( MeasureTypeRepository measureTypeRepository ) {
 		this.measureTypeRepository = measureTypeRepository;
 	}
+
+    @Value("${blueTooth.enabled}")
+    private boolean blueToothEnabled;
+    
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(BreweryApplication.class, args);
@@ -96,6 +109,11 @@ public class BreweryApplication implements CommandLineRunner {
 		
 		measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );
 		measurementRepository.save( measurement );
+
+		if( blueToothEnabled ) {
+			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
+			taskExecutor.execute( btThread );
+		}
 		
 	}
 }
