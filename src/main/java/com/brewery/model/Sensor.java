@@ -32,6 +32,7 @@ public class Sensor {
 	private String userId;
 	private String pin;
 	private String communicationType;
+	private String trigger;
 	
 	@ManyToOne
     @JoinColumn
@@ -56,8 +57,8 @@ public class Sensor {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, Batch batch,
-			Process process, MeasureType measureType, Date updateTime) {
+	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
+			Batch batch, Process process, MeasureType measureType, Date updateTime) {
 		super();
 		this.id = id;
 		this.enabled = enabled;
@@ -66,6 +67,7 @@ public class Sensor {
 		this.userId = userId;
 		this.pin = pin;
 		this.communicationType = communicationType;
+		this.trigger = trigger;
 		this.batch = batch;
 		this.process = process;
 		this.measureType = measureType;
@@ -127,6 +129,14 @@ public class Sensor {
 		this.communicationType = communicationType;
 	}
 
+	public String getTrigger() {
+		return trigger;
+	}
+
+	public void setTrigger(String trigger) {
+		this.trigger = trigger;
+	}
+
 	public Batch getBatch() {
 		return batch;
 	}
@@ -157,8 +167,8 @@ public class Sensor {
 	@Override
 	public String toString() {
 		return "Sensor [id=" + id + ", enabled=" + enabled + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
-				+ ", communicationType=" + communicationType + ", batch=" + batch + ", process=" + process
-				+ ", measureType=" + measureType + ", updateTime=" + updateTime + "]";
+				+ ", communicationType=" + communicationType + ", trigger=" + trigger 
+				+", batch=" + batch + ", process=" + process + ", measureType=" + measureType + ", updateTime=" + updateTime + "]";
 	}
 	
 }

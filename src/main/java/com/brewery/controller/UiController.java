@@ -3,8 +3,10 @@ package com.brewery.controller;
 import com.brewery.model.Style;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
+import com.brewery.core.BluetoothThread;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
+import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
@@ -265,6 +267,8 @@ public class UiController {
     	Sensor sensor = new Sensor();
     	sensor.setId( 0L );
     	sensor.setEnabled( false );
+    	sensor.setCommunicationType("Bluetooth");
+    	sensor.setTrigger( "Auto" );
     	sensor.setUpdateTime( new Date() );
         model.addAttribute("sensor", sensor );
         model.addAttribute("batches",  dataService.getAllBatches() );
@@ -304,6 +308,7 @@ public class UiController {
     	sensor.setId( 0L );
     	sensor.setEnabled( false );
     	sensor.setCommunicationType("Bluetooth");
+    	sensor.setTrigger( "Auto" );
     	sensor.setUpdateTime( new Date() );
         model.addAttribute("sensor", sensor );
         model.addAttribute("batches",  dataService.getAllBatches() );
@@ -330,16 +335,6 @@ public class UiController {
         return "results";
     }
 
-    @RequestMapping(path = "/sensor/connect/{id}", method = RequestMethod.GET)
-    public String connectSensor(Model model, @PathVariable(value = "id") Long id) {
-        Sensor sensor = dataService.getSensor( id );
-        model.addAttribute("title", sensor.getName() + " Connecting" );
-        boolean result = true;
-		blueToothService.connectAsynchronously( sensor );
-        model.addAttribute("message",  "Connect " +  (result ? "successful" : "failed") );
-        return "results";
-    }
-    
     @RequestMapping(path = "/sensor/edit/{id}", method = RequestMethod.GET)
     public String editSensor(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("sensor", dataService.getSensor( id ) );
@@ -355,5 +350,43 @@ public class UiController {
     	dataService.deleteSensor( id );
         return "redirect:/sensor/";
     }
+
+    @RequestMapping(path = "/sensor/controlauto/{id}", method = RequestMethod.GET)
+    public String sensorControlAuto(Model model, @PathVariable(value = "id") Long id) {
+        Sensor sensor = dataService.getSensor( id );
+        model.addAttribute("title", sensor.getName()  );
+        Message message = new Message();
+        message.setTarget( sensor.getName() );
+        message.setData( "COMMAND:CONTROL:AUTO" );
+        BluetoothThread.sendMessage( message );
+        model.addAttribute("message",  "Command Auto Control sent "  );
+        return "results";
+    }
+
+    
+    @RequestMapping(path = "/sensor/controlheat/{id}", method = RequestMethod.GET)
+    public String sensorControlHeat(Model model, @PathVariable(value = "id") Long id) {
+        Sensor sensor = dataService.getSensor( id );
+        model.addAttribute("title", sensor.getName()  );
+        Message message = new Message();
+        message.setTarget( sensor.getName() );
+        message.setData( "COMMAND:CONTROL:HEAT_ON" );
+        BluetoothThread.sendMessage( message );
+        model.addAttribute("message",  "Command override Heat On sent "  );
+        return "results";
+    }
+
+    @RequestMapping(path = "/sensor/controlcool/{id}", method = RequestMethod.GET)
+    public String sensorControlCool(Model model, @PathVariable(value = "id") Long id) {
+        Sensor sensor = dataService.getSensor( id );
+        model.addAttribute("title", sensor.getName()  );
+        Message message = new Message();
+        message.setTarget( sensor.getName() );
+        message.setData( "COMMAND:CONTROL:COOL_ON" );
+        BluetoothThread.sendMessage( message );
+        model.addAttribute("message",  "Command override Cool On sent "  );
+        return "results";
+    }
+    
     
 }

@@ -339,6 +339,7 @@ public class DataService {
         	foundSensor.setUserId( sensorToUpdate.getUserId() );
         	foundSensor.setPin( sensorToUpdate.getPin() );
         	foundSensor.setCommunicationType( sensorToUpdate.getCommunicationType() );
+        	foundSensor.setTrigger( sensorToUpdate.getTrigger() );
         	foundSensor.setBatch( sensorToUpdate.getBatch() );
         	foundSensor.setProcess( sensorToUpdate.getProcess() );
         	foundSensor.setMeasureType( sensorToUpdate.getMeasureType() );

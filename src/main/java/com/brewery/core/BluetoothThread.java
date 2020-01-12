@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
+import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorData;
 import com.brewery.service.DataService;
@@ -33,6 +35,10 @@ public class BluetoothThread implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger( BluetoothThread.class );
 
+	// public static MessageQueue blueToothQueue = new MessageQueue( 100, "BTQueue" );
+	
+	private static ArrayBlockingQueue<Message> blueToothQueue = new ArrayBlockingQueue<Message>( 100 ); 
+	
     private DataService dataService;
     @Autowired
     public void setDataService(DataService dataService) {
@@ -48,6 +54,13 @@ public class BluetoothThread implements Runnable {
 
 				List<Sensor> sensors= dataService.getEnabledSensors();
 				Thread.sleep(500);
+				
+				Message message = null;
+				if( !blueToothQueue.isEmpty() ) {
+					message = blueToothQueue.remove();
+					LOG.info("Message: " + message );						
+				}
+
 				for( Sensor sensor : sensors ) {
 					LOG.info( "Active Sensor: " + sensor );
 					LOG.info("Connecting to " + sensor.getUrl() );
@@ -55,31 +68,44 @@ public class BluetoothThread implements Runnable {
 					StreamConnection streamConnection;
 					streamConnection = (StreamConnection)Connector.open( sensor.getUrl() );
 					Thread.sleep(500);
-    	    	
-					OutputStream outStream=streamConnection.openOutputStream();
-					PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
-					pWriter.write("Brew Services\n\r");
-					pWriter.flush();
-	    	        outStream.close();
-    				
-    		        ObjectMapper objectMapper = new ObjectMapper();
-    		        
+
+					if( message != null ) {
+						String target = message.getTarget();
+						if( target != null ) {
+							if( target.equals( sensor.getName() ) ){
+								LOG.info("Sending Message: " + message );								
+								OutputStream outStream=streamConnection.openOutputStream();
+								PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
+								pWriter.write( message.getData() + "\n\r");
+								pWriter.flush();
+				    	        outStream.close();
+							}
+						}
+					}
+					
+    		        ObjectMapper objectMapper = new ObjectMapper();    		        
     		        InputStream inStream=streamConnection.openInputStream();
-			        //read response
-			        BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
-			        String lineRead=bReader2.readLine();
-			        LOG.info( "Bluetooth Data: " + lineRead);
-			        SensorData sensorData = objectMapper.readValue(lineRead, SensorData.class);
-			        LOG.info( "SensorData: " + sensorData );
-			        Measurement measurement = new Measurement();
-			        measurement.setId( 0L );
-			    	measurement.setMeasurementTime( new Date() );
-			    	measurement.setBatch( sensor.getBatch() );
-			    	measurement.setProcess( sensor.getProcess() );
-			    	measurement.setType( sensor.getMeasureType() );
-			    	measurement.setValueNumber( sensorData.getTemperature() );
-			    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() + "}");
-			        dataService.saveMeasurement( measurement );
+    		        try {
+				        //read response
+				        BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
+				        String lineRead=bReader2.readLine();
+				        LOG.info( "Bluetooth Data: " + lineRead);
+				        if( lineRead != null ) {
+					        SensorData sensorData = objectMapper.readValue(lineRead, SensorData.class);
+					        LOG.info( "SensorData: " + sensorData );
+					        Measurement measurement = new Measurement();
+					        measurement.setId( 0L );
+					    	measurement.setMeasurementTime( new Date() );
+					    	measurement.setBatch( sensor.getBatch() );
+					    	measurement.setProcess( sensor.getProcess() );
+					    	measurement.setType( sensor.getMeasureType() );
+					    	measurement.setValueNumber( sensorData.getTemperature() );
+					    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() + "}");
+					        dataService.saveMeasurement( measurement );
+				        }
+    				} catch( Exception e ) {
+    					e.printStackTrace();
+    				}
 			        inStream.close();
 			        
 	    	        streamConnection.close();
@@ -96,5 +122,7 @@ public class BluetoothThread implements Runnable {
         }
     }
     
-    
+    static public void sendMessage( Message message ) {
+    	blueToothQueue.add( message );
+    }
 }
