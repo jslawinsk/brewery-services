@@ -11,14 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
+@Table(name = "batch", schema="brewery")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Batch {
 
@@ -33,7 +36,14 @@ public class Batch {
     @JoinColumn
 	private Style style;
 	
-	@Column(name = "startTime", columnDefinition="DATETIME")
+	//
+	//	For H2 database use the following
+	//
+	// @Column(name = "startTime", columnDefinition="DATETIME")
+	//
+	//	For Postgres database use the following
+	//
+	@Column( name = "startTime" )
     @Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

@@ -11,8 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "style", schema="brewery")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
 public class Style {
 	
@@ -37,7 +39,7 @@ public class Style {
         this.batches = Stream.of(batches).collect(Collectors.toSet());
         this.batches.forEach(x -> x.setStyle(this));
     }    
-  */  
+*/  
 	public Style() {
 		// TODO Auto-generated constructor stub
 	}

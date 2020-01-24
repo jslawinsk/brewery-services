@@ -8,14 +8,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "process", schema="brewery")
 public class Process {
 	
 	@Id
 	private String code;
 	private String name;
 	
+/*	
     @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
     private Set<Measurement> measurements;	
 
@@ -23,7 +26,8 @@ public class Process {
         this.measurements = Stream.of(measurements).collect(Collectors.toSet());
         this.measurements.forEach(x -> x.setProcess(this));
     }    
-    
+*/
+	
 	public Process() {
 		// TODO Auto-generated constructor stub
 	}

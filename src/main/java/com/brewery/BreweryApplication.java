@@ -34,6 +34,7 @@ public class BreweryApplication implements CommandLineRunner {
 		this.styleRepository = styleRepository;
 	}
 
+	
 	private BatchRepository batchRepository;
 	@Autowired
 	public void batchRepository( BatchRepository batchRepository ) {
@@ -77,8 +78,8 @@ public class BreweryApplication implements CommandLineRunner {
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		styleRepository.save( testStyle );
 
-		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
-		batchRepository.save( testBatch );
+		Style testStyle2 = new Style( "Stout", "21", "Malty" );
+		styleRepository.save( testStyle2 );
 		
 		Process process = new Process( "FRM", "Fermentation" );
 		processRepository.save( process );
@@ -86,14 +87,17 @@ public class BreweryApplication implements CommandLineRunner {
 		process = new Process( "MSH", "Mash" );
 		processRepository.save( process );		
 		
-		MeasureType measureType = new MeasureType( "TMP", "Temprature" );
-		measureTypeRepository.save(measureType);
-
-		measureType = new MeasureType( "PH", "PH" );
+		MeasureType measureType = new MeasureType( "PH", "PH" );
 		measureTypeRepository.save(measureType);
 		
 		measureType = new MeasureType( "TA", "Total Achilinity" );
 		measureTypeRepository.save(measureType);
+		
+		measureType = new MeasureType( "TMP", "Temperature" );
+		measureTypeRepository.save(measureType);
+
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+		batchRepository.save( testBatch );
 		
 		Measurement measurement = new Measurement( 70.3, null, testBatch, process, measureType, new Date() );
 		measurementRepository.save( measurement );
@@ -101,9 +105,6 @@ public class BreweryApplication implements CommandLineRunner {
 		measurement = new Measurement( 70.5, null, testBatch, process, measureType, new Date() );
 		measurementRepository.save( measurement );
 
-		Style testStyle2 = new Style( "Stout", "21", "Malty" );
-		styleRepository.save( testStyle2 );
-		
 		Batch testBatch2 = new Batch( false, "Joe's Stout", "Old School Stout", testStyle2, new Date() );
 		batchRepository.save( testBatch2 );
 		

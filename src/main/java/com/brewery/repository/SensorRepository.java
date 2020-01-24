@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SensorRepository extends JpaRepository<Sensor, Long> {
 
-	@Query( value = "SELECT * FROM Sensor WHERE enabled = true", nativeQuery = true )
-	 List<Sensor> findEnabledSensors( );	
+	@Query( value = "SELECT * FROM brewery.sensor WHERE enabled = true", nativeQuery = true )
+	List<Sensor> findEnabledSensors( );	
 	
 }

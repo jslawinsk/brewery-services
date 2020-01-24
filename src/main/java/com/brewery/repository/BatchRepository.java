@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 	
-	 @Query( value = "SELECT * FROM Batch WHERE active = true", nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.batch WHERE active = true", nativeQuery = true )
 	 List<Batch> findActiveBatches( );	
 	
 }

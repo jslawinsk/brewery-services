@@ -8,14 +8,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "measureType", schema="brewery")
 public class MeasureType {
 	
 	@Id
 	private String code;
 	private String name;
 	
+/*	
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
     private Set<Measurement> measurements;	
 
@@ -23,7 +26,8 @@ public class MeasureType {
         this.measurements = Stream.of(measurements).collect(Collectors.toSet());
         this.measurements.forEach(x -> x.setType(this));
     }    
-    
+  */
+	
 	public MeasureType() {
 		// TODO Auto-generated constructor stub
 	}
