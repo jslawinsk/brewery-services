@@ -24,12 +24,14 @@
             <tr>
                 <th>Code</th>
                 <th>Name</th>
+                <th>Synched</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </tr>
             <tr th:each="measureType : ${measureTypes}">
                 <td th:text="${measureType.code}">Code</td>
                 <td th:text="${measureType.name}">Name</td>
+                <td th:text="${measureType.synched}">Synched</td>
                 <td><a th:href="${'/measureType/edit/' + measureType.code}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/measureType/delete/' + measureType.code}" class="btn btn-danger">Delete</a></td>
             </tr>

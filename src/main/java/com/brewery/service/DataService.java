@@ -76,6 +76,10 @@ public class DataService {
     	return styleRepository.findAll();
     }
 
+    public List<Style> getStylesToSynchronize() {
+    	return styleRepository.findStylesToSynchronize();
+    }
+    
     public Style saveStyle( Style style ) {
     	Style styleToSave;
         try {

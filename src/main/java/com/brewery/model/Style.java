@@ -24,11 +24,23 @@ public class Style {
 	private String name;
 	private String description;
 	private String bjcpCategory;
+	private boolean synched;
 	
 /*	@OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
     private Set<Batch> batches;	
 */
+	public Style() {
+		super();
+		this.synched = false;
+	}
     public Style( String name, String bjcpCategory, String description) {
+		this.synched = false;
+    	this.name = name;
+    	this.bjcpCategory = bjcpCategory;
+    	this.description = description;
+    }
+    public Style( boolean synched, String name, String bjcpCategory, String description) {
+		this.synched = synched;
     	this.name = name;
     	this.bjcpCategory = bjcpCategory;
     	this.description = description;
@@ -40,16 +52,20 @@ public class Style {
         this.batches.forEach(x -> x.setStyle(this));
     }    
 */  
-	public Style() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public boolean isSynched() {
+		return synched;
+	}
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -71,7 +87,9 @@ public class Style {
 
     @Override
 	public String toString() {
-		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory + "]";
+		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory 
+				+ ", synched=" + synched
+				+ "]";
 	}
 	
 }

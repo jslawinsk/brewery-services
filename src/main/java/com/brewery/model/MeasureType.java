@@ -17,6 +17,8 @@ public class MeasureType {
 	@Id
 	private String code;
 	private String name;
+
+	private boolean synched;
 	
 /*	
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
@@ -29,11 +31,17 @@ public class MeasureType {
   */
 	
 	public MeasureType() {
-		// TODO Auto-generated constructor stub
+		this.synched = false;
 	}
-
-	public MeasureType(String code, String name) {
+	public MeasureType( String code, String name) {
 		super();
+		this.synched = false;
+		this.code = code;
+		this.name = name;
+	}
+	public MeasureType( boolean synched, String code, String name) {
+		super();
+		this.synched = synched;
 		this.code = code;
 		this.name = name;
 	}
@@ -52,8 +60,17 @@ public class MeasureType {
 		this.name = name;
 	}
 
+	public boolean isSynched() {
+		return synched;
+	}
+
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+
+	
 	@Override
 	public String toString() {
-		return "MeasureType [code=" + code + ", name=" + name + "]";
+		return "MeasureType [code=" + code + ", name=" + name + ", synched=" + synched + "]";
 	}
 }

@@ -29,20 +29,14 @@ public class Batch {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
 	private boolean active;
+	private boolean synched;
 	private String name;
 	private String description;
 	
 	@ManyToOne
     @JoinColumn
 	private Style style;
-	
-	//
-	//	For H2 database use the following
-	//
-	// @Column(name = "startTime", columnDefinition="DATETIME")
-	//
-	//	For Postgres database use the following
-	//
+
 	@Column( name = "startTime" )
     @Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -53,12 +47,23 @@ public class Batch {
 	
 	public Batch() {
 		super();
+		this.active = false;
+		this.synched = false;
 		// TODO Auto-generated constructor stub
 	}
-
 	public Batch( boolean active, String name, String description, Style style, Date startTime) {
 		super();
 		this.active = active;
+		this.synched = false;
+		this.name = name;
+		this.description = description;
+		this.style = style;
+		this.startTime = startTime;
+	}
+	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime) {
+		super();
+		this.active = active;
+		this.synched = synched;
 		this.name = name;
 		this.description = description;
 		this.style = style;
@@ -77,6 +82,14 @@ public class Batch {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public boolean isSynched() {
+		return synched;
+	}
+
+	public void setSynched(boolean synched) {
+		this.synched = synched;
 	}
 
 	public String getName() {
@@ -108,6 +121,7 @@ public class Batch {
 	@Override
 	public String toString() {
 		return "Batch [active=" + active + ", name=" + name + ", id=" + id + ", description=" + description + ", style=" + style + ", startTime=" + startTime
+				+ ", synched=" + synched
 				+ "]";
 	}
 

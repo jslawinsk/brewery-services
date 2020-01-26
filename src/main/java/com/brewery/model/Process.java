@@ -17,6 +17,7 @@ public class Process {
 	@Id
 	private String code;
 	private String name;
+	private boolean synched;
 	
 /*	
     @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
@@ -29,11 +30,17 @@ public class Process {
 */
 	
 	public Process() {
-		// TODO Auto-generated constructor stub
+		this.synched = false;
 	}
-
-	public Process(String code, String name) {
+	public Process( String code, String name) {
 		super();
+		this.synched = false;
+		this.code = code;
+		this.name = name;
+	}
+	public Process( boolean synched, String code, String name) {
+		super();
+		this.synched = synched;
 		this.code = code;
 		this.name = name;
 	}
@@ -52,8 +59,15 @@ public class Process {
 		this.name = name;
 	}
 
+	public boolean isSynched() {
+		return synched;
+	}
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+	
 	@Override
 	public String toString() {
-		return "Process [code=" + code + ", name=" + name + "]";
+		return "Process [code=" + code + ", name=" + name + ", synched=" + synched + "]";
 	}
 }

@@ -26,6 +26,8 @@ public class Measurement {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
+
+	private boolean synched;
 	
 	private double valueNumber;
 	private String valueText;
@@ -56,11 +58,23 @@ public class Measurement {
 
 	public Measurement() {
 		super();
-		// TODO Auto-generated constructor stub
+		this.synched = false;
 	}
-	public Measurement(double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime) 
+	public Measurement( double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime) 
 	{
 		super();
+		this.synched = false;
+		this.valueNumber = valueNumber;
+		this.valueText = valueText;
+		this.batch = batch;
+		this.process = process;
+		this.type = type;
+		this.measurementTime = measurementTime;
+	}
+	public Measurement( boolean synched, double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime) 
+	{
+		super();
+		this.synched = synched;
 		this.valueNumber = valueNumber;
 		this.valueText = valueText;
 		this.batch = batch;
@@ -74,6 +88,14 @@ public class Measurement {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public boolean isSynched() {
+		return synched;
+	}
+
+	public void setSynched(boolean synched) {
+		this.synched = synched;
 	}
 
 	public double getValueNumber() {
@@ -120,6 +142,8 @@ public class Measurement {
 	@Override
 	public String toString() {
 		return "Measurement [id=" + id + ", valueNumber=" + valueNumber + ", valueText=" + valueText + ", batch="
-				+ batch + ", process=" + process + ", type=" + type + ", measurementTime=" + measurementTime + "]";
+				+ batch + ", process=" + process + ", type=" + type + ", measurementTime=" + measurementTime 
+				+ ", synched=" + synched
+				+ "]";
 	}
 }

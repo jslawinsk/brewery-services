@@ -62,55 +62,61 @@ public class BreweryApplication implements CommandLineRunner {
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
     
+    @Value("${testdata.create}")
+    private boolean createTestData;
+    
     @Autowired
     private TaskExecutor taskExecutor;
 
     @Autowired
     private ApplicationContext applicationContext;
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(BreweryApplication.class, args);
 	}
 
 	@Override
 	public void run(String... strings) throws Exception {
-
-		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
-		styleRepository.save( testStyle );
-
-		Style testStyle2 = new Style( "Stout", "21", "Malty" );
-		styleRepository.save( testStyle2 );
 		
-		Process process = new Process( "FRM", "Fermentation" );
-		processRepository.save( process );
-		
-		process = new Process( "MSH", "Mash" );
-		processRepository.save( process );		
-		
-		MeasureType measureType = new MeasureType( "PH", "PH" );
-		measureTypeRepository.save(measureType);
-		
-		measureType = new MeasureType( "TA", "Total Achilinity" );
-		measureTypeRepository.save(measureType);
-		
-		measureType = new MeasureType( "TMP", "Temperature" );
-		measureTypeRepository.save(measureType);
-
-		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
-		batchRepository.save( testBatch );
-		
-		Measurement measurement = new Measurement( 70.3, null, testBatch, process, measureType, new Date() );
-		measurementRepository.save( measurement );
-		
-		measurement = new Measurement( 70.5, null, testBatch, process, measureType, new Date() );
-		measurementRepository.save( measurement );
-
-		Batch testBatch2 = new Batch( false, "Joe's Stout", "Old School Stout", testStyle2, new Date() );
-		batchRepository.save( testBatch2 );
-		
-		measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );
-		measurementRepository.save( measurement );
-
+		// Populate test database
+		//
+		if( createTestData ) {
+			Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+			styleRepository.save( testStyle );
+	
+			Style testStyle2 = new Style( "Stout", "21", "Malty" );
+			styleRepository.save( testStyle2 );
+			
+			Process process = new Process( "FRM", "Fermentation" );
+			processRepository.save( process );
+			
+			process = new Process( "MSH", "Mash" );
+			processRepository.save( process );		
+			
+			MeasureType measureType = new MeasureType( "PH", "PH" );
+			measureTypeRepository.save(measureType);
+			
+			measureType = new MeasureType( "TA", "Total Alcalinity" );
+			measureTypeRepository.save(measureType);
+			
+			measureType = new MeasureType( "TMP", "Temperature" );
+			measureTypeRepository.save(measureType);
+	
+			Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+			batchRepository.save( testBatch );
+			
+			Measurement measurement = new Measurement( 70.3, null, testBatch, process, measureType, new Date() );
+			measurementRepository.save( measurement );
+			
+			measurement = new Measurement( 70.5, null, testBatch, process, measureType, new Date() );
+			measurementRepository.save( measurement );
+	
+			Batch testBatch2 = new Batch( false, "Joe's Stout", "Old School Stout", testStyle2, new Date() );
+			batchRepository.save( testBatch2 );
+			
+			measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );
+			measurementRepository.save( measurement );
+		}
 		if( blueToothEnabled ) {
 			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
 			taskExecutor.execute( btThread );

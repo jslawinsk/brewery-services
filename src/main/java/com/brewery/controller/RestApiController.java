@@ -14,7 +14,9 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +33,14 @@ public class RestApiController {
         this.dataService = dataService;
     }
 
+    //
+    // Heartbeat - Used to verify service is running
+    //
+    @RequestMapping(value = "/heartBeat", method = RequestMethod.GET)
+    public String heartBeat(){
+        return "ACK";
+    }    
+    
     //
     // Style table API service methods
     //

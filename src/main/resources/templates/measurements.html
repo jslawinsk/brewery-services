@@ -38,6 +38,7 @@
                 <th>Process</th>                
                 <th>Type</th>
                 <th>Time</th>
+                <th>Synched</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </tr>
@@ -49,6 +50,7 @@
                 <td th:text="${measurement.process.code}">Process Code</td>
                 <td th:text="${measurement.type.code}">Type</td>
                 <td th:text="${measurement.measurementTime}">Time</td>
+                <td th:text="${measurement.synched}">Synched</td>
                 <td><a th:href="${'/measurement/edit/' + measurement.id}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/measurement/delete/' + measurement.id}" class="btn btn-danger">Delete</a></td>
             </tr>

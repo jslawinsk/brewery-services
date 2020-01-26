@@ -28,6 +28,7 @@ public class Sensor {
 	private Long id;
 
 	private boolean enabled;
+	private boolean synched;
 	
 	private String name;
 	private String url;
@@ -63,13 +64,31 @@ public class Sensor {
 
 	public Sensor() {
 		super();
-		// TODO Auto-generated constructor stub
+		this.synched = false;
+		this.enabled = false;
 	}
-
 	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
 			Batch batch, Process process, MeasureType measureType, Date updateTime) {
 		super();
 		this.id = id;
+		this.synched = false;
+		this.enabled = enabled;
+		this.name = name;
+		this.url = url;
+		this.userId = userId;
+		this.pin = pin;
+		this.communicationType = communicationType;
+		this.trigger = trigger;
+		this.batch = batch;
+		this.process = process;
+		this.measureType = measureType;
+		this.updateTime = updateTime;
+	}
+	public Sensor(Long id, boolean synched, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
+			Batch batch, Process process, MeasureType measureType, Date updateTime) {
+		super();
+		this.id = id;
+		this.synched = synched;
 		this.enabled = enabled;
 		this.name = name;
 		this.url = url;
@@ -98,6 +117,13 @@ public class Sensor {
 		this.enabled = enabled;
 	}
 
+	public boolean isSynched() {
+		return synched;
+	}
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -177,7 +203,9 @@ public class Sensor {
 	public String toString() {
 		return "Sensor [id=" + id + ", enabled=" + enabled + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
 				+ ", communicationType=" + communicationType + ", trigger=" + trigger 
-				+", batch=" + batch + ", process=" + process + ", measureType=" + measureType + ", updateTime=" + updateTime + "]";
+				+", batch=" + batch + ", process=" + process + ", measureType=" + measureType + ", updateTime=" + updateTime 
+				+ ", synched=" + synched
+				+ "]";
 	}
 	
 }
