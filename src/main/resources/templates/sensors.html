@@ -54,7 +54,7 @@
                 <td th:text="${sensor.process.name}">Process Code</td>
                 <td th:text="${sensor.measureType.name}">Type</td>
                 <td th:text="${sensor.updateTime}">Time</td>
-                <td th:text="${sensor.synched}">Synched</td>
+                <td th:text="${sensor.dbSynch}">Synched</td>
                 <td><a th:href="${'/sensor/edit/' + sensor.id}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/sensor/delete/' + sensor.id}" class="btn btn-danger">Delete</a></td>
             </tr>

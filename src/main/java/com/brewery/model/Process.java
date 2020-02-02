@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,32 +19,25 @@ public class Process {
 	@Id
 	private String code;
 	private String name;
-	private boolean synched;
-	
-/*	
-    @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
-    private Set<Measurement> measurements;	
 
-    public Process(String name, Measurement... measurements) {
-        this.measurements = Stream.of(measurements).collect(Collectors.toSet());
-        this.measurements.forEach(x -> x.setProcess(this));
-    }    
-*/
-	
+	@Enumerated( EnumType.STRING )
+	private DbSync dbSynch;
+
 	public Process() {
-		this.synched = false;
+		super();
+		this.dbSynch = DbSync.ADD; 
 	}
 	public Process( String code, String name) {
 		super();
-		this.synched = false;
 		this.code = code;
 		this.name = name;
+		this.dbSynch = DbSync.ADD; 
 	}
-	public Process( boolean synched, String code, String name) {
+	public Process( String code, String name, DbSync dbSynch ) {
 		super();
-		this.synched = synched;
 		this.code = code;
 		this.name = name;
+    	this.dbSynch = dbSynch;
 	}
 
 	public String getCode() {
@@ -59,15 +54,15 @@ public class Process {
 		this.name = name;
 	}
 
-	public boolean isSynched() {
-		return synched;
+    public DbSync getDbSynch() {
+		return dbSynch;
 	}
-	public void setSynched(boolean synched) {
-		this.synched = synched;
+	public void setDbSynch(DbSync dbSynch) {
+		this.dbSynch = dbSynch;
 	}
 	
 	@Override
 	public String toString() {
-		return "Process [code=" + code + ", name=" + name + ", synched=" + synched + "]";
+		return "Process [code=" + code + ", name=" + name + ", dbSynch=" + dbSynch + "]";
 	}
 }

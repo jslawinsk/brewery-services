@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,9 +31,11 @@ public class Batch {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
 	private boolean active;
-	private boolean synched;
 	private String name;
 	private String description;
+
+	@Enumerated( EnumType.STRING )
+	private DbSync dbSynch;
 	
 	@ManyToOne
     @JoinColumn
@@ -48,26 +52,25 @@ public class Batch {
 	public Batch() {
 		super();
 		this.active = false;
-		this.synched = false;
-		// TODO Auto-generated constructor stub
+		this.dbSynch = DbSync.ADD; 
 	}
 	public Batch( boolean active, String name, String description, Style style, Date startTime) {
 		super();
 		this.active = active;
-		this.synched = false;
 		this.name = name;
 		this.description = description;
 		this.style = style;
 		this.startTime = startTime;
+		this.dbSynch = DbSync.ADD; 
 	}
-	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime) {
+	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime, DbSync dbSynch ) {
 		super();
 		this.active = active;
-		this.synched = synched;
 		this.name = name;
 		this.description = description;
 		this.style = style;
 		this.startTime = startTime;
+    	this.dbSynch = dbSynch;
 	}
 	
 	public Long getId() {
@@ -82,14 +85,6 @@ public class Batch {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	public boolean isSynched() {
-		return synched;
-	}
-
-	public void setSynched(boolean synched) {
-		this.synched = synched;
 	}
 
 	public String getName() {
@@ -114,14 +109,21 @@ public class Batch {
     public Date getStartTime() {
 		return startTime;
 	}
-
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
+	
+    public DbSync getDbSynch() {
+		return dbSynch;
+	}
+	public void setDbSynch(DbSync dbSynch) {
+		this.dbSynch = dbSynch;
+	}
+	
 	@Override
 	public String toString() {
 		return "Batch [active=" + active + ", name=" + name + ", id=" + id + ", description=" + description + ", style=" + style + ", startTime=" + startTime
-				+ ", synched=" + synched
+				+ ", dbSynch=" + dbSynch
 				+ "]";
 	}
 

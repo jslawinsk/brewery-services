@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,46 +26,32 @@ public class Style {
 	private String name;
 	private String description;
 	private String bjcpCategory;
-	private boolean synched;
 	
-/*	@OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
-    private Set<Batch> batches;	
-*/
+	@Enumerated( EnumType.STRING )
+	private DbSync dbSynch;
+	
 	public Style() {
 		super();
-		this.synched = false;
+		this.dbSynch = DbSync.ADD; 
 	}
     public Style( String name, String bjcpCategory, String description) {
-		this.synched = false;
     	this.name = name;
     	this.bjcpCategory = bjcpCategory;
     	this.description = description;
+		this.dbSynch = DbSync.ADD; 
     }
-    public Style( boolean synched, String name, String bjcpCategory, String description) {
-		this.synched = synched;
+    public Style( String name, String bjcpCategory, String description, DbSync dbSynch ) {
     	this.name = name;
     	this.bjcpCategory = bjcpCategory;
     	this.description = description;
+    	this.dbSynch = dbSynch;
     }
     
-/*    public Style(String name, Batch... batches) {
-        this.name = name;
-        this.batches = Stream.of(batches).collect(Collectors.toSet());
-        this.batches.forEach(x -> x.setStyle(this));
-    }    
-*/  
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	
-	public boolean isSynched() {
-		return synched;
-	}
-	public void setSynched(boolean synched) {
-		this.synched = synched;
 	}
 	
 	public String getName() {
@@ -85,10 +73,17 @@ public class Style {
 		this.bjcpCategory = bjcpCategory;
 	}
 
-    @Override
+    public DbSync getDbSynch() {
+		return dbSynch;
+	}
+	public void setDbSynch(DbSync dbSynch) {
+		this.dbSynch = dbSynch;
+	}
+	
+	@Override
 	public String toString() {
 		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory 
-				+ ", synched=" + synched
+				+ ", dbSynch=" + dbSynch
 				+ "]";
 	}
 	

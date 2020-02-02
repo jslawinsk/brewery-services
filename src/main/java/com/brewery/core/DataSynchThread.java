@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -22,11 +23,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.brewery.model.Batch;
+import com.brewery.model.DbSync;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
@@ -55,21 +60,47 @@ public class DataSynchThread implements Runnable {
         LOG.info("Running DataSynchThread");
         while( true ) {
 			try {
-				Thread.sleep( 1000 * 1800 ); // 1800 seconds every 30 miniutes
+				// Thread.sleep( 1000 * 1800 ); // 1800 seconds every 30 miniutes
+				Thread.sleep(15000);
 
-				RestTemplate restTemplate = new RestTemplate();
+	        	String response = "";
+	        	int attempt = 0;
+	        	while( !"ACK".equals( response ) && attempt < 10 ) {
+					RestTemplate restTemplate = new RestTemplate();
+					try {
+						response = restTemplate.getForObject( dataSynchUrl + "heartBeat", String.class);
+						LOG.info( "DB Synch health response: " + response );
+					} catch( Exception e ) {
+						LOG.error( e.getMessage() );
+					}	
+					attempt++;
+	        	}
 				
-				String response = restTemplate.getForObject( dataSynchUrl, String.class);
-				LOG.info( response );
-				
-				//List<Style> styles= dataService.getStylesToSynchronize();
-				//Thread.sleep(500);
+				Thread.sleep(500);
+				List<Style> styles= dataService.getStylesToSynchronize();
+				for( Style style: styles ) {
+					LOG.info( "Style to Synchronize: " + style );
+					if( style.getDbSynch() == DbSync.ADD ) {
+						RestTemplate restTemplate = new RestTemplate();
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_JSON);		
+						
+					    HttpEntity<Style> request = new HttpEntity<>(style, headers);
+						
+					    URI uri = new URI( dataSynchUrl + "style");
+					     
+					    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
+					    if( result.getStatusCodeValue() == 201 ) {
+					    	style.setDbSynch( DbSync.SYNCHED );
+					    	dataService.updateStyle( style );
+					    }
+					}
+				}
 				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error( e.getMessage() );
 			} catch( Exception e ) {
-				e.printStackTrace();
+				LOG.error( e.getMessage() );
 			}	
         }
     }

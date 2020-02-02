@@ -28,6 +28,7 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>BJCP Category</th>
+                <th>DB Synch</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </tr>
@@ -36,7 +37,7 @@
                 <td th:text="${style.name}">Name</td>
                 <td th:text="${style.description}">Description</td>
                 <td th:text="${style.bjcpCategory}">BJCP Category</td>
-                <td th:text="${style.synched}">Synched</td>
+                <td th:text="${style.dbSynch}">Synched</td>
                 <td><a th:href="${'/style/edit/' + style.id}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/style/delete/' + style.id}" class="btn btn-danger">Delete</a></td>
             </tr>

@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,8 +28,6 @@ public class Measurement {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
-
-	private boolean synched;
 	
 	private double valueNumber;
 	private String valueText;
@@ -42,14 +42,10 @@ public class Measurement {
 	@ManyToOne
     @JoinColumn
 	private MeasureType type;
-	
-	//
-	//	For H2 database use the following
-	//
-	// @Column(name = "startTime", columnDefinition="DATETIME")
-	//
-	//	For Postgres database use the following
-	//
+
+	@Enumerated( EnumType.STRING )
+	private DbSync dbSynch;
+
 	@Column( name = "startTime" )
     @Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -58,29 +54,29 @@ public class Measurement {
 
 	public Measurement() {
 		super();
-		this.synched = false;
+		this.dbSynch = DbSync.ADD; 
 	}
 	public Measurement( double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime) 
 	{
 		super();
-		this.synched = false;
 		this.valueNumber = valueNumber;
 		this.valueText = valueText;
 		this.batch = batch;
 		this.process = process;
 		this.type = type;
 		this.measurementTime = measurementTime;
+		this.dbSynch = DbSync.ADD; 
 	}
-	public Measurement( boolean synched, double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime) 
+	public Measurement( boolean synched, double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime, DbSync dbSynch) 
 	{
 		super();
-		this.synched = synched;
 		this.valueNumber = valueNumber;
 		this.valueText = valueText;
 		this.batch = batch;
 		this.process = process;
 		this.type = type;
 		this.measurementTime = measurementTime;
+    	this.dbSynch = dbSynch;
 	}
 
 	public Long getId() {
@@ -88,14 +84,6 @@ public class Measurement {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public boolean isSynched() {
-		return synched;
-	}
-
-	public void setSynched(boolean synched) {
-		this.synched = synched;
 	}
 
 	public double getValueNumber() {
@@ -138,12 +126,19 @@ public class Measurement {
 	public void setMeasurementTime(Date measurementTime) {
 		this.measurementTime = measurementTime;
 	}
+
+    public DbSync getDbSynch() {
+		return dbSynch;
+	}
+	public void setDbSynch(DbSync dbSynch) {
+		this.dbSynch = dbSynch;
+	}
 	
 	@Override
 	public String toString() {
 		return "Measurement [id=" + id + ", valueNumber=" + valueNumber + ", valueText=" + valueText + ", batch="
 				+ batch + ", process=" + process + ", type=" + type + ", measurementTime=" + measurementTime 
-				+ ", synched=" + synched
+				+ ", dbSynch=" + dbSynch
 				+ "]";
 	}
 }

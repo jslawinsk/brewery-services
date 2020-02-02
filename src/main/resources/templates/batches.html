@@ -44,7 +44,7 @@
                 <td th:text="${batch.style.name}">Style</td>
                 <td th:text="${batch.startTime}">Start Time</td>
                 <td th:text="${batch.description}">Description</td>
-                <td th:text="${batch.synched}">Synched</td>
+                <td th:text="${batch.dbSynch}">Synched</td>
                 <td><a th:href="${'/measurement/batch/' + batch.id}" class="btn btn-primary">Measurements</a></td>
                 <td><a th:href="${'/batch/edit/' + batch.id}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/batch/delete/' + batch.id}" class="btn btn-danger">Delete</a></td>

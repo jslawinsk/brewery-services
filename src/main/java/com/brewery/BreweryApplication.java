@@ -2,6 +2,7 @@ package com.brewery;
 
 import com.brewery.model.Style;
 import com.brewery.core.BluetoothThread;
+import com.brewery.core.DataSynchThread;
 import com.brewery.model.Batch;
 import com.brewery.model.Process;
 import com.brewery.model.Measurement;
@@ -61,6 +62,9 @@ public class BreweryApplication implements CommandLineRunner {
 
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
+
+    @Value("${dataSynch.enabled}")
+    private boolean dataSynchEnabled;
     
     @Value("${testdata.create}")
     private boolean createTestData;
@@ -120,6 +124,10 @@ public class BreweryApplication implements CommandLineRunner {
 		if( blueToothEnabled ) {
 			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
 			taskExecutor.execute( btThread );
+		}
+		if( dataSynchEnabled ) {
+			DataSynchThread dbSyncThread = applicationContext.getBean( DataSynchThread.class );
+			taskExecutor.execute( dbSyncThread );
 		}
 		
 	}

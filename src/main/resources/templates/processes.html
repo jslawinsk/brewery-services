@@ -31,7 +31,7 @@
             <tr th:each="process : ${processes}">
                 <td th:text="${process.code}">Code</td>
                 <td th:text="${process.name}">Name</td>
-                <td th:text="${process.synched}">Synched</td>
+                <td th:text="${process.dbSynch}">Synched</td>
                 <td><a th:href="${'/process/edit/' + process.code}" class="btn btn-default">Edit</a></td>
                 <td><a th:href="${'/process/delete/' + process.code}" class="btn btn-danger">Delete</a></td>
             </tr>

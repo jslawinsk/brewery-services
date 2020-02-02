@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +30,6 @@ public class Sensor {
 	private Long id;
 
 	private boolean enabled;
-	private boolean synched;
 	
 	private String name;
 	private String url;
@@ -36,6 +37,9 @@ public class Sensor {
 	private String pin;
 	private String communicationType;
 	private String trigger;
+
+	@Enumerated( EnumType.STRING )
+	private DbSync dbSynch;
 	
 	@ManyToOne
     @JoinColumn
@@ -64,14 +68,13 @@ public class Sensor {
 
 	public Sensor() {
 		super();
-		this.synched = false;
 		this.enabled = false;
+		this.dbSynch = DbSync.ADD; 
 	}
 	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
 			Batch batch, Process process, MeasureType measureType, Date updateTime) {
 		super();
 		this.id = id;
-		this.synched = false;
 		this.enabled = enabled;
 		this.name = name;
 		this.url = url;
@@ -83,12 +86,12 @@ public class Sensor {
 		this.process = process;
 		this.measureType = measureType;
 		this.updateTime = updateTime;
+		this.dbSynch = DbSync.ADD; 
 	}
 	public Sensor(Long id, boolean synched, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
-			Batch batch, Process process, MeasureType measureType, Date updateTime) {
+			Batch batch, Process process, MeasureType measureType, Date updateTime, DbSync dbSynch ) {
 		super();
 		this.id = id;
-		this.synched = synched;
 		this.enabled = enabled;
 		this.name = name;
 		this.url = url;
@@ -100,6 +103,7 @@ public class Sensor {
 		this.process = process;
 		this.measureType = measureType;
 		this.updateTime = updateTime;
+    	this.dbSynch = dbSynch;
 	}
 
 	public Long getId() {
@@ -117,13 +121,6 @@ public class Sensor {
 		this.enabled = enabled;
 	}
 
-	public boolean isSynched() {
-		return synched;
-	}
-	public void setSynched(boolean synched) {
-		this.synched = synched;
-	}
-	
 	public String getName() {
 		return name;
 	}
@@ -199,12 +196,19 @@ public class Sensor {
 		this.updateTime = updateTime;
 	}
 
+    public DbSync getDbSynch() {
+		return dbSynch;
+	}
+	public void setDbSynch(DbSync dbSynch) {
+		this.dbSynch = dbSynch;
+	}
+	
 	@Override
 	public String toString() {
 		return "Sensor [id=" + id + ", enabled=" + enabled + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
 				+ ", communicationType=" + communicationType + ", trigger=" + trigger 
 				+", batch=" + batch + ", process=" + process + ", measureType=" + measureType + ", updateTime=" + updateTime 
-				+ ", synched=" + synched
+				+ ", dbSynch=" + dbSynch
 				+ "]";
 	}
 	

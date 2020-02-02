@@ -1,5 +1,6 @@
 package com.brewery.repository;
 
+import com.brewery.model.DbSync;
 import com.brewery.model.Style;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StyleRepository extends JpaRepository<Style, Long> {
 	
-	 @Query( value = "SELECT * FROM brewery.style WHERE synched = false", nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.style WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
 	 List<Style> findStylesToSynchronize( );	
 	
 }
