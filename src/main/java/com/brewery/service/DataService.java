@@ -98,6 +98,7 @@ public class DataService {
         	foundStyle.setName( styleToUpdate.getName() );
         	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
         	foundStyle.setDescription( styleToUpdate.getDescription() );
+        	foundStyle.setDbSynch( styleToUpdate.getDbSynch() );
             return styleRepository.save( foundStyle );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateStyle: " + e.getMessage());
@@ -126,6 +127,10 @@ public class DataService {
     	return processRepository.findAll();
     }
 
+    public List<Process> getProcessesToSynchronize() {
+    	return processRepository.findProcessToSynchronize();
+    }
+    
     public Process saveProcess( Process process ) {
     	Process processToSave;
         LOG.info("Saving Process:" + process);
@@ -144,6 +149,7 @@ public class DataService {
     	Process foundProcess = processRepository.findOne( processToUpdate.getCode() );
         try {
         	foundProcess.setName( processToUpdate.getName() );
+        	foundProcess.setDbSynch( processToUpdate.getDbSynch() );
             return processRepository.save( foundProcess );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateProcess: " + e.getMessage());
@@ -172,6 +178,10 @@ public class DataService {
     	return measureTypeRepository.findAll();
     }
 
+    public List<MeasureType> getMeasureTypesToSynchronize() {
+    	return measureTypeRepository.findMeasureTypesToSynchronize();
+    }
+    
     public MeasureType saveMeasureType( MeasureType measureType ) {
     	MeasureType measureTypeToSave;
         try {
@@ -188,6 +198,7 @@ public class DataService {
     	MeasureType foundMeasureType = measureTypeRepository.findOne( measureTypeToUpdate.getCode() );
         try {
         	foundMeasureType.setName( measureTypeToUpdate.getName() );
+        	foundMeasureType.setDbSynch( measureTypeToUpdate.getDbSynch() );
             return measureTypeRepository.save( foundMeasureType );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateMeasureType: " + e.getMessage());
@@ -219,11 +230,23 @@ public class DataService {
     public List<Batch> getActiveBatches() {
     	return batchRepository.findActiveBatches();
     }
+
+    public List<Batch> getBatchesToSynchronize() {
+    	return batchRepository.findBatchesToSynchronize();
+    }
     
     public Batch saveBatch( Batch batch ) {
     	Batch batchToSave;
         try {
             LOG.info("Saving Batch: " + batch );
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+            if( batch.getStyle().getName() != null ) {
+            	Style style = styleRepository.findStyleByName( batch.getStyle().getName() );
+            	batch.setStyle( style );
+            }
+            
             batchToSave = batchRepository.save( batch );
             return batchToSave;
         } catch (Exception e) {
@@ -235,11 +258,22 @@ public class DataService {
     public Batch updateBatch( Batch batchToUpdate ) {
     	Batch foundBatch = batchRepository.findOne( batchToUpdate.getId() );
         try {
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+        	if( batchToUpdate.getStyle().getName() != null ) {
+        		Style style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+            	foundBatch.setStyle( style );
+        	}
+        	else {
+            	foundBatch.setStyle( batchToUpdate.getStyle() );        		
+        	}
+        	
         	foundBatch.setActive( batchToUpdate.isActive() );
         	foundBatch.setName( batchToUpdate.getName() );
         	foundBatch.setDescription( batchToUpdate.getDescription() );
-        	foundBatch.setStyle( batchToUpdate.getStyle() );
         	foundBatch.setStartTime( batchToUpdate.getStartTime() );
+        	foundBatch.setDbSynch( batchToUpdate.getDbSynch() );
             return batchRepository.save( foundBatch );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateBatch: " + e.getMessage());
@@ -272,6 +306,14 @@ public class DataService {
     	Measurement measurementToSave;
         try {
             LOG.info("Saving Measurement: " + measurement );
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+            if(  measurement.getBatch().getName() != null ) {
+            	Batch batch = batchRepository.findBatchByName( measurement.getBatch().getName() );
+            	measurement.setBatch( batch );
+            }
+            
             measurementToSave = measurementRepository.save( measurement );
             return measurementToSave;
         } catch (Exception e) {
@@ -283,12 +325,23 @@ public class DataService {
     public Measurement updateMeasurement( Measurement measurementToUpdate ) {
     	Measurement foundMeasurement = measurementRepository.findOne( measurementToUpdate.getId() );
         try {
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+        	if( measurementToUpdate.getBatch().getName() != null ) {
+        		Batch batch = batchRepository.findBatchByName( measurementToUpdate.getBatch().getName() );
+            	foundMeasurement.setBatch( batch );
+        	}
+        	else {
+            	foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
+        	}
+        	
         	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
         	foundMeasurement.setValueText( measurementToUpdate.getValueText() );
-        	foundMeasurement.setBatch( measurementToUpdate.getBatch() );
         	foundMeasurement.setProcess( measurementToUpdate.getProcess() );
         	foundMeasurement.setType(measurementToUpdate.getType() );
         	foundMeasurement.setMeasurementTime( measurementToUpdate.getMeasurementTime() );
+        	foundMeasurement.setDbSynch( measurementToUpdate.getDbSynch() );
             return measurementRepository.save( foundMeasurement );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateMeasurement: " + e.getMessage());
@@ -320,11 +373,23 @@ public class DataService {
     public List<Sensor> getEnabledSensors() {
     	return sensorRepository.findEnabledSensors();
     }
+
+    public List<Sensor> getSensorsToSynchronize() {
+    	return sensorRepository.findSensorsToSynchronize();
+    }
     
     public Sensor saveSensor( Sensor sensor ) {
     	Sensor sensorToSave;
         try {
             LOG.info("Saving Sensor...");
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+            if( sensor.getBatch().getName() != null ) {
+            	Batch batch = batchRepository.findBatchByName( sensor.getBatch().getName() );
+                sensor.setBatch( batch );
+            }
+            
             sensor.setUpdateTime( new Date() );
             sensorToSave = sensorRepository.save(sensor);
             return sensorToSave;
@@ -337,6 +402,17 @@ public class DataService {
     public Sensor updateSensor( Sensor sensorToUpdate ) {
     	Sensor foundSensor = sensorRepository.findOne( sensorToUpdate.getId() );
         try {
+        	//
+        	//	Can't use primary key for as remote DB may have different value
+        	//
+        	if( sensorToUpdate.getBatch().getName() != null ) {
+        		Batch batch = batchRepository.findBatchByName( sensorToUpdate.getBatch().getName() );
+            	foundSensor.setBatch( batch );
+        	}
+        	else {
+            	foundSensor.setBatch( sensorToUpdate.getBatch() );
+        	}
+        	
         	foundSensor.setEnabled( sensorToUpdate.isEnabled() );
         	foundSensor.setName( sensorToUpdate.getName() );
         	foundSensor.setUrl( sensorToUpdate.getUrl() );
@@ -344,10 +420,10 @@ public class DataService {
         	foundSensor.setPin( sensorToUpdate.getPin() );
         	foundSensor.setCommunicationType( sensorToUpdate.getCommunicationType() );
         	foundSensor.setTrigger( sensorToUpdate.getTrigger() );
-        	foundSensor.setBatch( sensorToUpdate.getBatch() );
         	foundSensor.setProcess( sensorToUpdate.getProcess() );
         	foundSensor.setMeasureType( sensorToUpdate.getMeasureType() );
         	foundSensor.setUpdateTime( new Date() );
+        	foundSensor.setDbSynch( sensorToUpdate.getDbSynch() );
             return sensorRepository.save( foundSensor );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateSensor: " + e.getMessage());

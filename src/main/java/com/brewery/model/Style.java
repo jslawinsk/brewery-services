@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,7 +24,10 @@ public class Style {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
+	
+	@Column(name="name", nullable=false, unique=true)
 	private String name;
+	
 	private String description;
 	private String bjcpCategory;
 	

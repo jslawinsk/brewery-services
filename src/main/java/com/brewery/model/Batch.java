@@ -31,7 +31,10 @@ public class Batch {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
 	private Long id;
 	private boolean active;
+	
+	@Column(name="name", nullable=false, unique=true)
 	private String name;
+	
 	private String description;
 
 	@Enumerated( EnumType.STRING )

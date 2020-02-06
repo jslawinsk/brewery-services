@@ -14,4 +14,7 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
 	@Query( value = "SELECT * FROM brewery.sensor WHERE enabled = true", nativeQuery = true )
 	List<Sensor> findEnabledSensors( );	
 	
+	@Query( value = "SELECT * FROM brewery.sensor WHERE db_synch != 'SYNCHED'", nativeQuery = true )
+	List<Sensor> findSensorsToSynchronize( );	
+	
 }
