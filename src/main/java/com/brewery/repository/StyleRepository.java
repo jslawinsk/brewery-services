@@ -15,7 +15,6 @@ public interface StyleRepository extends JpaRepository<Style, Long> {
 	 @Query( value = "SELECT * FROM brewery.style WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
 	 List<Style> findStylesToSynchronize( );	
 
-	 @Modifying
 	 @Query( value = "SELECT * FROM brewery.style WHERE name = ?" , nativeQuery = true )
 	 Style findStyleByName( String name );	
 	 
