@@ -4,5 +4,6 @@ public enum DbSync {
 	SYNCHED,
     ADD,
     UPDATE,
+    IGNORE,
     DELETE;
 }	

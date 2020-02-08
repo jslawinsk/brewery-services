@@ -50,7 +50,9 @@ public class BluetoothThread implements Runnable {
         LOG.info("Running BluetoothThread");
         while( true ) {
 			try {
-				Thread.sleep(5000);
+				Thread.sleep( 1000 * 60 ); // 60 seconds every 1 minute
+				// Thread.sleep( 1000 * 300 ); // 300 seconds every 5 minutes
+				// Thread.sleep(5000);
 
 				List<Sensor> sensors= dataService.getEnabledSensors();
 				Thread.sleep(500);

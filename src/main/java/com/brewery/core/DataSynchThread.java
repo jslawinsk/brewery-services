@@ -64,7 +64,8 @@ public class DataSynchThread implements Runnable {
         while( true ) {
 			try {
 				// Thread.sleep( 1000 * 1800 ); // 1800 seconds every 30 miniutes
-				Thread.sleep(15000);
+				Thread.sleep( 1000 * 900 ); // 900 seconds every 15 miniutes
+				// Thread.sleep(15000);
 
 	        	String response = "";
 	        	int attempt = 0;
@@ -203,7 +204,7 @@ public class DataSynchThread implements Runnable {
 						sensor.setDbSynch( DbSync.SYNCHED );
 					    HttpEntity<Sensor> request = new HttpEntity<>(sensor, headers);
 						
-					    URI uri = new URI( dataSynchUrl + "batch");
+					    URI uri = new URI( dataSynchUrl + "sensor");
 					     
 					    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 						LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
@@ -211,6 +212,58 @@ public class DataSynchThread implements Runnable {
 					    	LOG.info( "Synchronize Sensor local update" );
 					    	dataService.updateSensor( sensor );
 					    }
+					}
+				}
+
+	        	//
+	        	//	Synchronize Measurement Table
+	        	//
+				Thread.sleep(500);
+				Long batchId = -1L;
+				Double value = -1D;
+				String measureType = "";
+				String process = "";
+				
+				List<Measurement> measurements = dataService.getMeasurementsToSynchronize();
+				for( Measurement measurement: measurements ) {
+					LOG.info( "Measurement to Synchronize: " + measurement );
+					if( measurement.getDbSynch() == DbSync.ADD ) {
+						boolean publish = false;
+						if( batchId != measurement.getBatch().getId() 
+								|| value + .5 < measurement.getValueNumber()
+								|| value -.5 > measurement.getValueNumber()
+								|| !measureType.equals( measurement.getType().getCode() )
+								|| !process.equals( measurement.getProcess().getCode() )
+							) {
+							publish = true;
+							batchId = measurement.getBatch().getId();
+							value = measurement.getValueNumber();
+							measureType = measurement.getType().getCode();
+							process = measurement.getProcess().getCode();
+						}
+						if( publish ) {
+							LOG.info( "Synchronize Add: " + measurement.getId() );
+							RestTemplate restTemplate = new RestTemplate();
+							HttpHeaders headers = new HttpHeaders();
+							headers.setContentType(MediaType.APPLICATION_JSON);		
+							
+							measurement.setDbSynch( DbSync.SYNCHED );
+						    HttpEntity<Measurement> request = new HttpEntity<>(measurement, headers);
+							
+						    URI uri = new URI( dataSynchUrl + "measurement");
+						     
+						    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
+							LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+						    if( result.getStatusCode() == HttpStatus.OK ) {
+						    	LOG.info( "Synchronize Measurement local update" );
+						    	dataService.updateMeasurement( measurement );
+						    }
+						}
+						else {
+					    	LOG.info( "Synchronize ignore" );
+							measurement.setDbSynch( DbSync.IGNORE );
+					    	dataService.updateMeasurement( measurement );
+						}
 					}
 				}
 				

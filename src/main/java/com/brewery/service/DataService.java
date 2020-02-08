@@ -301,6 +301,10 @@ public class DataService {
     public List<Measurement> getMeasurementsByBatch( Long id ) {
     	return measurementRepository.findByBatchId( id );
     }
+
+    public List<Measurement> getMeasurementsToSynchronize( ) {
+    	return measurementRepository.findMeasurementsToSynchronize();
+    }
     
     public Measurement saveMeasurement( Measurement measurement ) {
     	Measurement measurementToSave;
