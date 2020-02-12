@@ -13,12 +13,17 @@ import com.brewery.repository.BatchRepository;
 import com.brewery.repository.MeasurementRepository;
 import com.brewery.repository.SensorRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +74,7 @@ public class DataService {
 	//
     public Style getStyle( Long id ) {
         LOG.info("Getting Stype, id:" + id);
-        return styleRepository.findOne(id);
+        return styleRepository.getOne(id);
     }
     
     public List<Style> getAllStyles() {
@@ -93,7 +98,7 @@ public class DataService {
     }
 
     public Style updateStyle( Style styleToUpdate ) {
-    	Style foundStyle = styleRepository.findOne( styleToUpdate.getId() );
+    	Style foundStyle = styleRepository.getOne( styleToUpdate.getId() );
         try {
         	foundStyle.setName( styleToUpdate.getName() );
         	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
@@ -108,7 +113,8 @@ public class DataService {
 
     public void deleteStyle( Long id ) {
         try {
-        	styleRepository.delete( id );
+        	Style foundStyle = styleRepository.getOne( id );
+        	styleRepository.delete( foundStyle );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteStyle: " + e.getMessage());
         }
@@ -120,7 +126,7 @@ public class DataService {
 	//
     public Process getProcess( String code ) {
         LOG.info("Getting Process, code:" + code);
-        return processRepository.findOne( code );
+        return processRepository.getOne( code );
     }
     
     public List<Process> getAllProcesses() {
@@ -146,7 +152,7 @@ public class DataService {
 
     public Process updateProcess( Process processToUpdate ) {
         LOG.info("Update Process:" + processToUpdate);
-    	Process foundProcess = processRepository.findOne( processToUpdate.getCode() );
+    	Process foundProcess = processRepository.getOne( processToUpdate.getCode() );
         try {
         	foundProcess.setName( processToUpdate.getName() );
         	foundProcess.setDbSynch( processToUpdate.getDbSynch() );
@@ -159,7 +165,8 @@ public class DataService {
 
     public void deleteProcess( String code ) {
         try {
-        	processRepository.delete( code );
+        	Process foundProcess = processRepository.getOne( code );
+        	processRepository.delete( foundProcess );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteProcess: " + e.getMessage());
         }
@@ -171,7 +178,7 @@ public class DataService {
 	//
     public MeasureType getMeasureType( String code ) {
         LOG.info("Getting Process, code:" + code);
-        return measureTypeRepository.findOne( code );
+        return measureTypeRepository.getOne( code );
     }
 
     public List<MeasureType> getAllMeasureTypes() {
@@ -195,7 +202,7 @@ public class DataService {
     }
 
     public MeasureType updateMeasureType( MeasureType measureTypeToUpdate ) {
-    	MeasureType foundMeasureType = measureTypeRepository.findOne( measureTypeToUpdate.getCode() );
+    	MeasureType foundMeasureType = measureTypeRepository.getOne( measureTypeToUpdate.getCode() );
         try {
         	foundMeasureType.setName( measureTypeToUpdate.getName() );
         	foundMeasureType.setDbSynch( measureTypeToUpdate.getDbSynch() );
@@ -208,7 +215,8 @@ public class DataService {
 
     public void deleteMeasureType( String code ) {
         try {
-        	measureTypeRepository.delete( code );
+        	MeasureType foundMeasureType = measureTypeRepository.getOne( code );
+        	measureTypeRepository.delete( foundMeasureType );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteMeasureType: " + e.getMessage());
         }
@@ -220,7 +228,7 @@ public class DataService {
 	//
     public Batch getBatch( Long id ) {
         LOG.info("Getting Batch, id:" + id );
-        return batchRepository.findOne( id );
+        return batchRepository.getOne( id );
     }
 
     public List<Batch> getAllBatches() {
@@ -256,7 +264,7 @@ public class DataService {
     }
 
     public Batch updateBatch( Batch batchToUpdate ) {
-    	Batch foundBatch = batchRepository.findOne( batchToUpdate.getId() );
+    	Batch foundBatch = batchRepository.getOne( batchToUpdate.getId() );
         try {
         	//
         	//	Can't use primary key for as remote DB may have different value
@@ -283,7 +291,8 @@ public class DataService {
 
     public void deleteBatch( Long id ) {
         try {
-        	batchRepository.delete( id );
+        	Batch foundBatch = batchRepository.getOne( id );
+        	batchRepository.delete( foundBatch );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteBatch: " + e.getMessage());
         }
@@ -295,13 +304,29 @@ public class DataService {
 	//
     public Measurement getMeasurement( Long id ) {
         LOG.info("Getting Measurement, id:" + id );
-        return measurementRepository.findOne( id );
+        return measurementRepository.getOne( id );
     }
 
     public List<Measurement> getMeasurementsByBatch( Long id ) {
     	return measurementRepository.findByBatchId( id );
     }
 
+    public Page<Measurement> getMeasurementsPageByBatch( int pageNo, Long id ) {
+    	int noOfRecords = 10;
+    	PageRequest pageRequest = PageRequest.of( pageNo, noOfRecords );
+        Pageable page = pageRequest;
+        
+        Page<Measurement> pagedResult = (Page<Measurement>) measurementRepository.findPageByBatchId(id, page);
+        return pagedResult;
+        // changing to List
+/*        if(pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<Measurement>();
+        }
+*/        
+    }
+    
     public List<Measurement> getMeasurementsToSynchronize( ) {
     	return measurementRepository.findMeasurementsToSynchronize();
     }
@@ -327,7 +352,7 @@ public class DataService {
     }
 
     public Measurement updateMeasurement( Measurement measurementToUpdate ) {
-    	Measurement foundMeasurement = measurementRepository.findOne( measurementToUpdate.getId() );
+    	Measurement foundMeasurement = measurementRepository.getOne( measurementToUpdate.getId() );
         try {
         	//
         	//	Can't use primary key for as remote DB may have different value
@@ -355,7 +380,8 @@ public class DataService {
 
     public void deleteMeasurement( Long id ) {
         try {
-        	measurementRepository.delete( id );
+        	Measurement foundMeasurement = measurementRepository.getOne( id );
+        	measurementRepository.delete( foundMeasurement );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteMeasurement: " + e.getMessage());
         }
@@ -367,7 +393,7 @@ public class DataService {
 	//
     public Sensor getSensor( Long id ) {
         LOG.info("Getting Sensor, id:" + id);
-        return sensorRepository.findOne(id);
+        return sensorRepository.getOne(id);
     }
     
     public List<Sensor> getAllSensors() {
@@ -404,7 +430,7 @@ public class DataService {
     }
 
     public Sensor updateSensor( Sensor sensorToUpdate ) {
-    	Sensor foundSensor = sensorRepository.findOne( sensorToUpdate.getId() );
+    	Sensor foundSensor = sensorRepository.getOne( sensorToUpdate.getId() );
         try {
         	//
         	//	Can't use primary key for as remote DB may have different value
@@ -437,7 +463,8 @@ public class DataService {
 
     public void deleteSensor( Long id ) {
         try {
-        	sensorRepository.delete( id );
+        	Sensor foundSensor = sensorRepository.getOne( id );
+        	sensorRepository.delete( foundSensor );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteSensor: " + e.getMessage());
         }

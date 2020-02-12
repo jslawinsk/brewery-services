@@ -18,6 +18,7 @@ import javax.bluetooth.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,14 +46,15 @@ public class BluetoothThread implements Runnable {
         this.dataService = dataService;
     }
 	
+    @Value("${blueTooth.scanSeconds}")
+    private int scanSeconds;
+    
     @Override
     public void run() {
         LOG.info("Running BluetoothThread");
         while( true ) {
 			try {
-				Thread.sleep( 1000 * 60 ); // 60 seconds every 1 minute
-				// Thread.sleep( 1000 * 300 ); // 300 seconds every 5 minutes
-				// Thread.sleep(5000);
+				Thread.sleep( 1000 * scanSeconds ); 
 
 				List<Sensor> sensors= dataService.getEnabledSensors();
 				Thread.sleep(500);

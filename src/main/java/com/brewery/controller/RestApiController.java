@@ -154,7 +154,9 @@ public class RestApiController {
     @RequestMapping(path = "measurement/{id}", method = RequestMethod.GET)
     @ApiOperation("Gets the measurement with specific id")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Measurement.class)})
-    public Measurement getMeasurement(@PathVariable(name = "id") Long id) {
+    public Measurement getMeasurement(@PathVariable(name = "id") Long id,
+    			@RequestParam(value="pageNo", defaultValue="0") Integer pageNo 
+    		) {
         return dataService.getMeasurement(id);
     }
 

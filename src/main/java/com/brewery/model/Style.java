@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "style", schema="brewery")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
+@SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Style {
 	
 	@Id

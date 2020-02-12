@@ -57,15 +57,17 @@ public class DataSynchThread implements Runnable {
 
     @Value("${dataSynch.url}")
     private String dataSynchUrl;    
+    
+    @Value("${dataSynch.delayMinutes}")
+    private int delayMinutes;
+    
 	
     @Override
     public void run() {
         LOG.info("Running DataSynchThread");
         while( true ) {
 			try {
-				// Thread.sleep( 1000 * 1800 ); // 1800 seconds every 30 miniutes
-				Thread.sleep( 1000 * 900 ); // 900 seconds every 15 miniutes
-				// Thread.sleep(15000);
+				Thread.sleep( 1000 * delayMinutes * 60 ); 
 
 	        	String response = "";
 	        	int attempt = 0;

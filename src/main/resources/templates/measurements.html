@@ -56,6 +56,41 @@
             </tr>
         </table>
     </div>
+    
+	<nav aria-label="Pagination" th:if="${totalPages gt 0}">
+	    <ul class="pagination justify-content-center font-weight-medium">
+	        <li class="page-item" th:classappend="${currentPage eq 0} ? 'disabled'">
+	            <a class="page-link svg-icon"
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {currentPage lt 2 ? 1 : currentPage -1} }"
+	               	aria-label="Previous"
+	               	title="Previous Page" rel="tooltip">
+					<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>	                
+	            </a>
+	        </li>
+	        <li class="page-item" th:classappend="${i eq currentPage + 1} ? 'active'"
+	            th:each="i : ${#numbers.sequence( currentPage + 1, totalPages > 10 + currentPage ? currentPage + 10 : totalPages, 1)}">
+	            <a class="page-link" 
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {i-1} }"
+	            	th:text="${i}"
+	               	th:title="${'Page '+ i}"
+	               	rel="tooltip"></a>
+	        </li>	        
+	        <li class="page-item disabled" th:if="${ currentPage + 10 < totalPages }">
+	            <a class="page-link svg-icon" href="#">
+					<span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span>	                
+	            </a>
+	        </li>	        
+	        <li class="page-item" th:classappend="${currentPage + 1 ge totalPages} ? 'disabled'">
+	            <a class="page-link svg-icon" 
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {currentPage + 1} }"
+	               	aria-label="Next"
+	               	title="Next Page" rel="tooltip">
+					<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>	                
+	            </a>
+	        </li>	        
+	    </ul>
+	</nav>    
+    
 </div>
 </body>
 </html>

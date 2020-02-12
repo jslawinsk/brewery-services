@@ -12,17 +12,24 @@ import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -237,9 +244,29 @@ public class UiController {
     }
     
     @RequestMapping(path = "/measurement/batch/{id}", method = RequestMethod.GET)
-    public String getMeasurementForBatch(Model model, @PathVariable(value = "id") long id ) {
-        model.addAttribute("measurements", dataService.getMeasurementsByBatch( id ) );
+    public String getMeasurementForBatch(Model model, @PathVariable(value = "id") long id,
+    		@RequestParam("page") Optional<Integer> page     		
+    		) {
+    	int currentPage = page.orElse( 0 );
+    	
+    	List<Measurement> measurements = new ArrayList<Measurement>();
+    	Page<Measurement> pagedResult = dataService.getMeasurementsPageByBatch( currentPage, id );
+	    if(pagedResult.hasContent()) {
+	    	measurements = (List<Measurement>) pagedResult.getContent();
+	    } 
+        model.addAttribute("measurements", measurements );
         model.addAttribute("batch", dataService.getBatch(id) );
+        
+        int totalPages = pagedResult.getTotalPages();
+        List<Integer> pageNumbers = new ArrayList<Integer>();
+        if (totalPages > 0) {
+            pageNumbers = IntStream.rangeClosed(1, totalPages)
+                .boxed()
+                .collect(Collectors.toList());
+        }        
+        model.addAttribute("totalPages", totalPages );
+        model.addAttribute("pageNumbers", pageNumbers );
+        model.addAttribute("currentPage", currentPage );
         return "measurements";
     }
 
