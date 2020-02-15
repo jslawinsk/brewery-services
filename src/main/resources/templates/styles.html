@@ -7,7 +7,9 @@
 <body>
 <div class="container">
     <div th:if="${#lists.isEmpty(styles)}">
-    	<a th:href="@{/style/add}" class="btn btn-primary btn-lg">Add Style</a>
+    	<a th:href="@{/style/add}" class="btn btn-outline-dark btn-lg">
+			<img th:src="@{/images/add-24px.svg}"/>Style
+    	</a>
     </div>
     <div th:if="${not #lists.isEmpty(styles)}">
         <table class="table table-striped">
@@ -17,9 +19,12 @@
 				<td/>
 				<td/>
 				<td/>
+				<td/>
 				<td>
 					<div>
-						<a th:href="@{/style/add}" class="btn btn-primary">Add</a>
+						<a th:href="@{/style/add}" class="btn btn-outline-dark">
+							<img th:src="@{/images/add-24px.svg}"/>
+						</a>
 					</div>
 				</td>
 			</tr>				
@@ -29,8 +34,8 @@
                 <th>Description</th>
                 <th>BJCP Category</th>
                 <th>DB Synch</th>
-                <th>Edit</th>
-                <th>Delete</th>
+                <th></th>
+                <th></th>
             </tr>
             <tr th:each="style : ${styles}">
                 <td th:text="${style.id}">Id</td>
@@ -38,8 +43,12 @@
                 <td th:text="${style.description}">Description</td>
                 <td th:text="${style.bjcpCategory}">BJCP Category</td>
                 <td th:text="${style.dbSynch}">Synched</td>
-                <td><a th:href="${'/style/edit/' + style.id}" class="btn btn-default">Edit</a></td>
-                <td><a th:href="${'/style/delete/' + style.id}" class="btn btn-danger">Delete</a></td>
+                <td><a th:href="${'/style/edit/' + style.id}" class="btn btn-default">
+					<img th:src="@{/images/edit-24px.svg}"/>
+                </a></td>
+                <td><a th:href="${'/style/delete/' + style.id}" class="btn btn-default">
+					<img th:src="@{/images/delete_forever-24px.svg}"/>
+                </a></td>
             </tr>
         </table>
     </div>

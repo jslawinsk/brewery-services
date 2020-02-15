@@ -11,7 +11,9 @@
    		Measurements
 	</h2>
     <div th:if="${#lists.isEmpty(measurements)}">
-    	<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-primary btn-lg">Add Measurement</a>
+    	<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-outline-dark btn-lg">Add Measurement
+			<img th:src="@{/images/add-24px.svg}"/>
+    	</a>
     </div>
     <div th:if="${not #lists.isEmpty(measurements)}">
         <table class="table table-striped">
@@ -24,9 +26,12 @@
 				<td/>
 				<td/>
 				<td/>
+				<td/>
 				<td>
 					<div>
-						<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-primary">Add</a>
+						<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-outline-dark">
+							<img th:src="@{/images/add-24px.svg}"/>
+						</a>
 					</div>
 				</td>
 			</tr>				
@@ -39,8 +44,8 @@
                 <th>Type</th>
                 <th>Time</th>
                 <th>Synched</th>
-                <th>Edit</th>
-                <th>Delete</th>
+                <th></th>
+                <th></th>
             </tr>
             <tr th:each="measurement : ${measurements}">
                 <td th:text="${measurement.id}">Id</td>
@@ -51,8 +56,12 @@
                 <td th:text="${measurement.type.code}">Type</td>
                 <td th:text="${measurement.measurementTime}">Time</td>
                 <td th:text="${measurement.dbSynch}">Synched</td>
-                <td><a th:href="${'/measurement/edit/' + measurement.id}" class="btn btn-default">Edit</a></td>
-                <td><a th:href="${'/measurement/delete/' + measurement.id}" class="btn btn-danger">Delete</a></td>
+                <td><a th:href="${'/measurement/edit/' + measurement.id}" class="btn btn-default">
+					<img th:src="@{/images/edit-24px.svg}"/>
+                </a></td>
+                <td><a th:href="${'/measurement/delete/' + measurement.id}" class="btn btn-default">
+					<img th:src="@{/images/delete_forever-24px.svg}"/>
+                </a></td>
             </tr>
         </table>
     </div>
@@ -61,23 +70,40 @@
 	    <ul class="pagination justify-content-center font-weight-medium">
 	        <li class="page-item" th:classappend="${currentPage eq 0} ? 'disabled'">
 	            <a class="page-link svg-icon"
-	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {currentPage lt 2 ? 1 : currentPage -1} }"
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=0' }"
+	               	aria-label="Start"
+	               	title="First Page" rel="tooltip">
+	            	<span>
+						<img th:src="@{/images/fast_rewind-24px.svg}"/>
+					</span>
+						
+	            </a>
+	        </li>
+	        <li class="page-item" th:classappend="${currentPage eq 0} ? 'disabled'">
+	            <a class="page-link"
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {currentPage lt 2 ? 0 : currentPage -1} }"
 	               	aria-label="Previous"
 	               	title="Previous Page" rel="tooltip">
-					<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>	                
+	            	<span>
+						<img th:src="@{/images/skip_previous-24px.svg}"/>
+					</span>
 	            </a>
 	        </li>
 	        <li class="page-item" th:classappend="${i eq currentPage + 1} ? 'active'"
 	            th:each="i : ${#numbers.sequence( currentPage + 1, totalPages > 10 + currentPage ? currentPage + 10 : totalPages, 1)}">
+	            <span>
 	            <a class="page-link" 
 	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {i-1} }"
 	            	th:text="${i}"
 	               	th:title="${'Page '+ i}"
 	               	rel="tooltip"></a>
+	         	</span>
 	        </li>	        
 	        <li class="page-item disabled" th:if="${ currentPage + 10 < totalPages }">
 	            <a class="page-link svg-icon" href="#">
-					<span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span>	                
+	            	<span>
+					<img th:src="@{/images/more_horiz-24px.svg}"/>
+					</span>
 	            </a>
 	        </li>	        
 	        <li class="page-item" th:classappend="${currentPage + 1 ge totalPages} ? 'disabled'">
@@ -85,7 +111,19 @@
 	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {currentPage + 1} }"
 	               	aria-label="Next"
 	               	title="Next Page" rel="tooltip">
-					<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>	                
+	            	<span>
+					<img th:src="@{/images/skip_next-24px.svg}"/>
+					</span>
+	            </a>
+	        </li>	        
+	        <li class="page-item" th:classappend="${currentPage + 1 ge totalPages} ? 'disabled'">
+	            <a class="page-link svg-icon"
+	            	th:href="${'/measurement/batch/' + batch.id + '?page=' + {totalPages - 1} }"
+	               	aria-label="End"
+	               	title="Last Page" rel="tooltip">
+	            	<span>
+					<img th:src="@{/images/fast_forward-24px.svg}"/>
+					</span>
 	            </a>
 	        </li>	        
 	    </ul>

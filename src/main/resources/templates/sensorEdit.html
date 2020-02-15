@@ -111,24 +111,29 @@
  
             <div class="form-group">
                 <div class="col-sm-2">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/pair/' + sensor.id}" class="btn btn-primary">Pair Bluetooth</a>
-                </div>
-                <div class="col-sm-2">
-	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-primary">Control Auto</a>
-                </div>
-                <div class="col-sm-2">
-	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-primary">Heat On</a>
-                </div>
-                <div class="col-sm-2">
-	                <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-primary">Cool On</a>
+                    <button type="submit" class="btn btn-outline-dark">Save
+						<img th:src="@{/images/save_alt-24px.svg}"/>
+                    </button>
                 </div>
             </div>
         </form>
+        <div class="container">
+            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/pair/' + sensor.id}" class="btn btn-outline-dark" title="Pair Bluetooth" rel="tooltip">
+				<img th:src="@{/images/settings_bluetooth-24px.svg}"/>
+            </a>
+        </div>
+        <br/>
+        <div class="container-fluid">
+            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
+				<img th:src="@{/images/all_inclusive-24px.svg}"/>
+            </a>
+            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
+				<img th:src="@{/images/whatshot-24px.svg}"/>
+            </a>
+            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
+				<img th:src="@{/images/ac_unit-24px.svg}"/>
+            </a>
+        </div>
     </div>
 </div>
 </body>

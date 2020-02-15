@@ -7,7 +7,9 @@
 <body>
 <div class="container">
     <div th:if="${#lists.isEmpty(measureTypes)}">
-    	<a th:href="@{/measureType/add}" class="btn btn-primary btn-lg">Add Measurement Type</a>
+    	<a th:href="@{/measureType/add}" class="btn btn-outline-dark btn-lg">Add Measurement Type
+			<img th:src="@{/images/add-24px.svg}"/>
+    	</a>
     </div>
     <div th:if="${not #lists.isEmpty(measureTypes)}">
         <table class="table table-striped">
@@ -15,9 +17,12 @@
 				<td><h2>Measure Types</h2></td>
 				<td/>
 				<td/>
+				<td/>
 				<td>
 					<div>
-						<a th:href="@{/measureType/add}" class="btn btn-primary">Add</a>
+						<a th:href="@{/measureType/add}" class="btn btn-outline-dark">
+							<img th:src="@{/images/add-24px.svg}"/>
+						</a>
 					</div>
 				</td>
 			</tr>				
@@ -25,15 +30,19 @@
                 <th>Code</th>
                 <th>Name</th>
                 <th>Synched</th>
-                <th>Edit</th>
-                <th>Delete</th>
+                <th></th>
+                <th></th>
             </tr>
             <tr th:each="measureType : ${measureTypes}">
                 <td th:text="${measureType.code}">Code</td>
                 <td th:text="${measureType.name}">Name</td>
                 <td th:text="${measureType.dbSynch}">Synched</td>
-                <td><a th:href="${'/measureType/edit/' + measureType.code}" class="btn btn-default">Edit</a></td>
-                <td><a th:href="${'/measureType/delete/' + measureType.code}" class="btn btn-danger">Delete</a></td>
+                <td><a th:href="${'/measureType/edit/' + measureType.code}" class="btn btn-default">
+					<img th:src="@{/images/edit-24px.svg}"/>
+                </a></td>
+                <td><a th:href="${'/measureType/delete/' + measureType.code}" class="btn btn-default">
+					<img th:src="@{/images/delete_forever-24px.svg}"/>
+                </a></td>
             </tr>
         </table>
     </div>

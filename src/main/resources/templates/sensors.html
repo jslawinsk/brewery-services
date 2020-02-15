@@ -8,8 +8,12 @@
 <div class="container">
 	<h2>Sensors</h2>
     <div th:if="${#lists.isEmpty(sensors)}">
-    	<a th:href="${'/sensor/add/'}" class="btn btn-primary btn-lg">Add Sensor</a>
-    	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary btn-lg">Discover Bluetooth</a>
+    	<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark btn-lg">Add Sensor
+			<img th:src="@{/images/add-24px.svg}"/>
+    	</a>
+    	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-outline-dark btn-lg">Discover Bluetooth
+   			<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
+    	</a>
     </div>
     <div th:if="${not #lists.isEmpty(sensors)}">
         <table class="table table-striped">
@@ -21,14 +25,20 @@
 				<td/>
 				<td/>
 				<td/>
+				<td/>
+				<td/>
 				<td>
 					<div>
-						<a th:href="${'/sensor/add/'}" class="btn btn-primary">Add</a>
+						<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark">
+							<img th:src="@{/images/add-24px.svg}"/>
+						</a>
 					</div>
 				</td>
 				<td>
-					<div>
-						<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-primary">Bluetooth</a>
+					<div th:if="${blueToothEnabled} == true">
+						<a  th:href="${'/sensor/scan/'}" class="btn btn-outline-dark">
+   							<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
+						</a>
 					</div>
 				</td>
 			</tr>				
@@ -42,8 +52,8 @@
                 <th>Sensor Type</th>
                 <th>Update Time</th>
                 <th>Synched</th>                
-                <th>Edit</th>
-                <th>Delete</th>
+                <th></th>
+                <th></th>
             </tr>
             <tr th:each="sensor : ${sensors}">
                 <td th:text="${sensor.id}">Id</td>
@@ -55,8 +65,12 @@
                 <td th:text="${sensor.measureType.name}">Type</td>
                 <td th:text="${sensor.updateTime}">Time</td>
                 <td th:text="${sensor.dbSynch}">Synched</td>
-                <td><a th:href="${'/sensor/edit/' + sensor.id}" class="btn btn-default">Edit</a></td>
-                <td><a th:href="${'/sensor/delete/' + sensor.id}" class="btn btn-danger">Delete</a></td>
+                <td><a th:href="${'/sensor/edit/' + sensor.id}" class="btn btn-default">
+					<img th:src="@{/images/edit-24px.svg}"/>
+                </a></td>
+                <td><a th:href="${'/sensor/delete/' + sensor.id}" class="btn btn-default">
+					<img th:src="@{/images/delete_forever-24px.svg}"/>
+                </a></td>
             </tr>
         </table>
     </div>
