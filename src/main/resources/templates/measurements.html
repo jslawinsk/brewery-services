@@ -21,11 +21,11 @@
 				<td/>
 				<td/>
 				<td/>
+				<td class="d-none d-lg-block"/>
 				<td/>
 				<td/>
 				<td/>
-				<td/>
-				<td/>
+				<td class="d-none d-lg-block"/>
 				<td/>
 				<td>
 					<div>
@@ -39,11 +39,11 @@
                 <th>Id</th>
                 <th>Value</th>
                 <th>Value Text</th>
-                <th>Batch Id</th>
+                <th class="d-none d-lg-block">Batch Id</th>
                 <th>Process</th>                
                 <th>Type</th>
                 <th>Time</th>
-                <th>Synched</th>
+                <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -51,11 +51,11 @@
                 <td th:text="${measurement.id}">Id</td>
                 <td th:text="${measurement.valueNumber}">Value</td>
                 <td th:text="${measurement.valueText}">valueText</td>
-                <td th:text="${measurement.batch.id}">Batch Id</td>
+                <td th:text="${measurement.batch.id}" class="d-none d-lg-block">Batch Id</td>
                 <td th:text="${measurement.process.code}">Process Code</td>
                 <td th:text="${measurement.type.code}">Type</td>
                 <td th:text="${measurement.measurementTime}">Time</td>
-                <td th:text="${measurement.dbSynch}">Synched</td>
+                <td th:text="${measurement.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/measurement/edit/' + measurement.id}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>

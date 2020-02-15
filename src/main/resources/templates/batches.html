@@ -18,9 +18,9 @@
 				<td/>
 				<td/>
 				<td/>
+				<td class="d-none d-lg-block"/>
 				<td/>
-				<td/>
-				<td/>
+				<td class="d-none d-lg-block"/>
 				<td/>
 				<td/>
 				<td>
@@ -36,9 +36,9 @@
                 <th>Active</th>
                 <th>Name</th>
                 <th>Style</th>
+                <th class="d-none d-lg-block">Description</th>                
                 <th>Start Time</th>
-                <th>Description</th>                
-                <th>Synched</th>
+                <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -48,9 +48,9 @@
                 <td th:text="${batch.active}">Active</td>
                 <td th:text="${batch.name}">Name</td>
                 <td th:text="${batch.style.name}">Style</td>
+                <td th:text="${batch.description}" class="d-none d-lg-block">Description</td>
                 <td th:text="${batch.startTime}">Start Time</td>
-                <td th:text="${batch.description}">Description</td>
-                <td th:text="${batch.dbSynch}">Synched</td>
+                <td th:text="${batch.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/measurement/batch/' + batch.id}" class="btn btn-default">
 					<img th:src="@{/images/speed-24px.svg}"/>
                 </a></td>
