@@ -15,7 +15,7 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 	 @Query( value = "SELECT * FROM brewery.batch WHERE active = true", nativeQuery = true )
 	 List<Batch> findActiveBatches( );	
 	
-	 @Query( value = "SELECT * FROM brewery.batch WHERE db_synch != 'SYNCHED'", nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.batch WHERE db_synch NOT IN ( 'SYNCHED', 'IGNORE' ", nativeQuery = true )
 	 List<Batch> findBatchesToSynchronize( );	
 
 	 @Query( value = "SELECT * FROM brewery.batch WHERE name = ?", nativeQuery = true )

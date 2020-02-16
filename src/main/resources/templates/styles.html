@@ -6,6 +6,7 @@
 </head>
 <body>
 <div class="container">
+	<h2>Styles</h2>
     <div th:if="${#lists.isEmpty(styles)}">
     	<a th:href="@{/style/add}" class="btn btn-outline-dark btn-lg">
 			<img th:src="@{/images/add-24px.svg}"/>Style
@@ -13,36 +14,25 @@
     </div>
     <div th:if="${not #lists.isEmpty(styles)}">
         <table class="table table-striped">
-    		<tr>
-				<td><h2>Styles</h2></td>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					<div>
-						<a th:href="@{/style/add}" class="btn btn-outline-dark">
-							<img th:src="@{/images/add-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-			</tr>				
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th class="d-none d-lg-block">BJCP Category</th>
                 <th>Description</th>
-                <th>BJCP Category</th>
-                <th>DB Synch</th>
+                <th class="d-none d-lg-block">DB Synch</th>
                 <th></th>
-                <th></th>
+                <th>
+					<a th:href="@{/style/add}" class="btn btn-outline-dark">
+						<img th:src="@{/images/add-24px.svg}"/>
+					</a>
+                </th>
             </tr>
             <tr th:each="style : ${styles}">
                 <td th:text="${style.id}">Id</td>
                 <td th:text="${style.name}">Name</td>
+                <td th:text="${style.bjcpCategory}" class="d-none d-lg-block">BJCP Category</td>
                 <td th:text="${style.description}">Description</td>
-                <td th:text="${style.bjcpCategory}">BJCP Category</td>
-                <td th:text="${style.dbSynch}">Synched</td>
+                <td th:text="${style.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/style/edit/' + style.id}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>

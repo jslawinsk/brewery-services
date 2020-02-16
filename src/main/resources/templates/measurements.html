@@ -17,24 +17,6 @@
     </div>
     <div th:if="${not #lists.isEmpty(measurements)}">
         <table class="table table-striped">
-    		<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td class="d-none d-lg-block"/>
-				<td/>
-				<td/>
-				<td/>
-				<td class="d-none d-lg-block"/>
-				<td/>
-				<td>
-					<div>
-						<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-outline-dark">
-							<img th:src="@{/images/add-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-			</tr>				
             <tr>
                 <th>Id</th>
                 <th>Value</th>
@@ -45,7 +27,13 @@
                 <th>Time</th>
                 <th class="d-none d-lg-block">Synched</th>
                 <th></th>
-                <th></th>
+                <th>
+					<div>
+						<a th:href="${'/measurement/add/' + batch.id}" class="btn btn-outline-dark">
+							<img th:src="@{/images/add-24px.svg}"/>
+						</a>
+					</div>
+                </th>
             </tr>
             <tr th:each="measurement : ${measurements}">
                 <td th:text="${measurement.id}">Id</td>

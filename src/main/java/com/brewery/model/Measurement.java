@@ -22,11 +22,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "measurement", schema="brewery")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
+// @SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Measurement {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+	// Below is for H2 DB
+	// @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+	// Below is for postgres DB
+	@GeneratedValue(strategy = GenerationType.AUTO, generator="measurement_id_seq")
+    @SequenceGenerator(name="measurement_id_seq", sequenceName="measurement_id_seq", allocationSize=1)
+    @Column(name = "id")
 	private Long id;
 	
 	private double valueNumber;

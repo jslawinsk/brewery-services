@@ -123,14 +123,14 @@
             </a>
         </div>
         <br/>
-        <div class="container-fluid">
-            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
+        <div th:if="${blueToothEnabled} == true" class="container-fluid">
+            <a th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
 				<img th:src="@{/images/all_inclusive-24px.svg}"/>
             </a>
-            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
+            <a th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
 				<img th:src="@{/images/whatshot-24px.svg}"/>
             </a>
-            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
+            <a th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
 				<img th:src="@{/images/ac_unit-24px.svg}"/>
             </a>
         </div>

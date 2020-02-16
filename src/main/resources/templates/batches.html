@@ -6,6 +6,7 @@
 </head>
 <body>
 <div class="container">
+	<h2>Batches</h2>
     <div th:if="${#lists.isEmpty(batches)}">
     	<a th:href="@{/batch/add}" class="btn btn-outline-dark btn-lg">Add Batch
 			<img th:src="@{/images/add-24px.svg}"/>
@@ -13,24 +14,6 @@
     </div>
     <div th:if="${not #lists.isEmpty(batches)}">
         <table class="table table-striped">
-    		<tr>
-				<td><h2>Batches</h2></td>
-				<td/>
-				<td/>
-				<td/>
-				<td class="d-none d-lg-block"/>
-				<td/>
-				<td class="d-none d-lg-block"/>
-				<td/>
-				<td/>
-				<td>
-					<div>
-						<a th:href="@{/batch/add}" class="btn btn-outline-dark">
-							<img th:src="@{/images/add-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-			</tr>				
             <tr>
                 <th>Id</th>
                 <th>Active</th>
@@ -41,7 +24,11 @@
                 <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th></th>
-                <th></th>
+                <th>
+					<a th:href="@{/batch/add}" class="btn btn-outline-dark">
+						<img th:src="@{/images/add-24px.svg}"/>
+					</a>
+                </th>
             </tr>
             <tr th:each="batch : ${batches}">
                 <td th:text="${batch.id}">Id</td>
@@ -51,13 +38,13 @@
                 <td th:text="${batch.description}" class="d-none d-lg-block">Description</td>
                 <td th:text="${batch.startTime}">Start Time</td>
                 <td th:text="${batch.dbSynch}" class="d-none d-lg-block">Synched</td>
-                <td><a th:href="${'/measurement/batch/' + batch.id}" class="btn btn-default">
+                <td><a th:href="${'/measurement/batch/' + batch.id}" class="btn btn-default" title="Measurements" rel="tooltip">
 					<img th:src="@{/images/speed-24px.svg}"/>
                 </a></td>
-                <td><a th:href="${'/batch/edit/' + batch.id}" class="btn btn-default">
+                <td><a th:href="${'/batch/edit/' + batch.id}" class="btn btn-default" title="Edit" rel="tooltip">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>
-                <td><a th:href="${'/batch/delete/' + batch.id}" class="btn btn-default">
+                <td><a th:href="${'/batch/delete/' + batch.id}" class="btn btn-default" title="Delete" rel="tooltip">
 					<img th:src="@{/images/delete_forever-24px.svg}"/>
                 </a></td>
             </tr>

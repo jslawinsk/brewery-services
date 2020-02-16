@@ -25,8 +25,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class DataService {
 
     private Logger LOG = LoggerFactory.getLogger(DataService.class);
@@ -352,17 +354,25 @@ public class DataService {
     }
 
     public Measurement updateMeasurement( Measurement measurementToUpdate ) {
+    	LOG.info("updateMeasurement:" + measurementToUpdate );
     	Measurement foundMeasurement = measurementRepository.getOne( measurementToUpdate.getId() );
+    	LOG.info("updateMeasurement: found: " + foundMeasurement );
         try {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
         	if( measurementToUpdate.getBatch().getName() != null ) {
+            	LOG.info("updateMeasurement: debug: 1" );
         		Batch batch = batchRepository.findBatchByName( measurementToUpdate.getBatch().getName() );
+            	LOG.info("updateMeasurement: debug: 2: " + batch );
             	foundMeasurement.setBatch( batch );
+            	LOG.info("updateMeasurement Measurement, found batch:" + batch );
         	}
         	else {
+            	LOG.info("updateMeasurement: debug: 3" );
             	foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
+            	LOG.info("updateMeasurement: debug: 4" );
+            	LOG.info("updateMeasurement Measurement, set batch:" + measurementToUpdate.getBatch() );
         	}
         	
         	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
@@ -371,10 +381,12 @@ public class DataService {
         	foundMeasurement.setType(measurementToUpdate.getType() );
         	foundMeasurement.setMeasurementTime( measurementToUpdate.getMeasurementTime() );
         	foundMeasurement.setDbSynch( measurementToUpdate.getDbSynch() );
+        	LOG.info("updateMeasurement: debug: 5" );
             return measurementRepository.save( foundMeasurement );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateMeasurement: " + e.getMessage());
         }
+    	LOG.info("updateMeasurement: debug: 6" );
         return measurementToUpdate;
     }
 

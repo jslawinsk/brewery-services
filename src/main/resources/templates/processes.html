@@ -6,6 +6,7 @@
 </head>
 <body>
 <div class="container">
+	<h2>Processes</h2>
     <div th:if="${#lists.isEmpty(processes)}">
     	<a th:href="@{/process/add}" class="btn btn-outline-dark btn-lg">Add Process
 			<img th:src="@{/images/add-24px.svg}"/>
@@ -13,30 +14,21 @@
     </div>
     <div th:if="${not #lists.isEmpty(processes)}">
         <table class="table table-striped">
-    		<tr>
-				<td><h2>Processes</h2></td>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					<div>
-						<a th:href="@{/process/add}" class="btn btn-outline-dark">
-							<img th:src="@{/images/add-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-			</tr>				
             <tr>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Synched</th>
+                <th class="d-none d-lg-block">Synched</th>
                 <th></th>
-                <th></th>
+                <th>
+					<a th:href="@{/process/add}" class="btn btn-outline-dark">
+						<img th:src="@{/images/add-24px.svg}"/>
+					</a>
+                </th>
             </tr>
             <tr th:each="process : ${processes}">
                 <td th:text="${process.code}">Code</td>
                 <td th:text="${process.name}">Name</td>
-                <td th:text="${process.dbSynch}">Synched</td>
+                <td th:text="${process.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/process/edit/' + process.code}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>

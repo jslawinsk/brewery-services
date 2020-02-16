@@ -17,54 +17,37 @@
     </div>
     <div th:if="${not #lists.isEmpty(sensors)}">
         <table class="table table-striped">
-    		<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					<div>
-						<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark">
-							<img th:src="@{/images/add-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-				<td>
-					<div th:if="${blueToothEnabled} == true">
-						<a  th:href="${'/sensor/scan/'}" class="btn btn-outline-dark">
-   							<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
-						</a>
-					</div>
-				</td>
-			</tr>				
             <tr>
                 <th>Id</th>
                 <th>Enabled</th>
                 <th>Name</th>
-                <th>Interface</th>
+                <th class="d-none d-lg-block">Interface</th>
                 <th>Batch Id</th>
                 <th>Process</th>                
+                <th class="d-none d-lg-block">Update Time</th>
                 <th>Sensor Type</th>
-                <th>Update Time</th>
-                <th>Synched</th>                
-                <th></th>
-                <th></th>
+                <th class="d-none d-lg-block">Synched</th>                
+                <th>
+					<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark">
+						<img th:src="@{/images/add-24px.svg}"/>
+					</a>
+                </th>
+                <th>
+					<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-outline-dark">
+						<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
+					</a>
+                </th>
             </tr>
             <tr th:each="sensor : ${sensors}">
                 <td th:text="${sensor.id}">Id</td>
                 <td th:text="${sensor.enabled}">Enabled</td>
                 <td th:text="${sensor.name}">Name</td>
-                <td th:text="${sensor.communicationType}">Interface</td>
+                <td th:text="${sensor.communicationType}" class="d-none d-lg-block">Interface</td>
                 <td th:text="${sensor.batch.id}">Batch Id</td>
                 <td th:text="${sensor.process.name}">Process Code</td>
+                <td th:text="${sensor.updateTime}" class="d-none d-lg-block">Time</td>
                 <td th:text="${sensor.measureType.name}">Type</td>
-                <td th:text="${sensor.updateTime}">Time</td>
-                <td th:text="${sensor.dbSynch}">Synched</td>
+                <td th:text="${sensor.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/sensor/edit/' + sensor.id}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>
