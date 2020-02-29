@@ -1,0 +1,2 @@
+SELECT setval('measurement_id_seq', 200, true );
+select nextval ('measurement_id_seq')

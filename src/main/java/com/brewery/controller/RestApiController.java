@@ -90,7 +90,7 @@ public class RestApiController {
 
     @RequestMapping(path = "process/{code}", method = RequestMethod.DELETE)
     public void deleteProcess(@PathVariable(name = "code") String code ) {
-        LOG.info("BreweryController: Delete Process: " + code );    	
+        LOG.info("RestApiController: Delete Process: " + code );    	
         dataService.deleteProcess( code );
     }
     
@@ -117,7 +117,7 @@ public class RestApiController {
 
     @RequestMapping(path = "measureType/{code}", method = RequestMethod.DELETE)
     public void deleteMeasureType(@PathVariable(name = "code") String code ) {
-        LOG.info("BreweryController: Delete MeasureType: " + code );    	
+        LOG.info("RestApiController: Delete MeasureType: " + code );    	
         dataService.deleteMeasureType( code );
     }
     
@@ -162,6 +162,7 @@ public class RestApiController {
 
     @RequestMapping( path = "measurement", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Measurement saveMeasurement( @RequestBody Measurement measurementToSave ) {
+    	LOG.info("RestApiController:saveMeasurement: " + measurementToSave );
         return dataService.saveMeasurement( measurementToSave );
     }
 
