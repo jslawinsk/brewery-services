@@ -88,6 +88,12 @@
 		    <scope>test</scope>
 		</dependency>
 		
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>highcharts</artifactId>
+		    <version>8.0.0</version>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/net.sf.bluecove/bluecove -->
 <!--  		<dependency>
 		    <groupId>net.sf.bluecove</groupId>

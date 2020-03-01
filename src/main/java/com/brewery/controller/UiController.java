@@ -3,16 +3,17 @@ package com.brewery.controller;
 import com.brewery.model.Style;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
-import com.brewery.core.BluetoothThread;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
+import com.brewery.core.BluetoothThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,27 @@ public class UiController {
 	
     @RequestMapping(path = "/")
     public String index( Model model ) {
+
+        //first, add the regional sales
+        Integer northeastSales = 17089;
+        Integer westSales = 10603;
+        Integer midwestSales = 5223;
+        Integer southSales = 10111;
+         
+        model.addAttribute("northeastSales", northeastSales);
+        model.addAttribute("southSales", southSales);
+        model.addAttribute("midwestSales", midwestSales);
+        model.addAttribute("westSales", westSales);
+         
+        //now add sales by lure type
+        List<Integer> inshoreSales = Arrays.asList(4074, 3455, 4112);
+        List<Integer> nearshoreSales = Arrays.asList(3222, 3011, 3788);
+        List<Integer> offshoreSales = Arrays.asList(7811, 7098, 6455);
+         
+        model.addAttribute("inshoreSales", inshoreSales);
+        model.addAttribute("nearshoreSales", nearshoreSales);
+        model.addAttribute("offshoreSales", offshoreSales);
+        
         return "index";
     }
 
