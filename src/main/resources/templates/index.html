@@ -228,7 +228,7 @@ Highcharts.chart('container', {
     series: [{
         name: 'Temperature',
         colorByPoint: false,
-        data: [80],
+        data: [ /*[[${measurement.valueNumber}]]*/ ],
         tooltip: {
             valueSuffix: ' F'
         }

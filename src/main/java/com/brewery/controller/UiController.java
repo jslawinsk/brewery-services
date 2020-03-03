@@ -77,6 +77,7 @@ public class UiController {
         model.addAttribute("nearshoreSales", nearshoreSales);
         model.addAttribute("offshoreSales", offshoreSales);
         
+        model.addAttribute("measurement", dataService.getRecentMeasurement( ) );
         return "index";
     }
 

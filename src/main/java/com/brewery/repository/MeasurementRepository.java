@@ -20,5 +20,8 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
 	 Page<Measurement> findPageByBatchId( Long id, Pageable pageable );	
 	 
 	 @Query( value = "SELECT * FROM brewery.measurement WHERE db_synch NOT IN ( 'SYNCHED', 'IGNORE' ) ORDER BY batch_id, process_code, type_code, start_time ASC", nativeQuery = true )
-	 List<Measurement> findMeasurementsToSynchronize( );	
+	 List<Measurement> findMeasurementsToSynchronize( );
+	 
+	 @Query( value = "SELECT start_time, id, db_synch, value_number, value_text, batch_id, process_code, type_code FROM brewery.measurement ORDER BY start_time DESC LIMIT 1", nativeQuery = true )
+	 Measurement findMostRecent( );
 }

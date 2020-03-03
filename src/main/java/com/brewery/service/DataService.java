@@ -309,6 +309,11 @@ public class DataService {
         return measurementRepository.getOne( id );
     }
 
+    public Measurement getRecentMeasurement(  ) {
+        LOG.info("Getting recent Measurement" );
+        return measurementRepository.findMostRecent( );
+    }
+    
     public List<Measurement> getMeasurementsByBatch( Long id ) {
     	return measurementRepository.findByBatchId( id );
     }
