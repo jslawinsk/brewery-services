@@ -13,19 +13,21 @@
     </div>
 
 
-	<figure class="highcharts-figure">
-	    <div id="container"></div>
-	    <p class="highcharts-description">
-	        Chart showing use of multiple panes and axis plot bands with a gauge
-	        series. The chart is updated dynamically every few seconds.
-	    </p>
-	</figure>
-	    
 	<div class="row" style="margin-bottom:30px">
-	    <div class="col-md-6" style="margin-top:20px">
+	    <div class="col-md-4" style="margin-top:20px">
+			<figure class="highcharts-figure">
+		    	<div id="container0"></div>
+			</figure>
+	    </div>
+	    <div class="col-md-4" style="margin-top:20px">
+			<figure class="highcharts-figure">
+			    <div id="container1"></div>
+			</figure>
+	    </div>
+	    <div class="col-md-5" style="margin-top:20px">
 	        <div id="salesByType" style="width:100%; height:400px;"></div>
 	    </div>
-	    <div class="col-md-6" style="margin-top:20px">
+	    <div class="col-md-5" style="margin-top:20px">
 	        <div id="salesByRegion" style="width:100%; height:400px;"></div>
 	    </div>
 	</div>
@@ -138,9 +140,16 @@
         });
     }
     
+var measurements = /*[[${measurement}]]*/;    
+var gaugeAtrs = /*[[${gaugeAttrs}]]*/;
 
+for ( var i = 0; i < measurements.length; i++) {
 
-Highcharts.chart('container', {
+	var chartNumber = 0;
+	var chartg; 
+  	chartNumber = i;
+  	chartg = "#container" + chartNumber;
+    $(chartg).highcharts({
 
     chart: {
         type: 'gauge',
@@ -151,7 +160,7 @@ Highcharts.chart('container', {
     },
 
     title: {
-        text: 'Temperature'
+        text: measurements[chartNumber].batch.name + ' ' + measurements[chartNumber].process.name
     },
 
     pane: {
@@ -189,8 +198,8 @@ Highcharts.chart('container', {
 
     // the value axis
     yAxis: {
-        min: 0,
-        max: 200,
+        min: gaugeAtrs[chartNumber].minValue,
+        max: gaugeAtrs[chartNumber].maxValue,
 
         minorTickInterval: 'auto',
         minorTickWidth: 1,
@@ -208,27 +217,15 @@ Highcharts.chart('container', {
             rotation: 'auto'
         },
         title: {
-            text: 'temperature'
+            text: measurements[chartNumber].type.name + " "
         },
-        plotBands: [{
-            from: 0,
-            to: 120,
-            color: '#DF5353' // green
-        }, {
-            from: 120,
-            to: 160,
-            color: '#DDDF0D' // yellow
-        }, {
-            from: 160,
-            to: 200,
-            color: '#DF5353' // red
-        }]
+        plotBands: gaugeAtrs[chartNumber].plotBands
     },
 
     series: [{
         name: 'Temperature',
         colorByPoint: false,
-        data: [ /*[[${measurement.valueNumber}]]*/ ],
+        data: [ measurements[chartNumber].valueNumber ],
         tooltip: {
             valueSuffix: ' F'
         }
@@ -255,7 +252,7 @@ function (chart) {
 */    
 }
 );
-
+}
 
     
     /*]]>*/

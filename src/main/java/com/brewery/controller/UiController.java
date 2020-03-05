@@ -7,8 +7,12 @@ import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
+import com.brewery.dto.Gauge;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.brewery.core.BluetoothThread;
 
 import java.io.IOException;
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -77,7 +82,57 @@ public class UiController {
         model.addAttribute("nearshoreSales", nearshoreSales);
         model.addAttribute("offshoreSales", offshoreSales);
         
-        model.addAttribute("measurement", dataService.getRecentMeasurement( ) );
+        List<Measurement> measurements = dataService.getRecentMeasurement( );
+        model.addAttribute("measurement", measurements );
+        
+        List<Gauge> gauges = new ArrayList<Gauge>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        for( Measurement measurement:measurements) {
+        	String targetTxt = "70";
+        	Gauge gauge = new Gauge();
+
+        	String temp = measurement.getValueText();
+        	Map<String, String> map;
+			try {
+				map = objectMapper.readValue(temp, Map.class);
+	        	targetTxt = map.get( "target" );
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        	double target = Double.parseDouble( targetTxt );  
+        	
+        	if( measurement.getType().getCode().equals( "PH" ) ) {
+            	targetTxt = "7";
+            	gauge.setMaxValue( 14 );
+            	gauge.addPlotBand( 0, 1, "#FC1B2B" );			// Red
+            	gauge.addPlotBand( 1, 2, "#FD542B" );	// Orange
+            	gauge.addPlotBand( 2, 3, "#FDA529" );		// Yellow
+            	gauge.addPlotBand( 3, 4, "#FECE2F" );		// Light Green
+            	gauge.addPlotBand( 4, 5, "#DBE030" );		// Green
+            	gauge.addPlotBand( 5, 6, "#72D628" );		// Light Green
+            	gauge.addPlotBand( 6, 7, "#1CB321" );		// Yellow
+            	gauge.addPlotBand( 7, 8, "#159A19" );	// Orange
+            	gauge.addPlotBand( 8, 9, "#17A45B" );			// Red
+            	gauge.addPlotBand( 9, 10, "#20BEB5" );			// Red
+            	gauge.addPlotBand( 10, 11, "#1888CE" );			// Red
+            	gauge.addPlotBand( 11, 12, "#0F4FC5" );			// Red
+            	gauge.addPlotBand( 12, 13, "#342BB7" );			// Red
+            	gauge.addPlotBand( 13, 14, "#342BA5" );			// Red
+        	}
+        	else {
+            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );			// Red
+            	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
+            	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
+            	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
+            	gauge.addPlotBand( (long)target-1, (long)target+2, "#55BF3B" );		// Green
+            	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
+            	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
+            	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
+            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );			// Red
+        	}
+        	gauges.add( gauge );
+        }
+        model.addAttribute("gaugeAttrs", gauges );
         return "index";
     }
 

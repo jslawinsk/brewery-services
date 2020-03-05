@@ -309,7 +309,7 @@ public class DataService {
         return measurementRepository.getOne( id );
     }
 
-    public Measurement getRecentMeasurement(  ) {
+    public List<Measurement> getRecentMeasurement(  ) {
         LOG.info("Getting recent Measurement" );
         return measurementRepository.findMostRecent( );
     }
