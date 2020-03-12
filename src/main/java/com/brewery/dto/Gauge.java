@@ -8,13 +8,22 @@ public class Gauge {
 
 	int minValue;
 	int maxValue;
+	int startAngle;
+	int endAngle;
+	String gaugeType;
 	List<PlotBand> plotBands;
+	List<ArrayList> stops;
 	
     public Gauge() {
 		super();
+		
 		minValue = 0;
 		maxValue = 200;
+		startAngle = -150;
+		endAngle = 150;
+		gaugeType = "gauge";
 		plotBands = new ArrayList<PlotBand>();
+		stops = new ArrayList<ArrayList>();
     }
 
 
@@ -37,6 +46,29 @@ public class Gauge {
 		this.maxValue = maxValue;
 	}
 
+	public int getStartAngle() {
+		return startAngle;
+	}
+
+	public void setStartAngle(int startAngle) {
+		this.startAngle = startAngle;
+	}
+
+	public int getEndAngle() {
+		return endAngle;
+	}
+
+	public void setEndAngle(int endAngle) {
+		this.endAngle = endAngle;
+	}
+
+	public String getGaugeType() {
+		return gaugeType;
+	}
+
+	public void setGaugeType(String gaugeType) {
+		this.gaugeType = gaugeType;
+	}
 
 	public List<PlotBand> getPlotBands() {
 		return plotBands;
@@ -46,10 +78,27 @@ public class Gauge {
 		PlotBand plotBand = new PlotBand( from, to, color );
 		plotBands.add( plotBand );
 	}
-    
+
+	public List<ArrayList> getStops() {
+		return stops;
+	}
+
+	public void addStop( long value, String color ) {
+		// Stop stop = new Stop( value, color );
+		ArrayList<Object> list = new ArrayList<>();
+		list.add( value );
+		list.add( color );
+		stops.add( list );
+	}
+	
 	@Override
 	public String toString() {
-		return "Gauge [minValue=" + minValue + ", maxValue=" + maxValue + ", plotBands=" + plotBands + "]";
+		return "Gauge [minValue=" + minValue 
+				+ ", maxValue=" + maxValue 
+				+ ", startAngle=" + startAngle 
+				+ ", endAngle=" + endAngle 
+				+ ", gaugeType=" + gaugeType 
+				+ ", plotBands=" + plotBands + "]";
 	}
 
 	public class PlotBand{
@@ -90,5 +139,28 @@ public class Gauge {
     	
     }
 
+	public class Stop{
+    	
+    	private ArrayList<Object> list = new ArrayList<>();
+    	
+    	public Stop() {
+        	list = new ArrayList<>();
+    	}
+    	public Stop( long value, String color ) {
+    		list = new ArrayList<>();
+    		list.add( value );
+    		list.add( color );
+    	}
+    	
+		public ArrayList<Object> getStop() {
+			return list;
+		}
+
+		@Override
+		public String toString() {
+			return "Stop [ " + list + " ]";
+		}
+    	
+    }
 
 }

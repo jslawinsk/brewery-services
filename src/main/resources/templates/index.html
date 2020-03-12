@@ -7,28 +7,20 @@
 </head>
 <body>
 
-
    	<div align="center">
-        <h2>Spring Boot Highcharts Example</h2>
+        <h2>Sensor Dashboard</h2>
     </div>
 
-
 	<div class="row" style="margin-bottom:30px">
-	    <div class="col-md-4" style="margin-top:20px">
+	    <div class="col-lg-5 col-md-12" style="margin-top:20px">
 			<figure class="highcharts-figure">
 		    	<div id="container0"></div>
 			</figure>
 	    </div>
-	    <div class="col-md-4" style="margin-top:20px">
+	    <div class="col-lg-5 col-md-12" style="margin-top:20px">
 			<figure class="highcharts-figure">
 			    <div id="container1"></div>
 			</figure>
-	    </div>
-	    <div class="col-md-5" style="margin-top:20px">
-	        <div id="salesByType" style="width:100%; height:400px;"></div>
-	    </div>
-	    <div class="col-md-5" style="margin-top:20px">
-	        <div id="salesByRegion" style="width:100%; height:400px;"></div>
 	    </div>
 	</div>
 
@@ -44,115 +36,104 @@
                 thousandsSep: ','
             }
         });
- 
-        drawSalesByTypeChart();
-        drawSalesByRegionChart();
     });
      
      
-    function drawSalesByRegionChart() {
-        var salesByRegionChart = Highcharts.chart('salesByRegion', {
-            chart: {
-                type: 'pie',
-                margin: 40,
-                options3d: {
-                    enabled: true,
-                    alpha: 45,
-                    beta: 0
-                }
-            },
-            title: {
-                text: 'Sales by Region'
-            },
-            tooltip: {
-                pointFormat: "${point.y:,.0f}"
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    depth: 35
-                }
-            },
-            series: [{
-                name: 'Regions',
-                colorByPoint:true,
-                data: [{
-                    name: 'Northeast',
-                    y: /*[[${northeastSales}]]*/ 0
-                },{
-                    name: 'South',
-                    y: /*[[${southSales}]]*/ 0
-                },{
-                    name: 'Midwest',
-                    y: /*[[${midwestSales}]]*/ 0
-                },{
-                    name: 'West',
-                    y: /*[[${westSales}]]*/ 0
-                }]
-            }]
-        });
-    }
-     
-    function drawSalesByTypeChart() {
-        var salesByTypeChart = Highcharts.chart('salesByType', {
-            chart: {
-                type: 'column',
-                margin: 75,
-                options3d: {
-                    enabled: true,
-                    alpha: 15,
-                    beta: 15,
-                    depth: 110
-                }
-            },
-            title: {
-                text: 'Sales by Lure Type'
-            },
-            xAxis: {
-                categories: ['May', 'June', 'July']
-            },
-            yAxis: {
-                title: {
-                    text: 'Sales (US $)'
-                }
-            },
-            tooltip: {
-                pointFormat: "${point.y:,.0f}"
-            },
-            plotOptions: {
-                column: {
-                    depth: 60,
-                    stacking: true,
-                    grouping: false,
-                    groupZPadding: 10
-                }
-            },
-            series: [{
-                name: 'Inshore',
-                data: /*[[${inshoreSales}]]*/ []
-            }, {
-                name: 'Nearshore',
-                data: /*[[${nearshoreSales}]]*/ []
-            }, {
-                name: 'Offshore',
-                data: /*[[${offshoreSales}]]*/ []
-            }]
-        });
-    }
-    
 var measurements = /*[[${measurement}]]*/;    
 var gaugeAtrs = /*[[${gaugeAttrs}]]*/;
 
 for ( var i = 0; i < measurements.length; i++) {
-
-	var chartNumber = 0;
+	var chartNumber = i;
+if( measurements[i].type.code == 'PH' ) {
 	var chartg; 
-  	chartNumber = i;
+  	chartg = "#container" + chartNumber;
+    $(chartg).highcharts({
+	    chart: {
+	        type: 'solidgauge'
+	    },
+	
+	    title: {
+	        text: measurements[chartNumber].batch.name + ' ' + measurements[chartNumber].process.name
+	    },
+	
+	    pane: {
+	        center: ['50%', '85%'],
+	        size: '100%',
+	        startAngle: -90,
+	        endAngle: 90,
+	        background: {
+	            backgroundColor:
+	                Highcharts.defaultOptions.legend.backgroundColor || '#EEE',
+	            innerRadius: '60%',
+	            outerRadius: '100%',
+	            shape: 'arc'
+	        }
+	    },
+	
+	    exporting: {
+	        enabled: false
+	    },
+	
+	    tooltip: {
+	        enabled: false
+	    },
+	
+	    // the value axis
+	    yAxis: {
+	        min: gaugeAtrs[chartNumber].minValue,
+        	max: gaugeAtrs[chartNumber].maxValue,
+         	stops: gaugeAtrs[chartNumber].stops,
+	        lineWidth: 0,
+	        tickWidth: 0,
+	        minorTickInterval: null,
+	        tickAmount: 2,
+	        title: {
+	            text: 'PH',
+	            y: -70
+	        },
+	        labels: {
+	            y: 14
+	        }
+	    },
+	    
+	    credits: {
+	        enabled: false
+	    },
+	
+	    series: [{
+	        name: 'PH',
+	        data: [ measurements[chartNumber].valueNumber ],
+	        dataLabels: {
+	            format:
+	                '<div style="text-align:center">' +
+	                '<span style="font-size:25px">{y}</span><br/>' +
+	                '<span style="font-size:12px;opacity:0.4">PH</span>' +
+	                '</div>'
+	        },
+	        tooltip: {
+	            valueSuffix: ' PH'
+	        }
+	    }],
+	
+	    plotOptions: {
+	        solidgauge: {
+	            dataLabels: {
+	                y: 5,
+	                borderWidth: 0,
+	                useHTML: true
+	            }
+	        }
+	    }
+    
+	});
+}
+else{
+	var chartg; 
   	chartg = "#container" + chartNumber;
     $(chartg).highcharts({
 
     chart: {
-        type: 'gauge',
+        type: gaugeAtrs[chartNumber].gaugeType,
         plotBackgroundColor: null,
         plotBackgroundImage: null,
         plotBorderWidth: 0,
@@ -164,8 +145,8 @@ for ( var i = 0; i < measurements.length; i++) {
     },
 
     pane: {
-        startAngle: -150,
-        endAngle: 150,
+        startAngle: gaugeAtrs[chartNumber].startAngle,
+        endAngle: gaugeAtrs[chartNumber].endAngle,
         background: [{
             backgroundColor: {
                 linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
@@ -230,7 +211,6 @@ for ( var i = 0; i < measurements.length; i++) {
             valueSuffix: ' F'
         }
     }]
-
 },
 // Add some life
 function (chart) {
@@ -250,9 +230,9 @@ function (chart) {
         }, 3000);
     }
 */    
-}
-);
-}
+});
+} // if
+} // for
 
     
     /*]]>*/

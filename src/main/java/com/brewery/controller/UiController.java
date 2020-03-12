@@ -103,24 +103,28 @@ public class UiController {
         	
         	if( measurement.getType().getCode().equals( "PH" ) ) {
             	targetTxt = "7";
-            	gauge.setMaxValue( 14 );
-            	gauge.addPlotBand( 0, 1, "#FC1B2B" );			// Red
-            	gauge.addPlotBand( 1, 2, "#FD542B" );	// Orange
-            	gauge.addPlotBand( 2, 3, "#FDA529" );		// Yellow
-            	gauge.addPlotBand( 3, 4, "#FECE2F" );		// Light Green
-            	gauge.addPlotBand( 4, 5, "#DBE030" );		// Green
-            	gauge.addPlotBand( 5, 6, "#72D628" );		// Light Green
-            	gauge.addPlotBand( 6, 7, "#1CB321" );		// Yellow
-            	gauge.addPlotBand( 7, 8, "#159A19" );	// Orange
-            	gauge.addPlotBand( 8, 9, "#17A45B" );			// Red
-            	gauge.addPlotBand( 9, 10, "#20BEB5" );			// Red
-            	gauge.addPlotBand( 10, 11, "#1888CE" );			// Red
-            	gauge.addPlotBand( 11, 12, "#0F4FC5" );			// Red
-            	gauge.addPlotBand( 12, 13, "#342BB7" );			// Red
-            	gauge.addPlotBand( 13, 14, "#342BA5" );			// Red
+            	gauge.setMaxValue( 15 );
+            	gauge.setGaugeType( "solidgauge" );
+            	gauge.setStartAngle( -90 );
+            	gauge.setEndAngle( 90 );
+            	gauge.addStop( 0, "#FC1B2B" );	// Red
+            	gauge.addStop( 1, "#FD542B" );	// Pink
+            	gauge.addStop( 2, "#FDA529" );	// Orange
+            	gauge.addStop( 3, "#FECE2F" );	// Beige
+            	gauge.addStop( 4, "#DBE030" );	// Yellow
+            	gauge.addStop( 5, "#72D628" );	// Lime Green
+            	gauge.addStop( 6, "#1CB321" );	// Green
+            	gauge.addStop( 7, "#159A19" );	// Dark Green
+            	gauge.addStop( 8, "#17A45B" );	// Turquoise
+            	gauge.addStop( 9, "#20BEB5" );	// Pale Blue
+            	gauge.addStop( 10,"#1888CE" );	// Blue
+            	gauge.addStop( 11, "#0F4FC5" );	// Dark Blue
+            	gauge.addStop( 12, "#342BB7" );	// Violet
+            	gauge.addStop( 13, "#342BA5" );	// Purple
+            	gauge.addStop( 14, "#4A1590" );	// Deep Purple
         	}
         	else {
-            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );			// Red
+            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
             	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
             	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
             	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
@@ -128,11 +132,14 @@ public class UiController {
             	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
             	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
             	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
-            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );			// Red
+            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );				// Red
         	}
         	gauges.add( gauge );
         }
         model.addAttribute("gaugeAttrs", gauges );
+        
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        
         return "index";
     }
 
