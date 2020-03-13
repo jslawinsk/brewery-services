@@ -1,11 +1,11 @@
-#Brewery Services Dashboard
+# Brewery Services Dashboard
 The Dashboard will display measurements for all sensors for an active batches.
 
-Mobile Device
+## Mobile Device
 
 <img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/MobileDashboard.png" width="200">
 
-PC
+## PC
 
 <img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png" width="650">
 
@@ -20,7 +20,7 @@ Consists of the following tables.
 - Measurement Type
 - Measurement
 
-#Architecture Design
+# Architecture Design
 
 The Brewery Services application is a Java Spring Application. In the below diagram the encapsulated green boxes indicate enviroments where it could run. 
 
@@ -37,8 +37,9 @@ To Do:
 - [ ] Angular Modules to present Bluetooth process
 - [X] CRUD UI Web layer
 - [X] Choose and implement a DB, PostgreSQL implemented
-- [ ] Ability to relay data to another instance running in the cloud. The data relay will be cuirated data to reduce DB space and costs. Data will also be sent in bulk.
-- [-] Charts and analytics
+- [X] Ability to relay data to another instance running in the cloud. The data relay will be cuirated data to reduce DB space and costs. Data will also be sent in bulk.
+- [ ] Ability to synch update and delete of data to another instance running in the cloud. 
+- [ ] Charts and analytics
 - [ ] Automated testing
 - [X] Cloud deployment, Deployed to Heroku
 - [ ] Deployment to Raspberry Pi
@@ -51,6 +52,7 @@ Tools Used:
 - PostgreSQL
 - Maven Plugin 
 - Spring Plugin
+- Highcharts
 - Git Plugin
 - Java Plugin
 - PostMan
