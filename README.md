@@ -1,4 +1,10 @@
-# Brewery-Services-spring-rest-api
+#Brewery Services Dashboard
+The Dashboard will display measurements for all sensors for an active batches.
+
+![Mobile Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/MobileDashboard.png)
+![PC Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png)
+
+#Brewery-Services-spring-rest-api
 Brewery Services Spring REST API Project
 
 Rest API to manage Brewery Services DB. 
@@ -27,7 +33,7 @@ To Do:
 - [X] CRUD UI Web layer
 - [X] Choose and implement a DB, PostgreSQL implemented
 - [ ] Ability to relay data to another instance running in the cloud. The data relay will be cuirated data to reduce DB space and costs. Data will also be sent in bulk.
-- [ ] Charts and analytics
+- [-] Charts and analytics
 - [ ] Automated testing
 - [X] Cloud deployment, Deployed to Heroku
 - [ ] Deployment to Raspberry Pi

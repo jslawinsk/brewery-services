@@ -12,7 +12,7 @@
     </div>
 
 	<div class="row" style="margin-bottom:30px">
-	    <div class="col-lg-5 col-md-12" style="margin-top:20px" th:each="measurement, stats : ${measurement}">
+	    <div class="col-lg-4 col-md-12" style="margin-top:20px" th:each="measurement, stats : ${measurement}">
 			<figure class="highcharts-figure">
 		    	<div th:id="'container' + ${stats.index}"></div>
 			</figure>
