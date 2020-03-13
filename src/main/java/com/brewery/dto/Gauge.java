@@ -83,7 +83,7 @@ public class Gauge {
 		return stops;
 	}
 
-	public void addStop( long value, String color ) {
+	public void addStop( double value, String color ) {
 		// Stop stop = new Stop( value, color );
 		ArrayList<Object> list = new ArrayList<>();
 		list.add( value );

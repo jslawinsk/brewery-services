@@ -8,23 +8,16 @@
 <body>
 
    	<div align="center">
-        <h2>Sensor Dashboard</h2>
+        <h2>Dashboard</h2>
     </div>
 
 	<div class="row" style="margin-bottom:30px">
-	    <div class="col-lg-5 col-md-12" style="margin-top:20px">
+	    <div class="col-lg-5 col-md-12" style="margin-top:20px" th:each="measurement, stats : ${measurement}">
 			<figure class="highcharts-figure">
-		    	<div id="container0"></div>
-			</figure>
-	    </div>
-	    <div class="col-lg-5 col-md-12" style="margin-top:20px">
-			<figure class="highcharts-figure">
-			    <div id="container1"></div>
+		    	<div th:id="'container' + ${stats.index}"></div>
 			</figure>
 	    </div>
 	</div>
-
-
 
 
 <script th:inline="javascript">
@@ -50,12 +43,10 @@ if( measurements[i].type.code == 'PH' ) {
     $(chartg).highcharts({
 	    chart: {
 	        type: 'solidgauge'
-	    },
-	
+	    },	
 	    title: {
 	        text: measurements[chartNumber].batch.name + ' ' + measurements[chartNumber].process.name
-	    },
-	
+	    },	
 	    pane: {
 	        center: ['50%', '85%'],
 	        size: '100%',
@@ -68,12 +59,10 @@ if( measurements[i].type.code == 'PH' ) {
 	            outerRadius: '100%',
 	            shape: 'arc'
 	        }
-	    },
-	
+	    },	
 	    exporting: {
 	        enabled: false
-	    },
-	
+	    },	
 	    tooltip: {
 	        enabled: false
 	    },
@@ -86,7 +75,7 @@ if( measurements[i].type.code == 'PH' ) {
 	        lineWidth: 0,
 	        tickWidth: 0,
 	        minorTickInterval: null,
-	        tickAmount: 2,
+	        tickAmount: 1,
 	        title: {
 	            text: 'PH',
 	            y: -70
@@ -95,7 +84,6 @@ if( measurements[i].type.code == 'PH' ) {
 	            y: 14
 	        }
 	    },
-	    
 	    credits: {
 	        enabled: false
 	    },
@@ -202,7 +190,9 @@ else{
         },
         plotBands: gaugeAtrs[chartNumber].plotBands
     },
-
+    credits: {
+        enabled: false
+    },
     series: [{
         name: 'Temperature',
         colorByPoint: false,

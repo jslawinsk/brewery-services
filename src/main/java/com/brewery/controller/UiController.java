@@ -62,66 +62,55 @@ public class UiController {
     @RequestMapping(path = "/")
     public String index( Model model ) {
 
-        //first, add the regional sales
-        Integer northeastSales = 17089;
-        Integer westSales = 10603;
-        Integer midwestSales = 5223;
-        Integer southSales = 10111;
-         
-        model.addAttribute("northeastSales", northeastSales);
-        model.addAttribute("southSales", southSales);
-        model.addAttribute("midwestSales", midwestSales);
-        model.addAttribute("westSales", westSales);
-         
-        //now add sales by lure type
-        List<Integer> inshoreSales = Arrays.asList(4074, 3455, 4112);
-        List<Integer> nearshoreSales = Arrays.asList(3222, 3011, 3788);
-        List<Integer> offshoreSales = Arrays.asList(7811, 7098, 6455);
-         
-        model.addAttribute("inshoreSales", inshoreSales);
-        model.addAttribute("nearshoreSales", nearshoreSales);
-        model.addAttribute("offshoreSales", offshoreSales);
-        
-        List<Measurement> measurements = dataService.getRecentMeasurement( );
+    	List<Measurement> measurements = new ArrayList<Measurement>();
+    	
+    	List<Batch> batches = dataService.getActiveBatches();
+    	for( Batch batch:batches) {
+    		List<Measurement> batchMeasurements = dataService.getRecentMeasurement(  batch.getId() );
+    		if( !batchMeasurements.isEmpty() ) {
+    			measurements.addAll( batchMeasurements );
+    		}
+    	}    	
         model.addAttribute("measurement", measurements );
         
         List<Gauge> gauges = new ArrayList<Gauge>();
         ObjectMapper objectMapper = new ObjectMapper();
         for( Measurement measurement:measurements) {
-        	String targetTxt = "70";
+        	String targetTxt = "60";
+        	double target = 60;
         	Gauge gauge = new Gauge();
 
         	String temp = measurement.getValueText();
-        	Map<String, String> map;
+        	Map<String, Double> map;
 			try {
 				map = objectMapper.readValue(temp, Map.class);
-	        	targetTxt = map.get( "target" );
+				target = (double)map.get( "target" );
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-        	double target = Double.parseDouble( targetTxt );  
+        	// double target = Double.parseDouble( targetTxt );  
         	
         	if( measurement.getType().getCode().equals( "PH" ) ) {
             	targetTxt = "7";
-            	gauge.setMaxValue( 15 );
+            	gauge.setMaxValue( 14 );
             	gauge.setGaugeType( "solidgauge" );
             	gauge.setStartAngle( -90 );
             	gauge.setEndAngle( 90 );
-            	gauge.addStop( 0, "#FC1B2B" );	// Red
-            	gauge.addStop( 1, "#FD542B" );	// Pink
-            	gauge.addStop( 2, "#FDA529" );	// Orange
-            	gauge.addStop( 3, "#FECE2F" );	// Beige
-            	gauge.addStop( 4, "#DBE030" );	// Yellow
-            	gauge.addStop( 5, "#72D628" );	// Lime Green
-            	gauge.addStop( 6, "#1CB321" );	// Green
-            	gauge.addStop( 7, "#159A19" );	// Dark Green
-            	gauge.addStop( 8, "#17A45B" );	// Turquoise
-            	gauge.addStop( 9, "#20BEB5" );	// Pale Blue
-            	gauge.addStop( 10,"#1888CE" );	// Blue
-            	gauge.addStop( 11, "#0F4FC5" );	// Dark Blue
-            	gauge.addStop( 12, "#342BB7" );	// Violet
-            	gauge.addStop( 13, "#342BA5" );	// Purple
-            	gauge.addStop( 14, "#4A1590" );	// Deep Purple
+            	gauge.addStop( 0,     "#FC1B2B" );	// Red
+            	gauge.addStop( 0.067, "#FD542B" );	// Pink
+            	gauge.addStop( 0.133, "#FDA529" );	// Orange
+            	gauge.addStop( 0.2,   "#FECE2F" );	// Beige
+            	gauge.addStop( 0.267, "#DBE030" );	// Yellow
+            	gauge.addStop( 0.333, "#72D628" );	// Lime Green
+            	gauge.addStop( 0.4,   "#1CB321" );	// Green
+            	gauge.addStop( 0.467, "#159A19" );	// Dark Green
+            	gauge.addStop( 0.533, "#17A45B" );	// Turquoise
+            	gauge.addStop( 0.6,   "#20BEB5" );	// Pale Blue
+            	gauge.addStop( 0.667, "#1888CE" );	// Blue
+            	gauge.addStop( 0.733, "#0F4FC5" );	// Dark Blue
+            	gauge.addStop( 0.8,   "#342BB7" );	// Violet
+            	gauge.addStop( 0.867, "#342BA5" );	// Purple
+            	gauge.addStop( 0.933, "#4A1590" );	// Deep Purple
         	}
         	else {
             	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
@@ -137,9 +126,6 @@ public class UiController {
         	gauges.add( gauge );
         }
         model.addAttribute("gaugeAttrs", gauges );
-        
-        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
-        
         return "index";
     }
 

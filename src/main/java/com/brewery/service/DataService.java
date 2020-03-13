@@ -309,9 +309,9 @@ public class DataService {
         return measurementRepository.getOne( id );
     }
 
-    public List<Measurement> getRecentMeasurement(  ) {
+    public List<Measurement> getRecentMeasurement( Long id ) {
         LOG.info("Getting recent Measurement" );
-        return measurementRepository.findMostRecent( );
+        return measurementRepository.findMostRecent( id );
     }
     
     public List<Measurement> getMeasurementsByBatch( Long id ) {
