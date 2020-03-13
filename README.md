@@ -7,7 +7,7 @@ Mobile Device
 
 PC
 
-<img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png" width="450">
+<img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png" width="650">
 
 #Brewery-Services-spring-rest-api
 Brewery Services Spring REST API Project
