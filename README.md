@@ -1,8 +1,8 @@
 #Brewery Services Dashboard
 The Dashboard will display measurements for all sensors for an active batches.
 
-![Mobile Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/MobileDashboard.png=250x)
-![PC Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png=250x)
+![Mobile Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/MobileDashboard.png =250x)
+![PC Dashboard](https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png =250x)
 
 #Brewery-Services-spring-rest-api
 Brewery Services Spring REST API Project
