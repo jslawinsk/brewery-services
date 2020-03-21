@@ -88,7 +88,7 @@ public class Sensor {
 		this.updateTime = updateTime;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public Sensor(Long id, boolean synched, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
+	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
 			Batch batch, Process process, MeasureType measureType, Date updateTime, DbSync dbSynch ) {
 		super();
 		this.id = id;

@@ -24,6 +24,7 @@
                 <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th></th>
+                <th></th>
                 <th>
 					<a th:href="@{/batch/add}" class="btn btn-outline-dark">
 						<img th:src="@{/images/add-24px.svg}"/>
@@ -38,6 +39,9 @@
                 <td th:text="${batch.description}" class="d-none d-lg-block">Description</td>
                 <td th:text="${batch.startTime}">Start Time</td>
                 <td th:text="${batch.dbSynch}" class="d-none d-lg-block">Synched</td>
+                <td><a th:href="${'/batch/chart/' + batch.id}" class="btn btn-default" title="Chart" rel="tooltip">
+					<img th:src="@{/images/show_chart-24px.svg}"/>
+                </a></td>
                 <td><a th:href="${'/measurement/batch/' + batch.id}" class="btn btn-default" title="Measurements" rel="tooltip">
 					<img th:src="@{/images/speed-24px.svg}"/>
                 </a></td>

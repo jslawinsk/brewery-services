@@ -318,6 +318,10 @@ public class DataService {
     	return measurementRepository.findByBatchId( id );
     }
 
+    public List<Measurement> getMeasurementsByBatchType( Long id, String type ) {
+    	return measurementRepository.findByBatchIdType( id, type );
+    }
+    
     public Page<Measurement> getMeasurementsPageByBatch( int pageNo, Long id ) {
     	int noOfRecords = 10;
     	PageRequest pageRequest = PageRequest.of( pageNo, noOfRecords );

@@ -1,10 +1,11 @@
 package com.brewery.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
-public class Gauge {
+public class ChartAttributes {
 
 	int minValue;
 	int maxValue;
@@ -13,8 +14,10 @@ public class Gauge {
 	String gaugeType;
 	List<PlotBand> plotBands;
 	List<ArrayList> stops;
+	List<SeriesInfo> seriesInfos;
+	SeriesInfo seriesInfo;
 	
-    public Gauge() {
+    public ChartAttributes() {
 		super();
 		
 		minValue = 0;
@@ -24,6 +27,8 @@ public class Gauge {
 		gaugeType = "gauge";
 		plotBands = new ArrayList<PlotBand>();
 		stops = new ArrayList<ArrayList>();
+		seriesInfos = new ArrayList<SeriesInfo>();
+		seriesInfo = new SeriesInfo();
     }
 
 
@@ -79,6 +84,14 @@ public class Gauge {
 		plotBands.add( plotBand );
 	}
 
+	public List<SeriesInfo> getSeriesInfos() {
+		return seriesInfos;
+	}
+
+	public void addSeriesInfo( SeriesInfo seriesInfo ) {
+		seriesInfos.add( seriesInfo );
+	}
+	
 	public List<ArrayList> getStops() {
 		return stops;
 	}
@@ -90,6 +103,14 @@ public class Gauge {
 		list.add( color );
 		stops.add( list );
 	}
+
+	public SeriesInfo getSeriesInfo() {
+		return seriesInfo;
+	}
+	
+	public void addSeriesData( long dateTime, double valueNumber ) {
+		seriesInfo.addData(dateTime, valueNumber);
+	}
 	
 	@Override
 	public String toString() {
@@ -98,7 +119,9 @@ public class Gauge {
 				+ ", startAngle=" + startAngle 
 				+ ", endAngle=" + endAngle 
 				+ ", gaugeType=" + gaugeType 
-				+ ", plotBands=" + plotBands + "]";
+				+ ", plotBands=" + plotBands 
+				+ ", seriesInfo=" + seriesInfo 
+				+ "]";
 	}
 
 	public class PlotBand{
@@ -139,6 +162,48 @@ public class Gauge {
     	
     }
 
+	public class SeriesInfo{
+	    private String name;
+		List<ArrayList> data;
+		
+		public SeriesInfo() {
+			super();
+			this.name = "test";
+			data = new ArrayList<ArrayList>();
+		}
+		public SeriesInfo(String name) {
+			super();
+			this.name = name;
+			data = new ArrayList<ArrayList>();
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public List<ArrayList> getData() {
+			return data;
+		}
+
+		public void addData( long dateTime, double valueNumber ) {
+			ArrayList<Object> list = new ArrayList<>();
+			list.add( dateTime );
+			list.add( valueNumber );
+			data.add( list );
+		}
+		
+		
+		@Override
+		public String toString() {
+			return "SeriesData [Name=" + name + "]";
+		}
+		
+	}
+	
 	public class Stop{
     	
     	private ArrayList<Object> list = new ArrayList<>();

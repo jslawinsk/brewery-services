@@ -33,7 +33,7 @@ public class MeasureType {
 		this.name = name;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public MeasureType( boolean synched, String code, String name, DbSync dbSynch ) {
+	public MeasureType( String code, String name, DbSync dbSynch ) {
 		super();
 		this.code = code;
 		this.name = name;

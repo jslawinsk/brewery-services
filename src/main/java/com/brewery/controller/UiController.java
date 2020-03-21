@@ -1,5 +1,6 @@
 package com.brewery.controller;
 
+
 import com.brewery.model.Style;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
@@ -7,7 +8,7 @@ import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
-import com.brewery.dto.Gauge;
+import com.brewery.dto.ChartAttributes;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -73,12 +74,12 @@ public class UiController {
     	}    	
         model.addAttribute("measurement", measurements );
         
-        List<Gauge> gauges = new ArrayList<Gauge>();
+        List<ChartAttributes> gauges = new ArrayList<ChartAttributes>();
         ObjectMapper objectMapper = new ObjectMapper();
         for( Measurement measurement:measurements) {
         	String targetTxt = "60";
         	double target = 60;
-        	Gauge gauge = new Gauge();
+        	ChartAttributes gauge = new ChartAttributes();
 
         	String temp = measurement.getValueText();
         	Map<String, Double> map;
@@ -276,6 +277,29 @@ public class UiController {
         return "batches";
     }
 
+    @RequestMapping(path = "/batch/chart/{id}", method = RequestMethod.GET)
+    public String getBatchChart(Model model, @PathVariable(value = "id") long id,
+    		@RequestParam("page") Optional<Integer> page     		
+    		) {
+    	
+    	ChartAttributes chartAttributes = new ChartAttributes();
+    	
+    	List<MeasureType> measureTypes = dataService.getAllMeasureTypes();
+        for( MeasureType measureType:measureTypes) {
+        	ChartAttributes.SeriesInfo seriesInfo = chartAttributes.new SeriesInfo( measureType.getName() );
+	    	List<Measurement> measurements = dataService.getMeasurementsByBatchType( id, measureType.getCode() );
+	        for( Measurement measurement:measurements) {
+	        	chartAttributes.addSeriesData( measurement.getMeasurementTime().getTime(), measurement.getValueNumber() );
+	        	seriesInfo.addData( measurement.getMeasurementTime().getTime(), measurement.getValueNumber()  );
+	        }    	
+	        chartAttributes.addSeriesInfo( seriesInfo );
+        }
+        LOG.info("UiController: getBatchChart Guage: " + chartAttributes );        
+        model.addAttribute("chartAttributes", chartAttributes );    	
+        model.addAttribute("batch", dataService.getBatch(id) );
+        return "batchChart";
+    }
+    
     @RequestMapping(path = "/batch/edit/{id}", method = RequestMethod.GET)
     public String editBatch(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("batch", dataService.getBatch(id) );

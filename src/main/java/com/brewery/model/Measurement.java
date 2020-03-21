@@ -72,7 +72,7 @@ public class Measurement {
 		this.measurementTime = measurementTime;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public Measurement( boolean synched, double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime, DbSync dbSynch) 
+	public Measurement( double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime, DbSync dbSynch) 
 	{
 		super();
 		this.valueNumber = valueNumber;
