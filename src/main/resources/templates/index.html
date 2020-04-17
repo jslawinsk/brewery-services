@@ -185,7 +185,7 @@ else{
             rotation: 'auto'
         },
         title: {
-            text: gaugeAtrs[chartNumber].title
+            text: gaugeAtrs[chartNumber].valueType
         },
         plotBands: gaugeAtrs[chartNumber].plotBands
     },
@@ -196,9 +196,9 @@ else{
         name: gaugeAtrs[chartNumber].valueType,
         colorByPoint: false,
         data: [ gaugeAtrs[chartNumber].valueNumber ],
-        tooltip: {
-            valueSuffix: gaugeAtrs[chartNumber].valueType
-        }
+	    tooltip: {
+	        enabled: false
+	    }
     }]
 },
 // Add some life

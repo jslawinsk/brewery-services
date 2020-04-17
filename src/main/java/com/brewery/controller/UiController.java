@@ -80,12 +80,14 @@ public class UiController {
 	        	double target = 60;
 	        	ChartAttributes gauge = new ChartAttributes();
 	
+	        	boolean btarget = false;
 	        	String temp = measurement.getValueText();
 	        	if( temp.indexOf("target") >= 0 ) {
 		        	Map<String, Double> map;
 					try {
 						map = objectMapper.readValue(temp, Map.class);
 						target = (double)map.get( "target" );
+						btarget = true;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -120,15 +122,17 @@ public class UiController {
 	        	}
 	        	else if( measurement.getType().getGraphType().toString().equals("GAUGE") ){
 	                LOG.info("UiController: Adding Gauge: " );   	
-	            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
-	            	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
-	            	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
-	            	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
-	            	gauge.addPlotBand( (long)target-1, (long)target+2, "#55BF3B" );		// Green
-	            	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
-	            	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
-	            	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
-	            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );				// Red
+	                if( btarget ) {
+		            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
+		            	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
+		            	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
+		            	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
+		            	gauge.addPlotBand( (long)target-1, (long)target+2, "#55BF3B" );		// Green
+		            	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
+		            	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
+		            	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
+		            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );				// Red
+	                }
 	        	}
             	gauges.add( gauge );
         	}
