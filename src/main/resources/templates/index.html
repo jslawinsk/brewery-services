@@ -12,7 +12,7 @@
     </div>
 
 	<div class="row" style="margin-bottom:30px">
-	    <div class="col-lg-4 col-md-12" style="margin-top:20px" th:each="measurement, stats : ${measurement}">
+	    <div class="col-lg-4 col-md-12" style="margin-top:20px" th:each="gaugeAttrs, stats : ${gaugeAttrs}">
 			<figure class="highcharts-figure">
 		    	<div th:id="'container' + ${stats.index}"></div>
 			</figure>
@@ -32,12 +32,11 @@
     });
      
      
-var measurements = /*[[${measurement}]]*/;    
 var gaugeAtrs = /*[[${gaugeAttrs}]]*/;
 
-for ( var i = 0; i < measurements.length; i++) {
+for ( var i = 0; i < gaugeAtrs.length; i++) {
 	var chartNumber = i;
-if( measurements[i].type.code == 'PH' ) {
+if( gaugeAtrs[i].gaugeType == 'SOLID_GUAGE' ) {
 	var chartg; 
   	chartg = "#container" + chartNumber;
     $(chartg).highcharts({
@@ -45,7 +44,7 @@ if( measurements[i].type.code == 'PH' ) {
 	        type: 'solidgauge'
 	    },	
 	    title: {
-	        text: measurements[chartNumber].batch.name + ' ' + measurements[chartNumber].process.name
+	        text: gaugeAtrs[chartNumber].title
 	    },	
 	    pane: {
 	        center: ['50%', '85%'],
@@ -77,7 +76,7 @@ if( measurements[i].type.code == 'PH' ) {
 	        minorTickInterval: null,
 	        tickAmount: 1,
 	        title: {
-	            text: 'PH',
+	            text: gaugeAtrs[chartNumber].valueType,
 	            y: -70
 	        },
 	        labels: {
@@ -89,17 +88,17 @@ if( measurements[i].type.code == 'PH' ) {
 	    },
 	
 	    series: [{
-	        name: 'PH',
-	        data: [ measurements[chartNumber].valueNumber ],
+	        name: gaugeAtrs[chartNumber].valueType,
+	        data: [ gaugeAtrs[chartNumber].valueNumber ],
 	        dataLabels: {
 	            format:
 	                '<div style="text-align:center">' +
 	                '<span style="font-size:25px">{y}</span><br/>' +
-	                '<span style="font-size:12px;opacity:0.4">PH</span>' +
+	                '<span style="font-size:12px;opacity:0.4">' + gaugeAtrs[chartNumber].valueType + '</span>' +
 	                '</div>'
 	        },
 	        tooltip: {
-	            valueSuffix: ' PH'
+	            valueSuffix: gaugeAtrs[chartNumber].valueType
 	        }
 	    }],
 	
@@ -121,7 +120,7 @@ else{
     $(chartg).highcharts({
 
     chart: {
-        type: gaugeAtrs[chartNumber].gaugeType,
+        type: 'gauge',
         plotBackgroundColor: null,
         plotBackgroundImage: null,
         plotBorderWidth: 0,
@@ -129,7 +128,7 @@ else{
     },
 
     title: {
-        text: measurements[chartNumber].batch.name + ' ' + measurements[chartNumber].process.name
+        text: gaugeAtrs[chartNumber].title
     },
 
     pane: {
@@ -186,7 +185,7 @@ else{
             rotation: 'auto'
         },
         title: {
-            text: measurements[chartNumber].type.name + " "
+            text: gaugeAtrs[chartNumber].title
         },
         plotBands: gaugeAtrs[chartNumber].plotBands
     },
@@ -194,11 +193,11 @@ else{
         enabled: false
     },
     series: [{
-        name: 'Temperature',
+        name: gaugeAtrs[chartNumber].valueType,
         colorByPoint: false,
-        data: [ measurements[chartNumber].valueNumber ],
+        data: [ gaugeAtrs[chartNumber].valueNumber ],
         tooltip: {
-            valueSuffix: ' F'
+            valueSuffix: gaugeAtrs[chartNumber].valueType
         }
     }]
 },

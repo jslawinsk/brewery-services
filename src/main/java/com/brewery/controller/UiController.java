@@ -72,59 +72,66 @@ public class UiController {
     			measurements.addAll( batchMeasurements );
     		}
     	}    	
-        model.addAttribute("measurement", measurements );
         
         List<ChartAttributes> gauges = new ArrayList<ChartAttributes>();
         ObjectMapper objectMapper = new ObjectMapper();
         for( Measurement measurement:measurements) {
-        	String targetTxt = "60";
-        	double target = 60;
-        	ChartAttributes gauge = new ChartAttributes();
-
-        	String temp = measurement.getValueText();
-        	Map<String, Double> map;
-			try {
-				map = objectMapper.readValue(temp, Map.class);
-				target = (double)map.get( "target" );
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-        	// double target = Double.parseDouble( targetTxt );  
-        	
-        	if( measurement.getType().getCode().equals( "PH" ) ) {
-            	targetTxt = "7";
-            	gauge.setMaxValue( 14 );
-            	gauge.setGaugeType( "solidgauge" );
-            	gauge.setStartAngle( -90 );
-            	gauge.setEndAngle( 90 );
-            	gauge.addStop( 0,     "#FC1B2B" );	// Red
-            	gauge.addStop( 0.067, "#FD542B" );	// Pink
-            	gauge.addStop( 0.133, "#FDA529" );	// Orange
-            	gauge.addStop( 0.2,   "#FECE2F" );	// Beige
-            	gauge.addStop( 0.267, "#DBE030" );	// Yellow
-            	gauge.addStop( 0.333, "#72D628" );	// Lime Green
-            	gauge.addStop( 0.4,   "#1CB321" );	// Green
-            	gauge.addStop( 0.467, "#159A19" );	// Dark Green
-            	gauge.addStop( 0.533, "#17A45B" );	// Turquoise
-            	gauge.addStop( 0.6,   "#20BEB5" );	// Pale Blue
-            	gauge.addStop( 0.667, "#1888CE" );	// Blue
-            	gauge.addStop( 0.733, "#0F4FC5" );	// Dark Blue
-            	gauge.addStop( 0.8,   "#342BB7" );	// Violet
-            	gauge.addStop( 0.867, "#342BA5" );	// Purple
-            	gauge.addStop( 0.933, "#4A1590" );	// Deep Purple
+        	if( !measurement.getType().getGraphType().toString().equals( "NONE" ) ){
+	        	double target = 60;
+	        	ChartAttributes gauge = new ChartAttributes();
+	
+	        	String temp = measurement.getValueText();
+	        	if( temp.indexOf("target") >= 0 ) {
+		        	Map<String, Double> map;
+					try {
+						map = objectMapper.readValue(temp, Map.class);
+						target = (double)map.get( "target" );
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	        	}
+	        	
+	        	gauge.setTitle( measurement.getBatch().getName() + " " + measurement.getProcess().getName() );
+	        	gauge.setValueType( measurement.getType().getName() );
+	        	gauge.setValueNumber( measurement.getValueNumber() );
+            	gauge.setGaugeType( measurement.getType().getGraphType().toString() );
+            	gauge.setMaxValue( measurement.getType().getMaxValue() );
+            	gauge.setMinValue( measurement.getType().getMinValue() );
+	            LOG.info("UiController: Gauge: Measurement:" + measurement.getType().getGraphType() );   	
+	        	if( measurement.getType().getGraphType().toString().equals("SOLID_GUAGE") ) {
+	                LOG.info("UiController: Adding Solid Gauge: " );   	
+	            	gauge.setStartAngle( -90 );
+	            	gauge.setEndAngle( 90 );
+	            	gauge.addStop( 0,     "#FC1B2B" );	// Red
+	            	gauge.addStop( 0.067, "#FD542B" );	// Pink
+	            	gauge.addStop( 0.133, "#FDA529" );	// Orange
+	            	gauge.addStop( 0.2,   "#FECE2F" );	// Beige
+	            	gauge.addStop( 0.267, "#DBE030" );	// Yellow
+	            	gauge.addStop( 0.333, "#72D628" );	// Lime Green
+	            	gauge.addStop( 0.4,   "#1CB321" );	// Green
+	            	gauge.addStop( 0.467, "#159A19" );	// Dark Green
+	            	gauge.addStop( 0.533, "#17A45B" );	// Turquoise
+	            	gauge.addStop( 0.6,   "#20BEB5" );	// Pale Blue
+	            	gauge.addStop( 0.667, "#1888CE" );	// Blue
+	            	gauge.addStop( 0.733, "#0F4FC5" );	// Dark Blue
+	            	gauge.addStop( 0.8,   "#342BB7" );	// Violet
+	            	gauge.addStop( 0.867, "#342BA5" );	// Purple
+	            	gauge.addStop( 0.933, "#4A1590" );	// Deep Purple
+	        	}
+	        	else if( measurement.getType().getGraphType().toString().equals("GAUGE") ){
+	                LOG.info("UiController: Adding Gauge: " );   	
+	            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
+	            	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
+	            	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
+	            	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
+	            	gauge.addPlotBand( (long)target-1, (long)target+2, "#55BF3B" );		// Green
+	            	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
+	            	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
+	            	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
+	            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );				// Red
+	        	}
+            	gauges.add( gauge );
         	}
-        	else {
-            	gauge.addPlotBand( 0, (long)target-12, "#DF5353" );					// Red
-            	gauge.addPlotBand( (long)target-12, (long)target-6, "#e0790b" );	// Orange
-            	gauge.addPlotBand( (long)target-6, (long)target-3, "#f2f20c" );		// Yellow
-            	gauge.addPlotBand( (long)target-3, (long)target-1, "#92f20c" );		// Light Green
-            	gauge.addPlotBand( (long)target-1, (long)target+2, "#55BF3B" );		// Green
-            	gauge.addPlotBand( (long)target+2, (long)target+4, "#92f20c" );		// Light Green
-            	gauge.addPlotBand( (long)target+4, (long)target+7, "#f2f20c" );		// Yellow
-            	gauge.addPlotBand( (long)target+7, (long)target+13, "#e0790b" );	// Orange
-            	gauge.addPlotBand( (long)target+13, 200, "#DF5353" );				// Red
-        	}
-        	gauges.add( gauge );
         }
         model.addAttribute("gaugeAttrs", gauges );
         return "index";
@@ -284,7 +291,7 @@ public class UiController {
     	
     	ChartAttributes chartAttributes = new ChartAttributes();
     	
-    	List<MeasureType> measureTypes = dataService.getAllMeasureTypes();
+    	List<MeasureType> measureTypes = dataService.getMeasureTypesToGraph();
         for( MeasureType measureType:measureTypes) {
         	ChartAttributes.SeriesInfo seriesInfo = chartAttributes.new SeriesInfo( measureType.getName() );
 	    	List<Measurement> measurements = dataService.getMeasurementsByBatchType( id, measureType.getCode() );

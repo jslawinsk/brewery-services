@@ -11,7 +11,10 @@ public class ChartAttributes {
 	int maxValue;
 	int startAngle;
 	int endAngle;
+	double valueNumber;
 	String gaugeType;
+	String title;
+	String valueType;
 	List<PlotBand> plotBands;
 	List<ArrayList> stops;
 	List<SeriesInfo> seriesInfos;
@@ -25,6 +28,9 @@ public class ChartAttributes {
 		startAngle = -150;
 		endAngle = 150;
 		gaugeType = "gauge";
+		title = "Measurement";
+		valueType = "Number";
+		valueNumber = 0.0;
 		plotBands = new ArrayList<PlotBand>();
 		stops = new ArrayList<ArrayList>();
 		seriesInfos = new ArrayList<SeriesInfo>();
@@ -74,6 +80,30 @@ public class ChartAttributes {
 	public void setGaugeType(String gaugeType) {
 		this.gaugeType = gaugeType;
 	}
+	
+	public double getValueNumber() {
+		return valueNumber;
+	}
+
+	public void setValueNumber(double valueNumber) {
+		this.valueNumber = valueNumber;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getValueType() {
+		return valueType;
+	}
+
+	public void setValueType(String valueType) {
+		this.valueType = valueType;
+	}
 
 	public List<PlotBand> getPlotBands() {
 		return plotBands;
@@ -119,6 +149,9 @@ public class ChartAttributes {
 				+ ", startAngle=" + startAngle 
 				+ ", endAngle=" + endAngle 
 				+ ", gaugeType=" + gaugeType 
+				+ ", valueNumber=" + valueNumber 
+				+ ", title=" + title 
+				+ ", valueType=" + valueType 
 				+ ", plotBands=" + plotBands 
 				+ ", seriesInfo=" + seriesInfo 
 				+ "]";

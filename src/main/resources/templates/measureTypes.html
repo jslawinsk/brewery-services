@@ -16,7 +16,11 @@
         <table class="table table-striped">
             <tr>
                 <th>Code</th>
-                <th>Name</th>
+                <th class="d-none d-lg-block">Name</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th class="d-none d-lg-block">Graph Data</th>
+                <th>Graph Type</th>
                 <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th>
@@ -27,7 +31,11 @@
             </tr>
             <tr th:each="measureType : ${measureTypes}">
                 <td th:text="${measureType.code}">Code</td>
-                <td th:text="${measureType.name}">Name</td>
+                <td th:text="${measureType.name}" class="d-none d-lg-block">Name</td>
+                <td th:text="${measureType.minValue}">Min</td>
+                <td th:text="${measureType.maxValue}">Max</td>
+                <td th:text="${measureType.graphData}" class="d-none d-lg-block">graphData</td>
+                <td th:text="${measureType.graphType}">graphType</td>
                 <td th:text="${measureType.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/measureType/edit/' + measureType.code}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>

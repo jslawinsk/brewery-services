@@ -14,4 +14,8 @@ public interface MeasureTypeRepository extends JpaRepository<MeasureType, String
 	 @Query( value = "SELECT * FROM brewery.measure_type WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
 	 List<MeasureType> findMeasureTypesToSynchronize( );	
 
+	 @Query( value = "SELECT * FROM brewery.measure_type WHERE graph_data = true" , nativeQuery = true )
+	 List<MeasureType> findMeasureTypesToGraph( );	
+
+	 
 }

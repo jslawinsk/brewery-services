@@ -4,6 +4,8 @@ import com.brewery.model.Style;
 import com.brewery.core.BluetoothThread;
 import com.brewery.core.DataSynchThread;
 import com.brewery.model.Batch;
+import com.brewery.model.DbSync;
+import com.brewery.model.GraphTypes;
 import com.brewery.model.Process;
 import com.brewery.model.Measurement;
 import com.brewery.model.MeasureType;
@@ -97,13 +99,13 @@ public class BreweryApplication implements CommandLineRunner {
 			process = new Process( "MSH", "Mash" );
 			processRepository.save( process );		
 			
-			MeasureType measureType = new MeasureType( "PH", "PH" );
+			MeasureType measureType = new MeasureType( "PH", "PH", true, 0, 14, GraphTypes.SOLID_GUAGE, DbSync.ADD );
 			measureTypeRepository.save(measureType);
 			
 			measureType = new MeasureType( "TA", "Total Alcalinity" );
 			measureTypeRepository.save(measureType);
 			
-			measureType = new MeasureType( "TMP", "Temperature" );
+			measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 			measureTypeRepository.save(measureType);
 	
 			Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );

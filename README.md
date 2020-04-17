@@ -37,10 +37,10 @@ Consists of the following tables.
 - [ ] Angular Modules to present Bluetooth process
 - [X] CRUD UI Web layer
 - [X] Choose and implement a DB, PostgreSQL implemented
-- [X] Ability to relay data to another instance running in the cloud. The data relay will be cuirated data to reduce DB space and costs. Data will also be sent in bulk.
+- [X] Ability to relay data to another instance running in the cloud. The data relay will be curerated data to reduce DB space and costs. Data will also be sent in bulk.
 - [ ] Ability to synch update and delete of data to another instance running in the cloud. 
 - [X] Charts and analytics
-- [ ] Add charting attribute (nin value, max value, Gauge Type) to MeasurementType Object
+- [ ] Add charting attribute (min value, max value, Gauge Type) to MeasurementType Object
 - [ ] Automated testing
 - [X] Cloud deployment, Deployed to Heroku
 - [ ] Deployment to Raspberry Pi
@@ -50,12 +50,12 @@ Consists of the following tables.
 
 #### Tools Used:
 - Eclipse
-- PostgreSQL Database
-- H2 Database
 - Maven Plugin 
-- Spring Plugin
-- Highcharts
 - Git Plugin
 - Java Plugin
+- PostgreSQL Database
+- H2 Database
+- Spring Plugin
+- Highcharts
 - PostMan
 - Draw.io

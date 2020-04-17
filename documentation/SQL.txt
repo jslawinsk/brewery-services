@@ -1,2 +1,4 @@
 SELECT setval('measurement_id_seq', 200, true );
 select nextval ('measurement_id_seq')
+
+CREATE SEQUENCE IF NOT EXISTS measurement_id_seq AS BIGINT INCREMENT BY 1 START WITH 1 

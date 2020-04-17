@@ -190,6 +190,10 @@ public class DataService {
     public List<MeasureType> getMeasureTypesToSynchronize() {
     	return measureTypeRepository.findMeasureTypesToSynchronize();
     }
+
+    public List<MeasureType> getMeasureTypesToGraph() {
+    	return measureTypeRepository.findMeasureTypesToGraph();
+    }
     
     public MeasureType saveMeasureType( MeasureType measureType ) {
     	MeasureType measureTypeToSave;
@@ -208,6 +212,10 @@ public class DataService {
         try {
         	foundMeasureType.setName( measureTypeToUpdate.getName() );
         	foundMeasureType.setDbSynch( measureTypeToUpdate.getDbSynch() );
+        	foundMeasureType.setGraphData( measureTypeToUpdate.isGraphData() );
+        	foundMeasureType.setMinValue( measureTypeToUpdate.getMinValue() );
+        	foundMeasureType.setMaxValue( measureTypeToUpdate.getMaxValue() );
+        	foundMeasureType.setGraphType( measureTypeToUpdate.getGraphType() );
             return measureTypeRepository.save( foundMeasureType );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateMeasureType: " + e.getMessage());

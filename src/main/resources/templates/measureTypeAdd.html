@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
-    <title>Edit Measure Type</title>
+    <title>Add Measure Type</title>
     <th:block th:include="layout/header"></th:block>
 </head>
 <body>
@@ -21,6 +21,32 @@
                     <input type="text" class="form-control" th:field="*{name}" />
                 </div>
             </div>
+            <div class="form-group form-check">
+                <label class="col-sm-2 control-label">Graph Data:</label>
+                <div class="col-sm-10">
+	                <input type="checkbox" class="form-check-input" name="graphData" th:checked="*{graphData}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Min Value:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{minValue}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Max Value:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{maxValue}" />
+                </div>
+            </div>
+			<div class="form-group">
+                <label class="col-sm-2 control-label">Graph Type:</label>
+                <div class="col-sm-10">
+	    			<select class="form-control" th:field="*{graphType}">
+	    				<option th:each="graphTyp : ${T(com.brewery.model.GraphTypes).values()}" th:value="${graphTyp}" th:text="${graphTyp}"></option>
+	    			</select>
+                </div>
+			</div>            
 			<div class="form-group">
                 <label class="col-sm-2 control-label">Synch Status:</label>
                 <div class="col-sm-10">
