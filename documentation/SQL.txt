@@ -2,3 +2,15 @@ SELECT setval('measurement_id_seq', 200, true );
 select nextval ('measurement_id_seq')
 
 CREATE SEQUENCE IF NOT EXISTS measurement_id_seq AS BIGINT INCREMENT BY 1 START WITH 1 
+
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE brewery.measure_type ADD COLUMN graph_data boolean;
+            ALTER TABLE brewery.measure_type ADD COLUMN max_value double precision ;
+            ALTER TABLE brewery.measure_type ADD COLUMN min_value double precision ;
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column <column_name> already exists in brewery.measure_type.';
+        END;
+    END;
+$$
