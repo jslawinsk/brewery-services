@@ -1,3 +1,6 @@
+#Brewery-Services-spring-rest-api
+Brewery Services Spring REST API Project. Allows to retrive data from various types of sensors and present data.
+
 # Brewery Services Dashboard
 The Dashboard will display measurements for all sensors for active batches.
 
@@ -9,7 +12,7 @@ The Dashboard will display measurements for all sensors for active batches.
 
 <img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png" width="650">
 
-# Architecture Design
+## Architecture Design
 
 The Brewery Services application is a Java Spring Boot Application. In the below diagram the encapsulated green boxes indicate enviroments where it could run. 
 
@@ -21,16 +24,8 @@ Environments include the following:
 
  ![Architecture Diagram](https://github.com/jslawinsk/brewery-services/blob/master/documentation/BrewTechDiagSpringApp.png)
 
-#Brewery-Services-spring-rest-api
-Brewery Services Spring REST API Project
-
-Rest API to manage Brewery Services DB. 
-Consists of the following tables.
-- Style
-- Batch
-- Process
-- Measurement Type
-- Measurement
+##Brewery Services DB. 
+<img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/BreweryDB.png" width="450">
 
 #### To Do:
 - [X] Bluetooth interface to to receive data from temperature controller
@@ -59,3 +54,4 @@ Consists of the following tables.
 - Highcharts
 - PostMan
 - Draw.io
+- dbdiagram.io
