@@ -142,6 +142,15 @@ public class UiController {
     }
 
     //
+    //	Login
+    //
+    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    public String login(Model model) {
+        return "login";
+    }
+    
+    
+    //
     //	Style table UI routines
     //
     //

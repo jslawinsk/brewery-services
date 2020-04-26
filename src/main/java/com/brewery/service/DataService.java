@@ -1,12 +1,14 @@
 package com.brewery.service;
 
 import com.brewery.model.Style;
+import com.brewery.model.User;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Sensor;
 import com.brewery.repository.StyleRepository;
+import com.brewery.repository.UserRepository;
 import com.brewery.repository.ProcessRepository;
 import com.brewery.repository.MeasureTypeRepository;
 import com.brewery.repository.BatchRepository;
@@ -24,12 +26,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class DataService {
+public class DataService implements UserDetailsService {
 
     private Logger LOG = LoggerFactory.getLogger(DataService.class);
 
@@ -69,7 +76,12 @@ public class DataService {
 		this.sensorRepository = sensorRepository;
 	}
 
-	
+    private UserRepository userRepository;
+    @Autowired
+	public void userRepository( UserRepository userRepository ) {
+		this.userRepository = userRepository;
+	}
+    
 	//
 	//	Style table access methods
 	//
@@ -490,4 +502,25 @@ public class DataService {
         }
     }
     
+    //
+    //	User table access methods
+    //
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+
+    	LOG.info("loadUserByUsername: " + username );    	
+    	User user = userRepository.findByUsername(username);
+        
+        UserBuilder builder = null;
+        if (user != null) {
+          builder = org.springframework.security.core.userdetails.User.withUsername(username);
+          builder.password(new BCryptPasswordEncoder().encode(user.getPassword()));
+          builder.roles(user.getRoles());
+        } else {
+          throw new UsernameNotFoundException("User not found.");
+        }
+
+        return builder.build();        
+        
+    }    
 }
