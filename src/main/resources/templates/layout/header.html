@@ -35,11 +35,17 @@
     					<a class="nav-link" th:href="@{/measureType}">Measure Types</a>
   					</li>
 					<li class="nav-item">
-				        <form th:action="@{/logout}" method="post">
-				            <input type="submit" value="Sign Out"/>
-				        </form>  					
+    					<a class="nav-link" th:href="@{/user}">Users</a>
   					</li>
         		</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="nav-item">
+						<form method="post" th:action="@{/logout}">
+						  	<input type="hidden" name="name" value="value" /> 
+						  	<a class="nav-link" onclick="this.parentNode.submit();">Logout</a>
+						</form>  					
+  					</li>
+				</ul>        		
       		</div>
     	</nav>        
         

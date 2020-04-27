@@ -519,8 +519,55 @@ public class DataService implements UserDetailsService {
         } else {
           throw new UsernameNotFoundException("User not found.");
         }
-
         return builder.build();        
-        
-    }    
+    }
+    
+    public User getUser( Long id ) {
+        LOG.info("Getting User, id:" + id);
+        return userRepository.getOne(id);
+    }
+    
+    public List<User> getAllUsers() {
+    	return userRepository.findAll();
+    }
+
+    public List<User> getUsersToSynchronize() {
+    	return userRepository.findUsersToSynchronize();
+    }
+    
+    public User saveUser( User user ) {
+    	User userToSave;
+        try {
+            LOG.info("Saving User...");
+            userToSave = userRepository.save(user);
+            return userToSave;
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: saveUser: " + e.getMessage());
+        }
+        return new User();
+    }
+
+    public User updateUser( User user ) {
+    	User foundUser = userRepository.getOne( user.getId() );
+        try {
+        	foundUser.setUsername( user.getUsername() );
+        	foundUser.setPassword( user.getPassword() );
+        	foundUser.setRoles( user.getRoles() );
+        	foundUser.setDbSynch( user.getDbSynch() );
+            return userRepository.save( foundUser );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: updateUser: " + e.getMessage());
+        }
+        return user;
+    }
+
+    public void deleteUser( Long id ) {
+        try {
+        	User user = userRepository.getOne( id );
+        	userRepository.delete( user );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: deleteUser: " + e.getMessage());
+        }
+    }
+    
 }

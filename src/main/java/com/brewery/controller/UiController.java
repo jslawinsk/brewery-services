@@ -2,6 +2,7 @@ package com.brewery.controller;
 
 
 import com.brewery.model.Style;
+import com.brewery.model.User;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
@@ -141,15 +142,6 @@ public class UiController {
         return "index";
     }
 
-    //
-    //	Login
-    //
-    @RequestMapping(path = "/login", method = RequestMethod.GET)
-    public String login(Model model) {
-        return "login";
-    }
-    
-    
     //
     //	Style table UI routines
     //
@@ -530,5 +522,46 @@ public class UiController {
         return "results";
     }
     
+    //
+    //	Login
+    //
+    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    public String login(Model model) {
+        return "login";
+    }
+    
+    //
+    //	User table UI routines
+    //
+    //
+    @RequestMapping(path = "/user/add", method = RequestMethod.GET)
+    public String createUser(Model model) {
+        model.addAttribute("user", new User());
+        return "userEdit";
+    }
+
+    @RequestMapping(path = "/user", method = RequestMethod.POST)
+    public String saveUser(User user) {
+    	dataService.saveUser(user);
+        return "redirect:/user";
+    }
+    
+    @RequestMapping(path = "/user", method = RequestMethod.GET)
+    public String getAllUsers(Model model) {
+        model.addAttribute("users",  dataService.getAllUsers() );
+        return "users";
+    }
+
+    @RequestMapping(path = "/user/edit/{id}", method = RequestMethod.GET)
+    public String editUser(Model model, @PathVariable(value = "id") Long id) {
+        model.addAttribute("user", dataService.getUser(id) );
+        return "userEdit";
+    }
+
+    @RequestMapping(path = "/user/delete/{id}", method = RequestMethod.GET)
+    public String deleteUser(@PathVariable(name = "id") Long id) {
+    	dataService.deleteUser(id);
+        return "redirect:/user";
+    }
     
 }
