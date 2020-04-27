@@ -17,8 +17,8 @@
         		<span class="navbar-toggler-icon"></span>
       		</button>
 
-      		<div class="collapse navbar-collapse" id="navbarsExample04">
-        		<ul class="navbar-nav mr-auto">
+      		<div class="collapse navbar-collapse" id="navbarsExample04" sec:authorize="isAuthenticated()">
+        		<ul class="navbar-nav mr-auto" sec:authorize="hasRole('ADMIN')">
           			<li class="nav-item active">
             			<a class="nav-link" th:href="@{/sensor}">Sensors <span class="sr-only">(current)</span></a>
           			</li>

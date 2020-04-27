@@ -42,8 +42,8 @@ Environments include the following:
 - [ ] Automated testing
 - [X] Cloud deployment, Deployed to Heroku
 - [ ] Deployment to Raspberry Pi
-- [ ] Security
-- [ ] Authentication
+- [ ] API Security
+- [X] Authentication for Users and Admins
 - [ ] AI Module to predict future temperatures
 
 #### Tools Used:
