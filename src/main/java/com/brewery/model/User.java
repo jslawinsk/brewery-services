@@ -27,6 +27,8 @@ public class User {
 
     private String roles;    
     
+	private String token;
+    
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
     
@@ -84,6 +86,14 @@ public class User {
 		this.roles = roles;
 	}
 
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 	public DbSync getDbSynch() {
 		return dbSynch;
 	}
@@ -95,7 +105,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", roles=" + roles
-				+ ", dbSynch=" + dbSynch + "]";
+				+ ", token= " + token + ", dbSynch=" + dbSynch + "]";
 	}
 	
 }
