@@ -28,6 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -215,13 +217,16 @@ public class RestApiController {
     
 	@PostMapping("authorize")
 	public User login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
-		
-		String token = getJWTToken(username);
-		User user = new User();
-		user.setUsername( username );
-		user.setToken(token);		
-		return user;
-		
+		User foundUser = dataService.getUserByName( username );
+		if( foundUser != null ) {
+			if( foundUser.getPassword().equals( pwd )) {
+				LOG.info( "Passwords Match");
+				String token = getJWTToken(username);
+				foundUser.setToken(token);		
+				return foundUser;
+			}
+		}			
+		return null;
 	}
 
 	private String getJWTToken(String username) {

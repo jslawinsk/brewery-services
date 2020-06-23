@@ -526,6 +526,13 @@ public class DataService implements UserDetailsService {
         LOG.info("Getting User, id:" + id);
         return userRepository.getOne(id);
     }
+
+    public User getUserByName(String username) {
+
+    	LOG.info("getUserByName: " + username );    	
+    	return userRepository.findByUsername(username);
+    }
+    
     
     public List<User> getAllUsers() {
     	return userRepository.findAll();
