@@ -221,7 +221,7 @@ public class RestApiController {
 		if( foundUser != null ) {
 			if( foundUser.getPassword().equals( pwd )) {
 				LOG.info( "Passwords Match");
-				String token = getJWTToken(username);
+				String token = getJWTToken( foundUser );
 				foundUser.setToken(token);		
 				return foundUser;
 			}
@@ -229,15 +229,15 @@ public class RestApiController {
 		return null;
 	}
 
-	private String getJWTToken(String username) {
+	private String getJWTToken( User user ) {
 		String secretKey = "mySecretKey";
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
+				.commaSeparatedStringToAuthorityList( user.getRoles() );
 		
 		String token = Jwts
 				.builder()
 				.setId("softtekJWT")
-				.setSubject(username)
+				.setSubject( user.getUsername() )
 				.claim("authorities",
 						grantedAuthorities.stream()
 								.map(GrantedAuthority::getAuthority)

@@ -32,7 +32,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-		LOG.info("doFilterInternal: " + request );
 		try {
 			if (checkJWTToken(request, response)) {
 				Claims claims = validateToken(request);
@@ -51,7 +50,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	}	
 
 	private Claims validateToken(HttpServletRequest request) {
-		LOG.info("validateToken: " + request );
 		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
 		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
 	}
@@ -62,7 +60,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	 * @param claims
 	 */
 	private void setUpSpringAuthentication(Claims claims) {
-		LOG.info("setUpSpringAuthentication: " + claims );
 		@SuppressWarnings("unchecked")
 		List<String> authorities = (List<String>) claims.get("authorities");
 
@@ -73,7 +70,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	private boolean checkJWTToken(HttpServletRequest request, HttpServletResponse res) {
-		LOG.info("checkJWTToken: " + request );
 		String authenticationHeader = request.getHeader(HEADER);
 		if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX))
 			return false;

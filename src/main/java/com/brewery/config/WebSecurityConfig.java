@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		LOG.info("configure: " + http.toString() );		
 		http
+			.csrf().disable()
 			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.authorizeRequests()
 				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**" ).permitAll()		
@@ -65,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/authorize").permitAll()
 				.and()
 			.authorizeRequests()
-				.antMatchers( "/api/**" ).authenticated()
+				.antMatchers( "/api/**" ).hasAuthority( "API" )
 				.and()
 			.formLogin()
 				.loginPage("/login")
@@ -74,12 +75,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.logout()
 				.permitAll();
 		http.cors();
-		
-		http.csrf().disable()
-			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.authorizeRequests()
-			.antMatchers(HttpMethod.POST, "/api/authorize").permitAll()
-			.anyRequest().authenticated();
-		
 	}
 }

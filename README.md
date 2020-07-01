@@ -31,6 +31,7 @@ Environments include the following:
 <img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/BreweryDB.png" width="850">
 
 #### To Do:
+- [X] Indicates completed
 - [X] Bluetooth interface to to receive data from temperature controller
 - [ ] Angular Modules to present Bluetooth process
 - [X] CRUD UI Web layer
