@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,58 +23,79 @@ import com.brewery.security.JWTAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig{
 	
-    private Logger LOG = LoggerFactory.getLogger( WebSecurityConfigurerAdapter.class );
-    
-    private DataService dataService;
-    @Autowired
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
+    @Configuration
+    @Order(1)
+    public static class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
+        private Logger LOG = LoggerFactory.getLogger( RestApiSecurityConfig.class );
+
+    	@Override
+    	protected void configure(HttpSecurity http) throws Exception {
+    		LOG.info("configure: " + http.toString() );		
+    		http
+    			.antMatcher("/api/**")
+    			.csrf().disable()
+    			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+    			.authorizeRequests()
+    				.antMatchers(HttpMethod.POST, "/api/authorize").permitAll()
+    				.and()
+    			.authorizeRequests()
+    				.antMatchers( "/api/**" ).hasAuthority( "API" )
+    				.and()
+    			.formLogin()
+    				.loginPage("/api/notauthenticated")
+    				.permitAll();
+    		http.cors();
+    	}
     }
-	
-    @Bean
-    public UserDetailsService userDetailsService() {
-      return dataService;
-    };
-    
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	};
-	  
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-	}	
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		LOG.info("configure: " + http.toString() );		
-		http
-			.csrf().disable()
-			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.authorizeRequests()
-				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**" ).permitAll()		
-				.and()
-			.authorizeRequests()
-				.antMatchers( "/style/**", "/process/**", "/measureType/**", "/batch/**", "/measurement/**", "/sensor/**", "/user/**"  ).hasRole( "ADMIN" )
-				.and()
-			.authorizeRequests()
-				.antMatchers( "/" ).hasAnyRole( "ADMIN", "USER" )
-				.and()
-			.authorizeRequests()
-				.antMatchers(HttpMethod.POST, "/api/authorize").permitAll()
-				.and()
-			.authorizeRequests()
-				.antMatchers( "/api/**" ).hasAuthority( "API" )
-				.and()
-			.formLogin()
-				.loginPage("/login")
-				.permitAll()
-				.and()
-			.logout()
-				.permitAll();
-		http.cors();
-	}
+
+    @Configuration
+    @Order(2)
+    public static class UiSecurityConfig extends WebSecurityConfigurerAdapter {
+        private Logger LOG = LoggerFactory.getLogger( UiSecurityConfig.class );
+
+        private DataService dataService;
+        @Autowired
+        public void setDataService(DataService dataService) {
+            this.dataService = dataService;
+        }
+    	
+        @Bean
+        public UserDetailsService userDetailsService() {
+          return dataService;
+        };
+        
+    	@Bean
+    	public BCryptPasswordEncoder passwordEncoder() {
+    		return new BCryptPasswordEncoder();
+    	};
+        
+    	@Override
+    	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    		auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+    	}	
+        
+    	@Override
+    	protected void configure(HttpSecurity http) throws Exception {
+    		LOG.info("configure: " + http.toString() );		
+    		http
+    			.authorizeRequests()
+    				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**" ).permitAll()		
+    				.and()
+    			.authorizeRequests()
+    				.antMatchers( "/style/**", "/process/**", "/measureType/**", "/batch/**", "/measurement/**", "/sensor/**", "/user/**"  ).hasRole( "ADMIN" )
+    				.and()
+    			.authorizeRequests()
+    				.antMatchers( "/" ).hasAnyRole( "ADMIN", "USER" )
+    				.and()
+    			.formLogin()
+    				.loginPage("/login")
+    				.permitAll()
+    				.and()
+    			.logout()
+    				.permitAll();
+    		http.cors();
+    	}
+    }
 }

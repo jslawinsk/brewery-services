@@ -229,6 +229,12 @@ public class RestApiController {
 		return null;
 	}
 
+    @RequestMapping( path = "notauthenticated", method = RequestMethod.GET)
+    public String notAuthenticated( ) {
+    	return "{error: Not Autheticated}";
+    }
+    
+	
 	private String getJWTToken( User user ) {
 		String secretKey = "mySecretKey";
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
