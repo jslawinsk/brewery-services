@@ -4,10 +4,12 @@ import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
+import com.brewery.dto.ChartAttributes;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Sensor;
 import com.brewery.service.DataService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,8 +18,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -53,6 +57,26 @@ public class RestApiController {
     public String heartBeat(){
         return "ACK";
     }    
+
+    //
+    // API service methods to get current summary of measurements
+    //
+    //    
+    @RequestMapping(path = "summary", method = RequestMethod.GET)
+    @ApiOperation("Gets brewery summary")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class )})
+    public List<Measurement> getMeasurementSummary( ) {
+    	List<Measurement> measurements = new ArrayList<Measurement>();
+    	List<Batch> batches = dataService.getActiveBatches();
+    	for( Batch batch:batches) {
+    		List<Measurement> batchMeasurements = dataService.getRecentMeasurement( batch.getId() );
+    		if( !batchMeasurements.isEmpty() ) {
+    			measurements.addAll( batchMeasurements );
+    		}
+    	}    	
+        return measurements;
+    }
+
     
     //
     // Style table API service methods
