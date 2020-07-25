@@ -38,7 +38,7 @@ public class WebSecurityConfig{
     			.csrf().disable()
     			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
     			.authorizeRequests()
-    				.antMatchers(HttpMethod.POST, "/api/authorize").permitAll()
+    				.antMatchers(HttpMethod.POST, "/api/authorize/**").permitAll()
     				.and()
     			.authorizeRequests()
     				.antMatchers( "/api/**" ).hasAuthority( "API" )
