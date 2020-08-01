@@ -17,6 +17,7 @@
             <tr>
                 <th>Code</th>
                 <th>Name</th>
+                <th>Voice Assist</th>
                 <th class="d-none d-lg-block">Synched</th>
                 <th></th>
                 <th>
@@ -28,6 +29,7 @@
             <tr th:each="process : ${processes}">
                 <td th:text="${process.code}">Code</td>
                 <td th:text="${process.name}">Name</td>
+                <td th:text="${process.voiceAssist}">voiceAssist</td>
                 <td th:text="${process.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/process/edit/' + process.code}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>

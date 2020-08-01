@@ -19,6 +19,7 @@ public class MeasureType {
 	@Id
 	private String code;
 	private String name;
+	private boolean voiceAssist;
 	private boolean graphData;
 	private int minValue;
 	private int maxValue;
@@ -30,6 +31,7 @@ public class MeasureType {
 
 	public MeasureType() {
 		super();
+		this.voiceAssist = false;
 		this.graphData = false;
 		this.minValue = 0;
 		this.maxValue = 200;
@@ -40,6 +42,7 @@ public class MeasureType {
 		super();
 		this.code = code;
 		this.name = name;
+		this.voiceAssist = false;
 		this.graphData = false;
 		this.minValue = 0;
 		this.maxValue = 200;
@@ -50,6 +53,7 @@ public class MeasureType {
 		super();
 		this.code = code;
 		this.name = name;
+		this.voiceAssist = false;
 		this.graphData = false;
 		this.minValue = 0;
 		this.maxValue = 200;
@@ -61,12 +65,26 @@ public class MeasureType {
 		super();
 		this.code = code;
 		this.name = name;
+		this.voiceAssist = false;
 		this.graphData = graphData;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.graphType = graphType;
 		this.dbSynch = dbSynch;
 	}
+	public MeasureType(String code, String name, boolean voiceAssist, boolean graphData, int minValue, int maxValue,
+			GraphTypes graphType, DbSync dbSynch) {
+		super();
+		this.code = code;
+		this.name = name;
+		this.voiceAssist = voiceAssist;
+		this.graphData = graphData;
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		this.graphType = graphType;
+		this.dbSynch = dbSynch;
+	}
+	
 	
 	public String getCode() {
 		return code;
@@ -82,6 +100,13 @@ public class MeasureType {
 		this.name = name;
 	}
 
+    public boolean isVoiceAssist() {
+		return voiceAssist;
+	}
+	public void setVoiceAssist(boolean voiceAssist) {
+		this.voiceAssist = voiceAssist;
+	}
+	
     public boolean isGraphData() {
 		return graphData;
 	}
@@ -119,8 +144,8 @@ public class MeasureType {
 	
 	@Override
 	public String toString() {
-		return "MeasureType [code=" + code + ", name=" + name + ", graphData=" + graphData + ", minValue=" + minValue
-				+ ", maxValue=" + maxValue + ", graphType=" + graphType + ", dbSynch=" + dbSynch + "]";
+		return "MeasureType [code=" + code + ", name=" + name + ", voiceAssist=" + voiceAssist+ ", graphData=" + graphData 
+				+ ", minValue=" + minValue + ", maxValue=" + maxValue + ", graphType=" + graphType + ", dbSynch=" + dbSynch + "]";
 	}
 	
 }

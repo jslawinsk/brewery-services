@@ -169,6 +169,7 @@ public class DataService implements UserDetailsService {
     	Process foundProcess = processRepository.getOne( processToUpdate.getCode() );
         try {
         	foundProcess.setName( processToUpdate.getName() );
+        	foundProcess.setVoiceAssist( processToUpdate.isVoiceAssist() );
         	foundProcess.setDbSynch( processToUpdate.getDbSynch() );
             return processRepository.save( foundProcess );
         } catch (Exception e) {
@@ -224,6 +225,7 @@ public class DataService implements UserDetailsService {
         try {
         	foundMeasureType.setName( measureTypeToUpdate.getName() );
         	foundMeasureType.setDbSynch( measureTypeToUpdate.getDbSynch() );
+        	foundMeasureType.setVoiceAssist( measureTypeToUpdate.isVoiceAssist() );
         	foundMeasureType.setGraphData( measureTypeToUpdate.isGraphData() );
         	foundMeasureType.setMinValue( measureTypeToUpdate.getMinValue() );
         	foundMeasureType.setMaxValue( measureTypeToUpdate.getMaxValue() );

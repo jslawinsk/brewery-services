@@ -19,7 +19,8 @@ public class Process {
 	@Id
 	private String code;
 	private String name;
-
+	private boolean voiceAssist;
+	
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
 
@@ -31,12 +32,21 @@ public class Process {
 		super();
 		this.code = code;
 		this.name = name;
+		this.voiceAssist = false;
 		this.dbSynch = DbSync.ADD; 
 	}
 	public Process( String code, String name, DbSync dbSynch ) {
 		super();
 		this.code = code;
 		this.name = name;
+		this.voiceAssist = false;
+    	this.dbSynch = dbSynch;
+	}
+	public Process( String code, String name, boolean voiceAssist, DbSync dbSynch ) {
+		super();
+		this.code = code;
+		this.name = name;
+		this.voiceAssist = voiceAssist;
     	this.dbSynch = dbSynch;
 	}
 
@@ -54,7 +64,14 @@ public class Process {
 		this.name = name;
 	}
 
-    public DbSync getDbSynch() {
+    public boolean isVoiceAssist() {
+		return voiceAssist;
+	}
+	public void setVoiceAssist(boolean voiceAssist) {
+		this.voiceAssist = voiceAssist;
+	}
+	
+	public DbSync getDbSynch() {
 		return dbSynch;
 	}
 	public void setDbSynch(DbSync dbSynch) {
@@ -63,6 +80,6 @@ public class Process {
 	
 	@Override
 	public String toString() {
-		return "Process [code=" + code + ", name=" + name + ", dbSynch=" + dbSynch + "]";
+		return "Process [code=" + code + ", name=" + name + ", voiceAssist=" + voiceAssist + ", dbSynch=" + dbSynch + "]";
 	}
 }
