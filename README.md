@@ -1,6 +1,8 @@
 # Brewery-Services-spring-rest-api and Web UI Interface
 
-Brewery Services Spring REST API Project and Web UI interface. Allows to retrieve data from various types of sensors and present data. Measurement data may also be entered manually. The API also provide for restful calls to receive data. The bluetooth interface may be used to automatically log sensor data.
+Brewery Services Spring REST API Project and Web UI interface. Allows to retrieve data from various types of sensors and present data. Measurement data may also be entered manually. The API also provide for restful calls to receive data. Optionally the bluetooth interface may be used to automatically log sensor data.
+
+Refer to the Wiki page for design and more details: https://github.com/jslawinsk/brewery-services/wiki
 
 ## Brewery Services Dashboard
 
@@ -13,22 +15,6 @@ The Dashboard will display measurements for all measurements for active batches.
 ## PC
 
 <img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/PcDashboard.png" width="650">
-
-## Architecture Design
-
-The Brewery Services application is a Java Spring Boot Application. In the below diagram the encapsulated green boxes indicate environments where the Spring Boot Application may be deployed. All deployments are optional and designed based on need. 
-
-Environments include the following:
-- Local Server or PC, Mac OS, Linux or Windows
-- Raspberry PI, Any OS which supports Java
-- Cloud Instance, For this option a local instance should be used to curate and relay data
-- DB will be enabled to reside locally, cloud or both. Options will be added to automatically clean up excess data. 
-
- ![Architecture Diagram](https://github.com/jslawinsk/brewery-services/blob/master/documentation/BrewTechDiagSpringApp.png)
-
-## Brewery Services DB 
-
-<img src="https://github.com/jslawinsk/brewery-services/blob/master/documentation/BreweryDB.png" width="850">
 
 #### To Do:
 - [X] Indicates completed

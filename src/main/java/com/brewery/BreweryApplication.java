@@ -1,6 +1,8 @@
 package com.brewery;
 
 import com.brewery.model.Style;
+import com.brewery.model.User;
+import com.brewery.model.UserRoles;
 import com.brewery.core.BluetoothThread;
 import com.brewery.core.DataSynchThread;
 import com.brewery.model.Batch;
@@ -10,6 +12,7 @@ import com.brewery.model.Process;
 import com.brewery.model.Measurement;
 import com.brewery.model.MeasureType;
 import com.brewery.repository.StyleRepository;
+import com.brewery.repository.UserRepository;
 import com.brewery.repository.BatchRepository;
 import com.brewery.repository.ProcessRepository;
 import com.brewery.repository.MeasurementRepository;
@@ -62,6 +65,12 @@ public class BreweryApplication implements CommandLineRunner {
 		this.measureTypeRepository = measureTypeRepository;
 	}
 
+	private UserRepository userRepository;
+    @Autowired
+	public void userRepository( UserRepository userRepository ) {
+		this.userRepository = userRepository;
+	}
+	    	
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
 
@@ -111,18 +120,22 @@ public class BreweryApplication implements CommandLineRunner {
 			Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 			batchRepository.save( testBatch );
 			
-			Measurement measurement = new Measurement( 70.3, null, testBatch, process, measureType, new Date() );
+			Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 			measurementRepository.save( measurement );
 			
-			measurement = new Measurement( 70.5, null, testBatch, process, measureType, new Date() );
+			measurement = new Measurement( 70.5, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 			measurementRepository.save( measurement );
 	
 			Batch testBatch2 = new Batch( false, "Joe's Stout", "Old School Stout", testStyle2, new Date() );
 			batchRepository.save( testBatch2 );
 			
-			measurement = new Measurement( 60.5, null, testBatch2, process, measureType, new Date() );
+			measurement = new Measurement( 60.5, "{\"target\":70.0}", testBatch2, process, measureType, new Date() );
 			measurementRepository.save( measurement );
+			
+			User user = new User( "ADMIN", "admin", DbSync.ADD, UserRoles.ADMIN.toString() );
+			userRepository.save( user );
 		}
+
 		if( blueToothEnabled ) {
 			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
 			taskExecutor.execute( btThread );
