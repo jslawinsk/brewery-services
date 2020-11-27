@@ -112,12 +112,14 @@
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/net.sf.bluecove/bluecove -->
-<!--  		<dependency>
+		<!-- Following Dependency for Linux OS Bluetooth Stack-->
+<!--  	<dependency>
 		    <groupId>net.sf.bluecove</groupId>
 		    <artifactId>bluecove</artifactId>
 		    <version>2.1.0</version>
 		</dependency>
 -->		
+		<!-- Following Dependency for Windows OS Bluetooth Stack-->
 		<dependency>
 		    <groupId>io.ultreia</groupId>
 		    <artifactId>bluecove</artifactId>
