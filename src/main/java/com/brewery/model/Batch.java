@@ -22,6 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name = "batch", schema="brewery")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
@@ -37,6 +39,7 @@ public class Batch {
 	
 	private String description;
 
+	@ApiModelProperty( value="Status of syncronizing data with another instance of the service" )
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
 	

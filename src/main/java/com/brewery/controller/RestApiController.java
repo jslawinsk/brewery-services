@@ -63,7 +63,8 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "summary", method = RequestMethod.GET)
-    @ApiOperation("Gets brewery summary")
+    @ApiOperation(value="Gets brewery summary",
+    		notes="Return summarey data for all active batches. Most recent measurement is included.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class )})
     public List<Measurement> getMeasurementSummary( ) {
     	List<Measurement> measurements = new ArrayList<Measurement>();
