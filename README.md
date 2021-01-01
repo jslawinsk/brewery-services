@@ -25,6 +25,7 @@ The Dashboard will display measurements for all measurements for active batches.
 - H2 Database
 - Spring Plugin
 - Highcharts
+- Swagger
 - PostMan
 - Draw.io
 - dbdiagram.io

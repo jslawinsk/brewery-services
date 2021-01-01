@@ -138,7 +138,7 @@
 		
 		<!-- https://mvnrepository.com/artifact/net.sf.bluecove/bluecove -->
 		<!-- Following Dependency for Windows OS Bluetooth Stack-->
- 		<dependency>
+		<dependency>
 		    <groupId>io.ultreia</groupId>
 		    <artifactId>bluecove</artifactId>
 		    <version>2.1.1</version>
@@ -160,7 +160,7 @@
             <artifactId>bluecove-gpl</artifactId>
           	<version>2.1.1-SNAPSHOT</version>
    		</dependency>
- -->   
+-->   
 
         <!-- If you plan to test your application in emulated Bluetooth mode -->
         <dependency>
