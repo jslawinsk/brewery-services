@@ -67,7 +67,13 @@ public class DataSynchThread implements Runnable {
     
     @Value("${dataSynch.apiId}")
     private String apiUserId;    
-	
+
+    @Value("${dataSynch.deleteDuplicates}")
+    private boolean deleteDuplicates;
+    
+    @Value("${dataSynch.deleteSynched}")
+    private boolean deleteSynched;
+    
     @Override
     public void run() {
         LOG.info("Running DataSynchThread");
@@ -147,7 +153,6 @@ public class DataSynchThread implements Runnable {
 								headers.setContentType(MediaType.APPLICATION_JSON);
 								headers.setBearerAuth(token);
 								
-								style.setDbSynch( DbSync.SYNCHED );
 							    HttpEntity<Style> request = new HttpEntity<>(style, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "style");
@@ -156,6 +161,7 @@ public class DataSynchThread implements Runnable {
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
 							    	LOG.info( "Synchronize Style local update" );
+									style.setDbSynch( DbSync.SYNCHED );
 							    	dataService.updateStyle( style );
 							    }
 							}
@@ -175,7 +181,6 @@ public class DataSynchThread implements Runnable {
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
 								
-								process.setDbSynch( DbSync.SYNCHED );
 							    HttpEntity<Process> request = new HttpEntity<>(process, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "process");
@@ -184,6 +189,7 @@ public class DataSynchThread implements Runnable {
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
 							    	LOG.info( "Synchronize Process local update" );
+									process.setDbSynch( DbSync.SYNCHED );
 							    	dataService.updateProcess( process );
 							    }
 							}
@@ -203,7 +209,6 @@ public class DataSynchThread implements Runnable {
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
 								
-								measureType.setDbSynch( DbSync.SYNCHED );
 							    HttpEntity<MeasureType> request = new HttpEntity<>(measureType, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "measureType");
@@ -212,6 +217,7 @@ public class DataSynchThread implements Runnable {
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
 							    	LOG.info( "Synchronize MeasureType local update" );
+									measureType.setDbSynch( DbSync.SYNCHED );
 							    	dataService.updateMeasureType( measureType );
 							    }
 							}
@@ -231,7 +237,6 @@ public class DataSynchThread implements Runnable {
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
 								
-								batch.setDbSynch( DbSync.SYNCHED );
 							    HttpEntity<Batch> request = new HttpEntity<>(batch, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "batch");
@@ -240,6 +245,7 @@ public class DataSynchThread implements Runnable {
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
 							    	LOG.info( "Synchronize Batch local update" );
+									batch.setDbSynch( DbSync.SYNCHED );
 							    	dataService.updateBatch( batch );
 							    }
 							}
@@ -259,7 +265,9 @@ public class DataSynchThread implements Runnable {
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
 								
-								sensor.setDbSynch( DbSync.SYNCHED );
+								boolean enabled = sensor.isEnabled();
+								sensor.setEnabled( false );
+								
 							    HttpEntity<Sensor> request = new HttpEntity<>(sensor, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "sensor");
@@ -268,6 +276,8 @@ public class DataSynchThread implements Runnable {
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
 							    	LOG.info( "Synchronize Sensor local update" );
+									sensor.setEnabled( enabled );
+									sensor.setDbSynch( DbSync.SYNCHED );
 							    	dataService.updateSensor( sensor );
 							    }
 							}
@@ -306,7 +316,6 @@ public class DataSynchThread implements Runnable {
 									headers.setContentType(MediaType.APPLICATION_JSON);		
 									headers.setBearerAuth(token);
 									
-									measurement.setDbSynch( DbSync.SYNCHED );
 								    HttpEntity<Measurement> request = new HttpEntity<>(measurement, headers);
 									
 								    URI uri = new URI( dataSynchUrl + "measurement");
@@ -314,14 +323,27 @@ public class DataSynchThread implements Runnable {
 								    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 								    if( result.getStatusCode() == HttpStatus.OK ) {
-								    	LOG.info( "Synchronize Measurement local update" );
-								    	dataService.updateMeasurement( measurement );
+								    	if( deleteSynched ) {
+									    	LOG.info( "Synchronize Measurement local delete" );
+									    	dataService.deleteMeasurement( measurement.getId() );
+								    	}
+								    	else {
+									    	LOG.info( "Synchronize Measurement local update" );
+											measurement.setDbSynch( DbSync.SYNCHED );
+									    	dataService.updateMeasurement( measurement );
+								    	}
 								    }
 								}
 								else {
-							    	LOG.info( "Synchronize ignore" );
-									measurement.setDbSynch( DbSync.IGNORE );
-							    	dataService.updateMeasurement( measurement );
+									if( deleteDuplicates ) {
+								    	LOG.info( "Delete Duplicate" );
+								    	dataService.deleteMeasurement( measurement.getId() );
+									}
+									else {
+								    	LOG.info( "Synchronize ignore" );
+										measurement.setDbSynch( DbSync.IGNORE );
+								    	dataService.updateMeasurement( measurement );
+									}
 								}
 							}
 						}

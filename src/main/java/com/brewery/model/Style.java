@@ -18,11 +18,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "style", schema="brewery")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Style {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name="styleseq", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="styleseq")
 	private Long id;
 	
 	@Column(name="name", nullable=false, unique=true)

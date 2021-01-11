@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "measurement", schema="brewery")
-// @SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Measurement {
 
 	@Id

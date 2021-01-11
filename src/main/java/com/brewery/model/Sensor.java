@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "sensor", schema="brewery")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Sensor {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name="sensorseq", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="sensorseq")
 	private Long id;
 
 	private boolean enabled;

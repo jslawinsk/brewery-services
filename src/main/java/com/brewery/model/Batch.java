@@ -26,11 +26,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "batch", schema="brewery")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=1)
 public class Batch {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name="batchseq", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="batchseq")
 	private Long id;
 	private boolean active;
 	
