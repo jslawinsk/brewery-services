@@ -19,9 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.brewery.actuator.BluetoothStatus;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
@@ -49,12 +51,17 @@ public class BluetoothThread implements Runnable {
     @Value("${blueTooth.scanSeconds}")
     private int scanSeconds;
     
+    @Autowired
+    private BluetoothStatus bluetoothStatus;
+    
     @Override
     public void run() {
         LOG.info("Running BluetoothThread");
+        String statusMessage = "";
         while( true ) {
 			try {
 				Thread.sleep( 1000 * scanSeconds ); 
+	        	bluetoothStatus.setUp(true);
 
 				List<Sensor> sensors= dataService.getEnabledSensors();
 				Thread.sleep(500);
@@ -65,9 +72,11 @@ public class BluetoothThread implements Runnable {
 					LOG.info("Message: " + message );						
 				}
 
+				statusMessage = "";
 				for( Sensor sensor : sensors ) {
 					LOG.info( "Active Sensor: " + sensor );
 					LOG.info("Connecting to " + sensor.getUrl() );
+					statusMessage = statusMessage + sensor.getName() + ": ";
 
 					StreamConnection streamConnection;
 					streamConnection = (StreamConnection)Connector.open( sensor.getUrl() );
@@ -83,6 +92,7 @@ public class BluetoothThread implements Runnable {
 								pWriter.write( message.getData() + "\n\r");
 								pWriter.flush();
 				    	        outStream.close();
+				    	        statusMessage = statusMessage + " Message Sent ";
 							}
 						}
 					}
@@ -106,23 +116,32 @@ public class BluetoothThread implements Runnable {
 					    	measurement.setValueNumber( sensorData.getTemperature() );
 					    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() + "}");
 					        dataService.saveMeasurement( measurement );
+			    	        statusMessage = statusMessage + " data retrieved ";
 				        }
     				} catch( Exception e ) {
     					e.printStackTrace();
+		    	        statusMessage = statusMessage + ": exeception ";
+		    	        bluetoothStatus.setUp( false );
     				}
 			        inStream.close();
-			        
 	    	        streamConnection.close();
 				}    			        
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+    	        statusMessage = statusMessage + ": IOException ";
+    	        bluetoothStatus.setUp( false );
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+    	        statusMessage = statusMessage + ": InterruptedException ";
+    	        bluetoothStatus.setUp( false );
 			} catch( Exception e ) {
 				e.printStackTrace();
+    	        statusMessage = statusMessage + ": Exception ";
+    	        bluetoothStatus.setUp( false );
 			}	
+	        bluetoothStatus.setMessage( statusMessage );
         }
     }
     

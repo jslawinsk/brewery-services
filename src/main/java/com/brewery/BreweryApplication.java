@@ -3,6 +3,8 @@ package com.brewery;
 import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.UserRoles;
+import com.brewery.actuator.BluetoothStatus;
+import com.brewery.actuator.DataSynchStatus;
 import com.brewery.core.BluetoothThread;
 import com.brewery.core.DataSynchThread;
 import com.brewery.model.Batch;
@@ -90,7 +92,13 @@ public class BreweryApplication implements CommandLineRunner {
 		SpringApplication.run(BreweryApplication.class, args);
 	}
 
-	@Override
+    @Autowired
+    private BluetoothStatus bluetoothStatus;
+
+    @Autowired
+    private DataSynchStatus dataSynchStatus;
+
+    @Override
 	public void run(String... strings) throws Exception {
 		
 		// Populate test database
@@ -136,13 +144,24 @@ public class BreweryApplication implements CommandLineRunner {
 			userRepository.save( user );
 		}
 
+		bluetoothStatus.setUp(true);	
 		if( blueToothEnabled ) {
 			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
+			bluetoothStatus.setMessage( "Initializing" );
 			taskExecutor.execute( btThread );
 		}
+		else {
+			bluetoothStatus.setMessage( "Not Enabled" );
+		}
+		
+		dataSynchStatus.setUp( true );
 		if( dataSynchEnabled ) {
 			DataSynchThread dbSyncThread = applicationContext.getBean( DataSynchThread.class );
+			dataSynchStatus.setMessage( "Enabled" );
 			taskExecutor.execute( dbSyncThread );
+		}
+		else {
+			dataSynchStatus.setMessage( "Not Enabled" );
 		}
 		
 	}

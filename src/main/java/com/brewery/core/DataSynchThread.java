@@ -34,6 +34,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.brewery.actuator.DataSynchStatus;
 import com.brewery.model.Batch;
 import com.brewery.model.DbSync;
 import com.brewery.model.MeasureType;
@@ -57,7 +58,10 @@ public class DataSynchThread implements Runnable {
     @Autowired
     public void setDataService(DataService dataService) {
         this.dataService = dataService;
-    }
+    }    
+    
+    @Autowired
+    private DataSynchStatus dataSynchStatus;
 
     @Value("${dataSynch.url}")
     private String dataSynchUrl;    
@@ -77,10 +81,12 @@ public class DataSynchThread implements Runnable {
     @Override
     public void run() {
         LOG.info("Running DataSynchThread");
+        String statusMessage = "";
         while( true ) {
 			try {
 				Thread.sleep( 1000 * delayMinutes * 60 ); 
-
+				dataSynchStatus.setUp(true);
+				statusMessage = "Syncronizing data: ";
 				User apiUser = dataService.getUserByName(apiUserId);
 				if( apiUser != null ) {
 					String token = "";
@@ -350,17 +356,26 @@ public class DataSynchThread implements Runnable {
 		        	}
 		        	else {
 				    	LOG.info( "API User not autheticated" );
+				    	statusMessage = statusMessage + "API User not autheticated ";
+				    	dataSynchStatus.setUp( false );
 		        	}
 				}
 				else {
 			    	LOG.info( "API User not found" );
+			    	statusMessage = statusMessage +  "API User not found ";
+			    	dataSynchStatus.setUp( false );
 				}
 				
 			} catch (InterruptedException e) {
 				LOG.error( e.getMessage() );
+				statusMessage = statusMessage + "InterruptedException ";
+				dataSynchStatus.setUp( false );
 			} catch( Exception e ) {
 				LOG.error( e.getMessage() );
+				statusMessage = statusMessage + "Exception";
+				dataSynchStatus.setUp( false );
 			}	
+	        dataSynchStatus.setMessage( statusMessage );
         }
     }
     
