@@ -154,6 +154,7 @@ public class UiController {
 
     @RequestMapping(path = "/style", method = RequestMethod.POST)
     public String saveStyle(Style style) {
+        LOG.info("UiController: Style Post: " );   	
     	dataService.saveStyle(style);
         return "redirect:/style";
     }

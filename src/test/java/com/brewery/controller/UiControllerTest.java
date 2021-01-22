@@ -1,7 +1,9 @@
 package com.brewery.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.brewery.model.Batch;
 import com.brewery.model.DbSync;
@@ -33,6 +36,7 @@ import com.brewery.model.Process;
 import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.service.DataService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith( SpringRunner.class)
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -47,6 +51,9 @@ public class UiControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private ObjectMapper objectMapper;	
 	
 	@MockBean
 	DataService dataService;
@@ -99,5 +106,44 @@ public class UiControllerTest {
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<h2>Edit Style</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void saveStyle() throws Exception
+	{
+		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/style" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( testStyle ))		
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
 	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void editStyle() throws Exception
+	{
+		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "//style/edit/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Style</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void deleteStyle() throws Exception
+	{
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "//style/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
+	}		
+	
+	
 }
