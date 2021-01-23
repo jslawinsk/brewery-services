@@ -347,8 +347,8 @@ public class UiController {
     @RequestMapping(path = "/measurement", method = RequestMethod.POST)
     public String saveMeasurement( Measurement measurement ) {
         LOG.info("UiController: saveMeasurement Measurement: " + measurement );   
-    	dataService.saveMeasurement( measurement );
-        return "redirect:/measurement/batch/" + measurement.getBatch().getId();
+        Measurement measurementS = dataService.saveMeasurement( measurement );
+        return "redirect:/measurement/batch/" + measurementS.getBatch().getId();
     }
     
     @RequestMapping(path = "/measurement/batch/{id}", method = RequestMethod.GET)
