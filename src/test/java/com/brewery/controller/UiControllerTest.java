@@ -35,8 +35,10 @@ import com.brewery.model.GraphTypes;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Measurement;
 import com.brewery.model.Process;
+import com.brewery.model.Sensor;
 import com.brewery.model.Style;
 import com.brewery.model.User;
+import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -59,6 +61,9 @@ public class UiControllerTest {
 	
 	@MockBean
 	DataService dataService;
+	
+	@MockBean
+	BlueToothService blueToothService;
 	
 	//
 	//	Index Dash board tests 
@@ -481,6 +486,217 @@ public class UiControllerTest {
 				.with(csrf())
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/"));
+	}		
+	
+	
+	//
+	//	Sensor Method tests 
+	//
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void createSensor() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/add")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void saveSensor() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( sensor ))		
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void getAllSensors() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Sensors</h2>")));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void discoverSensors() throws Exception
+	{
+		Sensor sensor = new Sensor();
+    	List<Sensor> sensors = new ArrayList<>();
+    	sensors.add( sensor );			
+		Mockito.when( blueToothService.discoverSensors( )).thenReturn( sensors );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/scan")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void pairSensor() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		sensor.setName( "test" );
+		sensor.setPin( "1234" );
+		sensor.setId( 1L );
+    	List<Sensor> sensors = new ArrayList<>();
+    	sensors.add( sensor );			
+		Mockito.when( blueToothService.pairSensor( sensor.getName(), sensor.getPin() )).thenReturn( true );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/pair/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<title>Error</title>")));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void editSensor() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/edit/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void deleteSensor() throws Exception
+	{
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void sensorControlAuto() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		sensor.setName( "test" );
+		sensor.setPin( "1234" );
+		sensor.setId( 1L );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/controlauto/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<title>Error</title>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void sensorControlHeat() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		sensor.setName( "test" );
+		sensor.setPin( "1234" );
+		sensor.setId( 1L );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/controlheat/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<title>Error</title>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void sensorControlCool() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		sensor.setName( "test" );
+		sensor.setPin( "1234" );
+		sensor.setId( 1L );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/controlcool/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<title>Error</title>")));
+	}	
+	
+	//
+	//	User Methods tests 
+	//
+	@Test
+	public void login() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/login")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Login</h2>")));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void createUser() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/add")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit User</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void saveUser() throws Exception
+	{
+		User user = new User( );
+
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/user" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( user ))		
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/user"));
+	}	
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void getAllUsers() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Users</h2>")));
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void editUser() throws Exception
+	{
+		User user = new User( );
+		Mockito.when(dataService.getUser( 1L )).thenReturn( user );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/edit/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit User</h2>")));
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void deleteUser() throws Exception
+	{
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/user"));
 	}		
 	
 	
