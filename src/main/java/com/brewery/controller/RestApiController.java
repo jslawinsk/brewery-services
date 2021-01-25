@@ -75,6 +75,8 @@ public class RestApiController {
     			measurements.addAll( batchMeasurements );
     		}
     	}    	
+        LOG.info("RestApiController: getMeasurementSummary: " + measurements );    	
+
         return measurements;
     }
 
@@ -117,7 +119,7 @@ public class RestApiController {
     }
 
     @RequestMapping( path = "process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Process saveStyle( @RequestBody Process processToSave ) {
+    public Process saveProcess( @RequestBody Process processToSave ) {
         return dataService.saveProcess( processToSave );
     }
 
