@@ -242,6 +242,10 @@ public class RestApiController {
     	dataService.deleteSensor( id );
     }
     
+    //
+    // API Authentication methods
+    //
+    //    
 	@PostMapping("authorize")
 	public User login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
 		User foundUser = dataService.getUserByName( username );
