@@ -449,7 +449,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-            if( sensor.getBatch().getName() != null ) {
+            if( sensor.getBatch() != null && sensor.getBatch().getName() != null ) {
             	Batch batch = batchRepository.findBatchByName( sensor.getBatch().getName() );
                 sensor.setBatch( batch );
             }
@@ -469,7 +469,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-        	if( sensorToUpdate.getBatch().getName() != null ) {
+        	if( sensorToUpdate.getBatch() != null && sensorToUpdate.getBatch().getName() != null ) {
         		Batch batch = batchRepository.findBatchByName( sensorToUpdate.getBatch().getName() );
             	foundSensor.setBatch( batch );
         	}

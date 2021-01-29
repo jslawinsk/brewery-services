@@ -64,29 +64,23 @@ public class RestApiControllerTest {
 	@MockBean
 	DataService dataService;
 	
-	static private Style testStyle = new Style( "IPA", "18a", "Hoppy" );
-	static private Process process = new Process( "FRM", "Fermentation" );
-	static private MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
-	static private Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
-	static private Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
-	static private Sensor sensor = new Sensor();
+	private Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+	private Process process = new Process( "FRM", "Fermentation" );
+	private MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+	private Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+	private Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
+	private Sensor sensor = new Sensor();
 	
     @BeforeClass
     public static void beforeAllTestMethods() {
-		LOG.info( "beforeAllTestMethods: " );
-		testStyle.setId( 1L );
-		measurement.setId( 1L );
-		sensor.setId( 1L );
     }
  
     @Before
     public void beforeEachTestMethod() {
-		LOG.info( "beforeEachTestMethod: " );
     }
  
     @After
     public void afterEachTestMethod() {
-		LOG.info( "afterEachTestMethod: " );
     }
  	
 	
@@ -132,7 +126,8 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void getStyle() throws Exception
 	{
-        Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
+		testStyle.setId( 1L );
+		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/style/1")
 	            .accept(MediaType.ALL))
@@ -144,6 +139,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void saveStyle() throws Exception
 	{
+		testStyle.setId( 1L );
 		Mockito.when(dataService.saveStyle( Mockito.any(Style.class) )).thenReturn( testStyle );
 
         mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/style" )
@@ -159,6 +155,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void updateStyle() throws Exception
 	{
+		testStyle.setId( 1L );
 		Mockito.when(dataService.updateStyle( Mockito.any(Style.class) )).thenReturn( testStyle );
 
         mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/style" )
@@ -294,7 +291,8 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void getBatch() throws Exception
 	{
-        Mockito.when(dataService.getBatch( 1L )).thenReturn( testBatch );
+		testStyle.setId( 1L );
+		Mockito.when(dataService.getBatch( 1L )).thenReturn( testBatch );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/batch/1")
 	            .accept(MediaType.ALL))
@@ -306,6 +304,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void saveBatch() throws Exception
 	{
+		testStyle.setId( 1L );
 		Mockito.when(dataService.saveBatch( Mockito.any( Batch.class) )).thenReturn( testBatch );
 
         mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/batch" )
@@ -321,6 +320,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void updateBatch() throws Exception
 	{
+		testStyle.setId( 1L );
 		Mockito.when(dataService.updateBatch( Mockito.any( Batch.class) )).thenReturn( testBatch );
 
         mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/batch" )
@@ -348,6 +348,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void getMeasurement() throws Exception
 	{
+		measurement.setId( 1L );
         Mockito.when(dataService.getMeasurement( 1L )).thenReturn( measurement );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measurement/1")
@@ -360,6 +361,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void saveMeasurement() throws Exception
 	{
+		measurement.setId( 1L );
 		Mockito.when(dataService.saveMeasurement( Mockito.any( Measurement.class ) )).thenReturn( measurement );
 
         mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/measurement" )
@@ -375,6 +377,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void updateMeasurement() throws Exception
 	{
+		measurement.setId( 1L );
 		Mockito.when(dataService.updateMeasurement( Mockito.any(Measurement.class) )).thenReturn( measurement );
 
         mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/measurement" )
@@ -403,7 +406,8 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void getSensor() throws Exception
 	{
-        Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+		sensor.setId( 1L );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/sensor/1")
 	            .accept(MediaType.ALL))
@@ -415,6 +419,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void saveSensor() throws Exception
 	{
+		sensor.setId( 1L );
 		Mockito.when(dataService.saveSensor( Mockito.any(Sensor.class) )).thenReturn( sensor );
 
         mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/sensor" )
@@ -430,6 +435,7 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void updateSensor() throws Exception
 	{
+		sensor.setId( 1L );
 		Mockito.when(dataService.updateSensor( Mockito.any(Sensor.class) )).thenReturn( sensor );
 
         mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/sensor" )
