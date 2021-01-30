@@ -274,7 +274,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-            if( batch.getStyle().getName() != null ) {
+            if( batch.getStyle() !=null && batch.getStyle().getName() != null ) {
             	Style style = styleRepository.findStyleByName( batch.getStyle().getName() );
             	batch.setStyle( style );
             }
@@ -293,7 +293,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-        	if( batchToUpdate.getStyle().getName() != null ) {
+        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
         		Style style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
             	foundBatch.setStyle( style );
         	}
@@ -371,7 +371,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-            if(  measurement.getBatch().getName() != null ) {
+            if( measurement.getBatch() != null && measurement.getBatch().getName() != null ) {
             	Batch batch = batchRepository.findBatchByName( measurement.getBatch().getName() );
             	measurement.setBatch( batch );
             }
@@ -391,7 +391,7 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-        	if( measurementToUpdate.getBatch().getName() != null ) {
+        	if( measurementToUpdate.getBatch() != null &&  measurementToUpdate.getBatch().getName() != null ) {
         		Batch batch = batchRepository.findBatchByName( measurementToUpdate.getBatch().getName() );
             	foundMeasurement.setBatch( batch );
         	}

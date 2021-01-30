@@ -66,7 +66,7 @@ public class DataServiceTest {
 	DataService dataService;
     
 	private Style testStyle = new Style( "IPA", "18a", "Hoppy" );
-	private Process process = new Process( "FRM", "Fermentation" );
+	private Process process = new Process( "FRM", "Fermentation", false, DbSync.ADD );
 	private MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 	private Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 	private Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
@@ -127,6 +127,10 @@ public class DataServiceTest {
         
         Style style = dataService.updateStyle( testStyle );
         assertEquals( style.getName(), "IPA");
+        
+		Style testStyle2 = new Style( "test", "", "", DbSync.ADD );
+        style = dataService.updateStyle( testStyle2 );
+        assertEquals( style.getName(), "test");
 	}	
 	
 	@Test
@@ -193,6 +197,10 @@ public class DataServiceTest {
         
         Process tmpProcess = dataService.updateProcess( process );
         assertEquals( tmpProcess.getCode(), "FRM");
+        
+    	Process process2 = new Process( "TST", "Test", DbSync.ADD );
+        tmpProcess = dataService.updateProcess( process2 );
+        assertEquals( tmpProcess.getCode(), "TST");        
 	}	
 	
 	@Test
@@ -269,6 +277,10 @@ public class DataServiceTest {
         
         MeasureType tmpMeasureType = dataService.updateMeasureType( measureType );
         assertEquals( tmpMeasureType.getCode(), "TMP");
+        
+    	MeasureType measureType2 = new MeasureType( "TST", "Test", false, false, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+        tmpMeasureType = dataService.updateMeasureType( measureType2 );
+        assertEquals( tmpMeasureType.getCode(), "TST");
 	}	
 	
 	@Test
@@ -337,6 +349,11 @@ public class DataServiceTest {
         
         Batch batch = dataService.saveBatch( testBatch );
         assertEquals( batch.getName(), "Joe's IPA");
+        
+    	Batch batch2 = new Batch( false, true, "Test IPA", "Old School IPA", null, new Date(), DbSync.ADD );
+        Mockito.when(batchRepository.save( batch2 )).thenReturn( batch2 );
+        batch = dataService.saveBatch( batch2 );
+        assertEquals( batch.getName(), "Test IPA");
 	}	
 
 	@Test
@@ -348,6 +365,17 @@ public class DataServiceTest {
         
         Batch batch = dataService.updateBatch( testBatch );
         assertEquals( batch.getName(), "Joe's IPA");
+
+    	Batch batch2 = new Batch( false, false, "Test IPA3", "Old School IPA", null, new Date(), DbSync.ADD );
+    	batch2.setId(2L);
+        Mockito.when(batchRepository.getOne( 2L )).thenReturn( batch2 );
+        Mockito.when(batchRepository.save( batch2 )).thenReturn( batch2 );
+        batch = dataService.updateBatch( batch2 );
+        assertEquals( batch.getName(), "Test IPA3");
+
+    	batch2.setId( 22L );
+        batch = dataService.updateBatch( batch2 );
+        assertEquals( batch.getName(), "Test IPA3");
 	}	
 	
 	@Test
@@ -455,6 +483,21 @@ public class DataServiceTest {
         
         Measurement tmpMeasurement = dataService.updateMeasurement( measurement );
         assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
+        //
+        //	Null Batch Path
+        //
+    	Measurement measurement2 = new Measurement( 70.3, "{\"target\":77.0}", null, process, measureType, new Date(), DbSync.ADD );
+		measurement2.setId( 2L );
+        Mockito.when(measurementRepository.getOne( 2L )).thenReturn( measurement2 );
+        Mockito.when(measurementRepository.save( measurement2 )).thenReturn( measurement2 );
+        tmpMeasurement = dataService.updateMeasurement( measurement2 );
+        assertEquals( tmpMeasurement.getValueText(), "{\"target\":77.0}" );
+    	//
+        //	Data not found should generate exception
+        //
+		measurement2.setId( 3L );
+        tmpMeasurement = dataService.updateMeasurement( measurement2 );
+        assertEquals( tmpMeasurement.getValueText(), "{\"target\":77.0}" );
 	}	
 	
 	@Test
@@ -522,10 +565,16 @@ public class DataServiceTest {
 	{
 		sensor.setId( 1L );
 		sensor.setName( "test" );
+		sensor.setBatch( testBatch );
         Mockito.when(sensorRepository.save( sensor )).thenReturn( sensor );
         
         Sensor tmpSensor = dataService.saveSensor( sensor );
         assertEquals( tmpSensor.getName(), "test");
+        
+        Sensor sensor2 = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date() );
+        Mockito.when(sensorRepository.save( sensor2 )).thenReturn( sensor2 );
+        tmpSensor = dataService.saveSensor( sensor2 );
+        assertEquals( tmpSensor.getName(), "test2");
 	}	
 
 	@Test
@@ -538,6 +587,15 @@ public class DataServiceTest {
         
         Sensor tmpSensor = dataService.updateSensor( sensor );
         assertEquals( tmpSensor.getName(), "test");
+
+		sensor.setBatch( testBatch );
+        tmpSensor = dataService.updateSensor( sensor );
+        assertEquals( tmpSensor.getName(), "test");
+
+        Sensor sensor2 = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.ADD );
+        Mockito.when(sensorRepository.save( sensor2 )).thenReturn( sensor2 );
+        tmpSensor = dataService.updateSensor( sensor2 );
+        assertEquals( tmpSensor.getName(), "test2");
 	}	
 	
 	@Test
@@ -622,6 +680,11 @@ public class DataServiceTest {
         
         User userTmp = dataService.updateUser( user );
         assertEquals( userTmp.getUsername(), "ADMIN");
+
+    	User user2 = new User( "test2", "admin", UserRoles.ADMIN.toString() );
+        user2.setId( 2L );
+        userTmp = dataService.updateUser( user2 );
+        assertEquals( userTmp.getUsername(), "test2" );
 	}	
 	
 	@Test
