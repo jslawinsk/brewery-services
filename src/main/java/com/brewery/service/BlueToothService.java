@@ -46,7 +46,7 @@ public class BlueToothService implements CommandLineRunner {
     
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
-    
+
     @Autowired
     private TaskExecutor taskExecutor;
 
@@ -54,56 +54,16 @@ public class BlueToothService implements CommandLineRunner {
     private ApplicationContext applicationContext;
     
     
-    //start server
-    private void startServer() throws IOException{
- 
-        //Create a UUID for SPP
-        UUID uuid = new UUID(0x1101);
-        //Create the service url
-        String connectionString = "btspp://localhost:" + uuid +";name=SampleSPPServer";        
-        
-        LOG.info("SampleSPPServer: startServer " );   	
-        
-        //open server url
-        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier)Connector.open( connectionString );
-       
-        //Wait for client connection
-        LOG.info("\nServer Started. Waiting for clients to connect...");
-        StreamConnection connection=streamConnNotifier.acceptAndOpen();
-         
-        RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-        LOG.info("Remote device address: "+dev.getBluetoothAddress());
-        LOG.info("Remote device name: "+dev.getFriendlyName(true));
-       
-        //read string from spp client
-        /* InputStream inStream=connection.openInputStream();
-        BufferedReader bReader=new BufferedReader(new InputStreamReader(inStream));
-        String lineRead=bReader.readLine();
-        LOG.info(lineRead);   
-        */
- 
-    }
- 
- 
     @Override
     public void run(String... strings) throws Exception {
         //display local device address and name
-        LOG.info("SampleSPPServer: run: " + blueToothEnabled );   	
+        LOG.info("Bluetooth Discovery: run: " + blueToothEnabled );   	
         if( blueToothEnabled ) {
 	        try{
 	            localDevice = LocalDevice.getLocalDevice();
 	            LOG.info( "Address: "+localDevice.getBluetoothAddress() );
 	            LOG.info( "Name: "+localDevice.getFriendlyName() );
 
-	            // BlueToothService sampleSPPServer=new BlueToothService();
-	            // sampleSPPServer.startServer();
-/*	            List<RemoteDevice> remoteDevices = discoverDevices();
-	            for( RemoteDevice remoteDevice : remoteDevices ) {
-	            	LOG.info( "Device Discovered: " + remoteDevice.getFriendlyName(false) );
-	            }
-*/	            
-//	            List<Sensor> sensors = discoverSensors( );	            
-	            //connect( "btspp://000666DA0B89:1;authenticate=false;encrypt=false;master=false" );
 	        }catch(Exception e){
 	            System.err.println(e.toString());
 	            System.err.println(e.getStackTrace());
@@ -331,11 +291,6 @@ public class BlueToothService implements CommandLineRunner {
         String lineRead=bReader2.readLine();
         LOG.info(lineRead);    	
     	
-    }    
-    
-    public void connectAsynchronously( Sensor sensor ) {
-    	BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
-        taskExecutor.execute( btThread );
     }    
     
 }

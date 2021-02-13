@@ -45,8 +45,9 @@ import com.brewery.service.DataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith( SpringRunner.class)
-@SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-		)
+@SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
+				properties = { "blueTooth.enabled=false" }
+			)
 @AutoConfigureMockMvc
 public class RestApiControllerTest {
 

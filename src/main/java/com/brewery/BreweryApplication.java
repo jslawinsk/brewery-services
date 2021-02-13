@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -36,7 +38,9 @@ import org.springframework.core.task.TaskExecutor;
 @SpringBootApplication
 public class BreweryApplication implements CommandLineRunner {
 
-	private StyleRepository styleRepository;
+    static private Logger LOG = LoggerFactory.getLogger( BreweryApplication.class );
+
+    private StyleRepository styleRepository;
 	@Autowired
 	public void styleRepository( StyleRepository styleRepository ) {
 		this.styleRepository = styleRepository;
@@ -146,21 +150,25 @@ public class BreweryApplication implements CommandLineRunner {
 
 		bluetoothStatus.setUp(true);	
 		if( blueToothEnabled ) {
+			LOG.info("Bluetooth Initializing" );
 			BluetoothThread btThread = applicationContext.getBean( BluetoothThread.class );
 			bluetoothStatus.setMessage( "Initializing" );
 			taskExecutor.execute( btThread );
 		}
 		else {
+			LOG.info("Bluetooth Not Enabled" );
 			bluetoothStatus.setMessage( "Not Enabled" );
 		}
 		
 		dataSynchStatus.setUp( true );
 		if( dataSynchEnabled ) {
+			LOG.info("Data Synch Enabled" );
 			DataSynchThread dbSyncThread = applicationContext.getBean( DataSynchThread.class );
 			dataSynchStatus.setMessage( "Enabled" );
 			taskExecutor.execute( dbSyncThread );
 		}
 		else {
+			LOG.info("Data Synch Not Enabled" );
 			dataSynchStatus.setMessage( "Not Enabled" );
 		}
 		

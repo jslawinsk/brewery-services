@@ -43,7 +43,7 @@ import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
 
 @RunWith( SpringRunner.class)
-@SpringBootTest
+@SpringBootTest( properties = { "blueTooth.enabled=false" } )
 public class DataServiceTest {
 
 	

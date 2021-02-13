@@ -134,7 +134,20 @@
 		    <version>2.2.4.RELEASE</version>
 		    <scope>test</scope>
 		</dependency>
-		
+	
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>2.0.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.powermock</groupId>
+		    <artifactId>powermock-api-mockito2</artifactId>
+		    <version>2.0.9</version>
+		    <scope>test</scope>
+		</dependency>				
+
 		<dependency>
 		    <groupId>org.webjars</groupId>
 		    <artifactId>highcharts</artifactId>
@@ -148,6 +161,16 @@
 		    <artifactId>bluecove</artifactId>
 		    <version>2.1.1</version>
 		</dependency>
+
+        <!-- If you plan to test your application in emulated Bluetooth mode -->
+        <dependency>
+            <groupId>net.sf.bluecove</groupId>
+            <artifactId>bluecove-emu</artifactId>
+            <version>2.1.0</version>
+            <scope>test</scope>
+        </dependency>
+     
+     
 		
      	<!--  The following are for Rasberry Pi ARM  -->
 <!--	<dependency>
@@ -167,15 +190,6 @@
    		</dependency>
 -->  
 
-        <!-- If you plan to test your application in emulated Bluetooth mode -->
-        <dependency>
-            <groupId>net.sf.bluecove</groupId>
-            <artifactId>bluecove-emu</artifactId>
-            <version>2.1.0</version>
-            <scope>test</scope>
-        </dependency>
-     
-     
         
 		<!-- JSON WEB TOKEN -->
 		<dependency>
@@ -202,7 +216,8 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.6</version>  
+				
 				<executions>
 					<execution>
 						<id>default-prepare-agent</id>
@@ -210,6 +225,25 @@
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
+					
+					<!-- The following require for Powermock code coverage -->					
+					<execution>
+					  <id>jacoco-instrument</id>
+					  <goals>
+					    <goal>instrument</goal>
+					  </goals>
+					  <configuration>
+						<includes> com/brewery/service/BlueToothService** </includes>
+					  </configuration>	  
+					</execution>
+					<execution>
+					  <id>jacoco-restore-instrumented-classes</id>
+					  <goals>
+					    <goal>restore-instrumented-classes</goal>
+					  </goals>
+					</execution>					
+					<!-- Powermock code coverage -->					
+					
 					<execution>
 					    <id>default-report</id>
 					    <phase>prepare-package</phase>
@@ -219,6 +253,12 @@
 					</execution>
 				</executions>
 			 </plugin>
+			 
+			 
+			 
+			 
+			 
+			 
 		</plugins>
 	</build>
 
