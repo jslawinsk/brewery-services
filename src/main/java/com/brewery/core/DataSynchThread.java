@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -54,11 +55,8 @@ public class DataSynchThread implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger( DataSynchThread.class );
 
+	@Autowired
     private DataService dataService;
-    @Autowired
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
-    }    
     
     @Autowired
     private DataSynchStatus dataSynchStatus;
@@ -78,6 +76,9 @@ public class DataSynchThread implements Runnable {
     @Value("${dataSynch.deleteSynched}")
     private boolean deleteSynched;
     
+    @Autowired
+    private RestTemplate restTemplate;
+    
     @Override
     public void run() {
         LOG.info("Running DataSynchThread");
@@ -93,7 +94,6 @@ public class DataSynchThread implements Runnable {
 		        	int attempt = 0;
 					User autheticatedUser = null;
 		        	while( autheticatedUser == null && attempt < 10 ) {
-						RestTemplate restTemplate = new RestTemplate();
 						try {
 							
 							HttpHeaders headers = new HttpHeaders();
@@ -115,16 +115,12 @@ public class DataSynchThread implements Runnable {
 						}	
 						attempt++;
 		        	}
-					
+			
 		        	if( token != null && token.length() > 0 ) {
 			        	String response = "";
 			        	attempt = 0;
 			        	while( !"ACK".equals( response ) && attempt < 10 ) {
-							RestTemplate restTemplate = new RestTemplate();
 							try {
-								
-	//							response = restTemplate.getForObject( dataSynchUrl + "heartBeat", String.class);
-								
 								
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.TEXT_PLAIN);
@@ -148,13 +144,12 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Style Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						List<Style> styles= dataService.getStylesToSynchronize();
 						for( Style style: styles ) {
 							LOG.info( "Style to Synchronize: " + style );
 							if( style.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + style.getName() );
-								RestTemplate restTemplate = new RestTemplate();
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);
 								headers.setBearerAuth(token);
@@ -176,13 +171,12 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Process Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						List<Process> processes = dataService.getProcessesToSynchronize();
 						for( Process process: processes ) {
 							LOG.info( "Process to Synchronize: " + process );
 							if( process.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + process.getName() );
-								RestTemplate restTemplate = new RestTemplate();
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -204,13 +198,12 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Measure Types Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						List<MeasureType> measureTypes = dataService.getMeasureTypesToSynchronize();
 						for( MeasureType measureType: measureTypes ) {
 							LOG.info( "MeasureType to Synchronize: " + measureType );
 							if( measureType.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + measureType.getName() );
-								RestTemplate restTemplate = new RestTemplate();
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -232,13 +225,12 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Batch Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						List<Batch> batches = dataService.getBatchesToSynchronize();
 						for( Batch batch: batches ) {
 							LOG.info( "Batch to Synchronize: " + batch );
 							if( batch.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + batch.getName() );
-								RestTemplate restTemplate = new RestTemplate();
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -260,13 +252,12 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Sensor Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						List<Sensor> sensors = dataService.getSensorsToSynchronize();
 						for( Sensor sensor: sensors ) {
 							LOG.info( "Sensor to Synchronize: " + sensor );
 							if( sensor.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + sensor.getName() );
-								RestTemplate restTemplate = new RestTemplate();
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -292,7 +283,7 @@ public class DataSynchThread implements Runnable {
 			        	//
 			        	//	Synchronize Measurement Table
 			        	//
-						Thread.sleep(500);
+						//Thread.sleep(500);
 						Long batchId = -1L;
 						Double value = -1D;
 						String measureType = "";
@@ -317,7 +308,6 @@ public class DataSynchThread implements Runnable {
 								}
 								if( publish ) {
 									LOG.info( "Synchronize Add: " + measurement.getId() );
-									RestTemplate restTemplate = new RestTemplate();
 									HttpHeaders headers = new HttpHeaders();
 									headers.setContentType(MediaType.APPLICATION_JSON);		
 									headers.setBearerAuth(token);
@@ -376,6 +366,7 @@ public class DataSynchThread implements Runnable {
 				dataSynchStatus.setUp( false );
 			}	
 	        dataSynchStatus.setMessage( statusMessage );
+	        if( delayMinutes == 0 ) break;
         }
     }
     
