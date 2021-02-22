@@ -64,24 +64,9 @@ public class DataSynchThreadTest {
 
 	static private Logger LOG = LoggerFactory.getLogger( DataSynchThreadTest.class );
 	
-    //@Autowired
-    //private TaskExecutor taskExecutor;
-
 	@MockBean
 	DataService dataService;
 
-/*	
-    @TestConfiguration
-    static class TestConfig {
-
-    	@Bean
-    	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-    	    return builder.build();
-    	}       
-        
-    }	
-*/	
-	
 	@Autowired
 	RestTemplate  restTemplate;
     //private RestTemplate restTemplate = new RestTemplate();

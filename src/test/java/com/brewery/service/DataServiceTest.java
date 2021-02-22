@@ -2,6 +2,7 @@ package com.brewery.service;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,7 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -22,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.brewery.model.Batch;
@@ -119,6 +125,14 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveStyleEx() throws Exception
+	{
+        Mockito.when( styleRepository.save( null ) ).thenThrow( new IllegalArgumentException("Test") );
+        Style style = dataService.saveStyle( null );
+        assertNull( style.getName() );
+	}	
+	
+	@Test
 	public void updateStyle() throws Exception
 	{
 		testStyle.setId( 1L );
@@ -142,6 +156,15 @@ public class DataServiceTest {
         dataService.deleteStyle( 1L );
         assertTrue( true );
 	}	
+
+	@Test
+	public void deleteStyleEx() throws Exception
+	{
+		Mockito.when(styleRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteStyle( -1L );
+        assertTrue( true );
+	}	
+	
 	
 	//
 	//	Process table test methods
@@ -190,6 +213,15 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveProcessEx() throws Exception
+	{
+        Mockito.when(processRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        
+        Process tmpProcess = dataService.saveProcess( null );
+        assertNull( tmpProcess.getCode() );
+	}	
+	
+	@Test
 	public void updateProcess() throws Exception
 	{
         Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
@@ -208,6 +240,14 @@ public class DataServiceTest {
 	{
         Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
         dataService.deleteProcess( "FRM" );
+        assertTrue( true );
+	}	
+
+	@Test
+	public void deleteProcessEx() throws Exception
+	{
+        Mockito.when(processRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteProcess( null );
         assertTrue( true );
 	}	
 
@@ -270,6 +310,15 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveMeasureTypeEx() throws Exception
+	{
+        Mockito.when(measureTypeRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        
+        MeasureType tmpMeasureType = dataService.saveMeasureType( null );
+        assertNull( tmpMeasureType.getCode() );
+	}	
+	
+	@Test
 	public void updateMeasureType() throws Exception
 	{
         Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
@@ -289,6 +338,15 @@ public class DataServiceTest {
         Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
 
         dataService.deleteMeasureType( "TMP" );
+        assertTrue( true );
+	}	
+	
+	@Test
+	public void deleteMeasureTypeEx() throws Exception
+	{
+        Mockito.when(measureTypeRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
+
+        dataService.deleteMeasureType( null );
         assertTrue( true );
 	}	
 	
@@ -357,6 +415,15 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveBatchEx() throws Exception
+	{
+    	Batch batch2 = new Batch( false, true, null, null, null, new Date(), DbSync.ADD );
+        Mockito.when(batchRepository.save( batch2 )).thenThrow( new IllegalArgumentException("Test") );
+        Batch batch = dataService.saveBatch( batch2 );
+        assertNull( batch.getName() );
+	}	
+
+	@Test
 	public void updateBatch() throws Exception
 	{
 		testBatch.setId( 1L );
@@ -385,6 +452,14 @@ public class DataServiceTest {
         Mockito.when(batchRepository.getOne( 1L )).thenReturn( testBatch );
 
         dataService.deleteBatch( 1L );
+        assertTrue( true );
+	}	
+	
+	@Test
+	public void deleteBatchEx() throws Exception
+	{
+        Mockito.when(batchRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteBatch( -1L );
         assertTrue( true );
 	}	
 	
@@ -470,8 +545,14 @@ public class DataServiceTest {
         
         Measurement tmpMeasurement = dataService.saveMeasurement( measurement );
         assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
-        
-        
+	}	
+
+	@Test
+	public void saveMeasurementEx() throws Exception
+	{
+        Mockito.when(measurementRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        Measurement tmpMeasurement = dataService.saveMeasurement( null );
+        assertNull( tmpMeasurement.getValueText() );
 	}	
 
 	@Test
@@ -510,6 +591,14 @@ public class DataServiceTest {
         assertTrue( true );
 	}	
 	
+	@Test
+	public void deleteMeasurementEx() throws Exception
+	{
+		Mockito.when(measurementRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteMeasurement( -1L );
+        assertTrue( true );
+	}	
+
 	//
 	//	Sensor table test methods
 	//
@@ -578,6 +667,15 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveSensorEx() throws Exception
+	{
+        Sensor sensor2 = new Sensor( 2L, false, null, null, null, null, null, null, null, null, null, new Date() );
+        Mockito.when(sensorRepository.save( sensor2 )).thenThrow( new IllegalArgumentException("Test") );
+        Sensor tmpSensor = dataService.saveSensor( sensor2 );
+        assertNull( tmpSensor.getName() );
+	}	
+	
+	@Test
 	public void updateSensor() throws Exception
 	{
 		sensor.setId( 1L );
@@ -608,6 +706,14 @@ public class DataServiceTest {
         assertTrue( true );
 	}	
 	
+	@Test
+	public void deleteSensorEx() throws Exception
+	{
+		Mockito.when(sensorRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteSensor( -1L );
+        assertTrue( true );
+	}	
+
 	//
 	//	User table test methods
 	//
@@ -618,6 +724,13 @@ public class DataServiceTest {
         
         UserDetails userDetails = dataService.loadUserByUsername( "ADMIN" );
         assertEquals( userDetails.getUsername(), "ADMIN");
+	}	
+	
+	@Test( expected = UsernameNotFoundException.class )
+	public void loadUserByUsernameEx() throws Exception
+	{
+        Mockito.when(userRepository.findByUsername( null )).thenReturn( null );
+        dataService.loadUserByUsername( null );
 	}	
 
 	@Test
@@ -672,6 +785,14 @@ public class DataServiceTest {
 	}	
 
 	@Test
+	public void saveUserEx() throws Exception
+	{
+        Mockito.when(userRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        User userTmp = dataService.saveUser( null );
+        assertNull( userTmp.getUsername() );
+	}	
+
+	@Test
 	public void updateUser() throws Exception
 	{
 		user.setId( 1L );
@@ -696,4 +817,11 @@ public class DataServiceTest {
         assertTrue( true );
 	}	
 
+	@Test
+	public void deleteUserEx() throws Exception
+	{
+        Mockito.when(userRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteUser( -1L );
+        assertTrue( true );
+	}	
 }

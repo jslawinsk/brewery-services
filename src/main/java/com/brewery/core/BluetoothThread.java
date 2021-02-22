@@ -30,6 +30,7 @@ import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorData;
 import com.brewery.service.DataService;
+import com.brewery.util.BluetoothUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -42,17 +43,17 @@ public class BluetoothThread implements Runnable {
 	
 	private static ArrayBlockingQueue<Message> blueToothQueue = new ArrayBlockingQueue<Message>( 100 ); 
 	
-    private DataService dataService;
     @Autowired
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
-    }
+    private DataService dataService;
 	
-    @Value("${blueTooth.scanSeconds}")
-    private int scanSeconds;
-    
     @Autowired
     private BluetoothStatus bluetoothStatus;
+    
+    @Autowired 
+    BluetoothUtil bluetoothUtil;
+    
+    @Value("${blueTooth.scanSeconds}")
+    private int scanSeconds;
     
     @Override
     public void run() {
@@ -79,12 +80,15 @@ public class BluetoothThread implements Runnable {
 					statusMessage = statusMessage + sensor.getName() + ": ";
 
 					StreamConnection streamConnection;
-					streamConnection = (StreamConnection)Connector.open( sensor.getUrl() );
+					streamConnection = bluetoothUtil.getStreamConnection( sensor.getUrl() );
+//					streamConnection = (StreamConnection)Connector.open( sensor.getUrl() );
 					Thread.sleep(500);
 
 					if( message != null ) {
+						LOG.info("Message: " + message  );								
 						String target = message.getTarget();
 						if( target != null ) {
+							LOG.info("Sensor: " + sensor  );								
 							if( target.equals( sensor.getName() ) ){
 								LOG.info("Sending Message: " + message );								
 								OutputStream outStream=streamConnection.openOutputStream();
@@ -101,7 +105,8 @@ public class BluetoothThread implements Runnable {
     		        InputStream inStream=streamConnection.openInputStream();
     		        try {
 				        //read response
-				        BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
+//				        BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
+				        BufferedReader bReader2 = bluetoothUtil.getBufferedReader( inStream);
 				        String lineRead=bReader2.readLine();
 				        LOG.info( "Bluetooth Data: " + lineRead);
 				        if( lineRead != null ) {
@@ -115,7 +120,9 @@ public class BluetoothThread implements Runnable {
 					    	measurement.setType( sensor.getMeasureType() );
 					    	measurement.setValueNumber( sensorData.getTemperature() );
 					    	measurement.setValueText( "{\"target\":" + sensorData.getTarget() + "}");
-					        dataService.saveMeasurement( measurement );
+					    	if( measurement.getValueNumber() != 0 ) {
+					    		dataService.saveMeasurement( measurement );
+					    	}
 			    	        statusMessage = statusMessage + " data retrieved ";
 				        }
     				} catch( Exception e ) {
@@ -142,6 +149,7 @@ public class BluetoothThread implements Runnable {
     	        bluetoothStatus.setUp( false );
 			}	
 	        bluetoothStatus.setMessage( statusMessage );
+	        if( scanSeconds == 0 && blueToothQueue.isEmpty() )  break;
         }
     }
     
