@@ -1,11 +1,9 @@
 package com.brewery.service;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,18 +11,15 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -154,7 +149,8 @@ public class DataServiceTest {
 
 		Mockito.when(styleRepository.getOne( 1L )).thenReturn( testStyle );
         dataService.deleteStyle( 1L );
-        assertTrue( true );
+        verify( styleRepository, times(1)).getOne( 1L );
+
 	}	
 
 	@Test
@@ -162,7 +158,7 @@ public class DataServiceTest {
 	{
 		Mockito.when(styleRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteStyle( -1L );
-        assertTrue( true );
+        verify( styleRepository, times(1)).getOne( -1L );
 	}	
 	
 	
@@ -240,7 +236,7 @@ public class DataServiceTest {
 	{
         Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
         dataService.deleteProcess( "FRM" );
-        assertTrue( true );
+        verify( processRepository, times(1)).getOne( "FRM" );
 	}	
 
 	@Test
@@ -248,7 +244,7 @@ public class DataServiceTest {
 	{
         Mockito.when(processRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteProcess( null );
-        assertTrue( true );
+        verify( processRepository, times(1)).getOne( null );
 	}	
 
 	//
@@ -338,7 +334,7 @@ public class DataServiceTest {
         Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
 
         dataService.deleteMeasureType( "TMP" );
-        assertTrue( true );
+        verify( measureTypeRepository, times(1)).getOne( "TMP" );
 	}	
 	
 	@Test
@@ -347,7 +343,7 @@ public class DataServiceTest {
         Mockito.when(measureTypeRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
 
         dataService.deleteMeasureType( null );
-        assertTrue( true );
+        verify( measureTypeRepository, times(1)).getOne( null );
 	}	
 	
 	//
@@ -452,7 +448,7 @@ public class DataServiceTest {
         Mockito.when(batchRepository.getOne( 1L )).thenReturn( testBatch );
 
         dataService.deleteBatch( 1L );
-        assertTrue( true );
+        verify( batchRepository, times(1)).getOne( 1L );
 	}	
 	
 	@Test
@@ -460,7 +456,7 @@ public class DataServiceTest {
 	{
         Mockito.when(batchRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteBatch( -1L );
-        assertTrue( true );
+        verify( batchRepository, times(1)).getOne( -1L );
 	}	
 	
 	//
@@ -517,13 +513,16 @@ public class DataServiceTest {
 	{
 		List<Measurement> measurementData = new ArrayList<>();
     	measurementData.add(measurement);		
-		Page<Measurement> page = new PageImpl<>(measurementData);		
-		Pageable pageable = null;
+		
+       	int noOfRecords = 10;
+    	PageRequest pageRequest = PageRequest.of( 0, noOfRecords );
+        Pageable pageable = pageRequest;    	
+        Page<Measurement> page = new PageImpl<>(measurementData);		
 		
 		Mockito.when(measurementRepository.findPageByBatchId( 1L, pageable )).thenReturn( page );
         
 		Page<Measurement> tmpPage = dataService.getMeasurementsPageByBatch( 0, 1L );
-//		assertEquals(  tmpPage.getNumberOfElements(), 1 );
+		assertEquals(  tmpPage.getTotalPages(), 1 );
 	}	
 	
 	@Test
@@ -588,7 +587,7 @@ public class DataServiceTest {
 
 		Mockito.when(measurementRepository.getOne( 1L )).thenReturn( measurement );
         dataService.deleteMeasurement( 1L );
-        assertTrue( true );
+        verify( measurementRepository, times(1)).getOne( 1L );
 	}	
 	
 	@Test
@@ -596,7 +595,7 @@ public class DataServiceTest {
 	{
 		Mockito.when(measurementRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteMeasurement( -1L );
-        assertTrue( true );
+        verify( measurementRepository, times(1)).getOne( -1L );
 	}	
 
 	//
@@ -703,7 +702,7 @@ public class DataServiceTest {
 
 		Mockito.when(sensorRepository.getOne( 1L )).thenReturn( sensor );
         dataService.deleteSensor( 1L );
-        assertTrue( true );
+        verify( sensorRepository, times(1)).getOne( 1L );
 	}	
 	
 	@Test
@@ -711,7 +710,7 @@ public class DataServiceTest {
 	{
 		Mockito.when(sensorRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteSensor( -1L );
-        assertTrue( true );
+        verify( sensorRepository, times(1)).getOne( -1L );
 	}	
 
 	//
@@ -814,7 +813,7 @@ public class DataServiceTest {
 		user.setId( 1L );
         Mockito.when(userRepository.getOne( 1L )).thenReturn( user );
         dataService.deleteUser( 1L );
-        assertTrue( true );
+        verify( userRepository, times(1)).getOne( 1L );
 	}	
 
 	@Test
@@ -822,6 +821,6 @@ public class DataServiceTest {
 	{
         Mockito.when(userRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteUser( -1L );
-        assertTrue( true );
+        verify( userRepository, times(1)).getOne( -1L );
 	}	
 }

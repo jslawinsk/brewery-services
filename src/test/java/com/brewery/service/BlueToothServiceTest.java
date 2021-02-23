@@ -1,7 +1,6 @@
 package com.brewery.service;
 
 import static org.hamcrest.CoreMatchers.any;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -119,7 +118,6 @@ public class BlueToothServiceTest {
 		
 		String[] testStrings = new String[1];
 		blueToothService.run( testStrings );
-        assertEquals( true, true );
         verify( blueToothService, times(1)).run( testStrings );
 
 	}	

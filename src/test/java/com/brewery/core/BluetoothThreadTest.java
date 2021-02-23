@@ -1,7 +1,7 @@
 package com.brewery.core;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,13 +9,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -69,8 +67,7 @@ public class BluetoothThreadTest {
 		
 		bluetoothThread.run();
 		
-		
-		assertEquals( true, true );
+		verify( dataService, atLeast(1)).getEnabledSensors( );		
 	}
 
 }
