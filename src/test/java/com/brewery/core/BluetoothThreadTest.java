@@ -49,9 +49,9 @@ public class BluetoothThreadTest {
     	sensors.add( sensor );
 		Mockito.when( dataService.getEnabledSensors() ).thenReturn( sensors );
 		
-		Message message = new Message();
-		message.setTarget( sensor.getName() );
-		message.setData( "COMMAND:CONTROL:COOL_ON" );
+		Message message = new Message( sensor.getName(), "COMMAND:CONTROL:COOL_ON" );
+//		message.setTarget( sensor.getName() );
+//		message.setData( "COMMAND:CONTROL:COOL_ON" );
 		BluetoothThread.sendMessage( message );		
 		
 		BufferedReader bufferedReader = Mockito.mock( BufferedReader.class );

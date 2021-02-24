@@ -80,10 +80,12 @@ public class UiControllerTest {
     	batches.add( testBatch );
     	
     	Process process = new Process( "FRM", "Fermentation" );
-    	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+    	MeasureType measureType = new MeasureType( "TMP", "Temperature" );
+    	measureType.setGraphType( GraphTypes.GAUGE );
 		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 		
-		MeasureType measureType2 = new MeasureType( "PH", "PH", true, 0, 14, GraphTypes.SOLID_GUAGE, DbSync.ADD );
+		MeasureType measureType2 = new MeasureType( "PH", "PH", DbSync.ADD );
+		measureType2.setGraphType( GraphTypes.SOLID_GUAGE );
 		Measurement measurement2 = new Measurement( 7.0, "{\"target\":7.0}", testBatch, process, measureType2, new Date() );
 
     	List<Measurement> measurements = new ArrayList<Measurement>();
