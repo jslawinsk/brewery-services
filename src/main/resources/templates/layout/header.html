@@ -12,7 +12,8 @@
 <div class="container">
     <div th:fragment="header">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        	<a class="navbar-brand" href="#" th:href="@{/}">Home</a>
+			<img th:src="@{/images/TopLogo.png}"/>
+        	<a class="navbar-brand" href="#" th:href="@{/}">My Brewery</a>
       		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation" href="#">
         		<span class="navbar-toggler-icon"></span>
       		</button>
@@ -48,19 +49,6 @@
 				</ul>        		
       		</div>
     	</nav>        
-        
-        
-        <div class="jumbotron">
-            <div class="row text-center">
-                <div class="row">
-                    <h2>Brewery Application</h2>
-                </div>
-            </div>
-            <div class="row text-center">
-                <img src="../../static/images/Logo.png" width="30%"
-                     th:src="@{/images/Logo.png}" />
-            </div>
-        </div>
         
     </div>
 </div>
