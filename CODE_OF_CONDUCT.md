@@ -27,7 +27,7 @@ Examples of unacceptable behavior by participants include:
  address, without explicit permission
 * Other conduct which could reasonably be considered inappropriate in a
  professional setting
- * Do not be an asshole.
+* Do not be an asshole.
 
 ## Our Responsibilities
 
@@ -50,14 +50,3 @@ further defined and clarified by project maintainers.
 
 Just deal it with.
 
-## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-
-And https://github.com/moscow-python-beer/moscow-code-of-conduct#readme
-
-[homepage]: https://www.contributor-covenant.org
-
-For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq
