@@ -393,6 +393,12 @@ public class UiController {
         return "redirect:/";
     }
 
+    @RequestMapping(path = "/measurement/duplicatedelete/{id}", method = RequestMethod.GET)
+    public String deleteDuplicateMeasurements(@PathVariable(name = "id") Long id) {
+    	dataService.deleteDuplicateMeasurements( id );
+        return "redirect:/measurement/batch/" + id;
+    }
+
     //
     //	Sensor table UI routines
     //

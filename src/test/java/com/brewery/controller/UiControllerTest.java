@@ -491,6 +491,16 @@ public class UiControllerTest {
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/"));
 	}		
 	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void deleteDuplicateMeasurements() throws Exception
+	{
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/duplicatedelete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"));
+	}		
+	
 	
 	//
 	//	Sensor Method tests 

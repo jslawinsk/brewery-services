@@ -116,6 +116,31 @@
 	        </li>	        
 	    </ul>
 	</nav>    
+	
+	<a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${batch.id }" class="btn btn-default">
+    	Delete Duplicates
+		<img th:src="@{/images/delete_forever-24px.svg}"/>
+	</a>    
+    
+	<div class="modal modal-warning fade in" th:id="modal-warning+${batch.id }">
+ 		<div class="modal-dialog">
+ 			<div class="modal-content">
+ 				<div class="modal-header">
+ 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+ 					<span aria-hidden="true">×</span></button>
+ 					<h5 class="modal-title">Delete Duplicates</h5>
+ 				</div>
+ 				<div class="modal-body">
+ 					<h3>Are you sure want to delete consecutive sequential duplicate measurements?</h3>
+ 				</div>
+ 				<div class="modal-footer">
+ 					<button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+ 					<a type="button" class="btn btn-danger" th:href="${'/measurement/duplicatedelete/' + batch.id}"><i class="fa fa-check"></i>&nbsp;Yes</a>
+ 				</div>
+			</div>
+ 		</div>
+ 	</div>
+    
     
 </div>
 </body>

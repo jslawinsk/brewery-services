@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MeasurementRepository extends JpaRepository<Measurement, Long> {
 	
-	 @Query( value = "SELECT * FROM brewery.measurement WHERE batch_id = ?1", nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.measurement WHERE batch_id = ?1 ORDER BY process_code, type_code, start_time ASC", nativeQuery = true )
 	 List<Measurement> findByBatchId( Long id );	
 
 	 @Query( value = "SELECT * FROM brewery.measurement WHERE batch_id = ?1 ORDER BY start_time DESC", nativeQuery = true )
