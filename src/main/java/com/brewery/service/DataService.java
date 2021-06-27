@@ -421,6 +421,26 @@ public class DataService implements UserDetailsService {
         }
     }
 
+    public void deleteDuplicateMeasurements( Long batchId ) {
+    	List<Measurement> measurements = measurementRepository.findByBatchId( batchId );
+    	
+    	Measurement baseMeasurement = null;
+    	for( Measurement measurement:measurements) {
+    		if( baseMeasurement != null) {
+    			if( baseMeasurement.getType().getCode().equals( measurement.getType().getCode() )
+    					&& baseMeasurement.getProcess().getCode().equals( measurement.getProcess().getCode() )
+    					&& baseMeasurement.getValueNumber() == measurement.getValueNumber()
+    					&& baseMeasurement.getValueText().equals( measurement.getValueText() ) 
+    			) {
+    		    	LOG.info("Delete Measurement:" + measurement );
+    		    	deleteMeasurement( measurement.getId() );
+    			}
+    		}
+			baseMeasurement = measurement;    				
+    	}
+    	
+    }
+    
 	//
 	//	Sensor table access methods
 	//

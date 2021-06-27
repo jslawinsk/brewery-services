@@ -598,6 +598,25 @@ public class DataServiceTest {
         verify( measurementRepository, times(1)).getOne( -1L );
 	}	
 
+	@Test
+	public void deleteDuplicateMeasurements() throws Exception
+	{
+		
+		Measurement measurement2 = new Measurement( 72.3, "{\"target\":72.0}", testBatch, process, measureType, new Date() );
+		Measurement measurement3 = new Measurement( 72.3, "{\"target\":74.0}", testBatch, process, measureType, new Date() );
+		
+		List<Measurement> measurementData = new ArrayList<>();
+    	measurementData.add(measurement);		
+    	measurementData.add(measurement);		
+    	measurementData.add(measurement2);		
+    	measurementData.add(measurement3);		
+		
+		Mockito.when(measurementRepository.findByBatchId( 1L )).thenReturn( measurementData );
+        dataService.deleteDuplicateMeasurements( 1L );
+        verify( measurementRepository, times(1)).findByBatchId( 1L );
+	}	
+	
+	
 	//
 	//	Sensor table test methods
 	//
