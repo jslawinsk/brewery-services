@@ -48,11 +48,38 @@
                 <td><a th:href="${'/batch/edit/' + batch.id}" class="btn btn-default" title="Edit" rel="tooltip">
 					<img th:src="@{/images/edit-24px.svg}"/>
                 </a></td>
-                <td><a th:href="${'/batch/delete/' + batch.id}" class="btn btn-default" title="Delete" rel="tooltip">
+				<td><a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${batch.id }" class="btn btn-default" title="Delete" rel="tooltip">
 					<img th:src="@{/images/delete_forever-24px.svg}"/>
-                </a></td>
+				</a></td>    
+
+				<td>
+					<div class="modal modal-warning fade in" th:id="modal-warning+${batch.id }">
+				 		<div class="modal-dialog">
+				 			<div class="modal-content">
+				 				<div class="modal-header">
+				 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				 					<span aria-hidden="true">×</span></button>
+				 					<h5 class="modal-title">Delete Duplicates</h5>
+				 				</div>
+				 				<div class="modal-body">
+				 					<h3>
+				 						<p th:text="'All measurements for batch ' + ${batch.name} + ' will also be deleted.'"></p> 
+				 						<p th:text="'Delete batch ' + ${batch.id} + '?'"></p>
+				 					</h3>
+				 				</div>
+				 				<div class="modal-footer">
+				 					<button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+				 					<a type="button" class="btn btn-danger" th:href="${'/batch/delete/' + batch.id}"><i class="fa fa-check"></i>&nbsp;Yes</a>
+				 				</div>
+							</div>
+				 		</div>
+				 	</div>
+				</td>
             </tr>
         </table>
+        
+    
+        
     </div>
 </div>
 </body>

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -27,4 +28,9 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
 
 	 @Query( value = "SELECT type_code, start_time, id, db_synch, value_number, value_text, batch_id, process_code FROM brewery.measurement WHERE batch_id = ?1 AND type_code = ?2 ORDER BY type_code, start_time", nativeQuery = true )
 	 List<Measurement> findByBatchIdType( Long id, String type );
+	 
+	 @Modifying
+	 @Query( value = "DELETE FROM brewery.measurement WHERE batch_id = ?1", nativeQuery = true )
+	 int deleteByBatchId( Long id );	
+	 
 }

@@ -316,6 +316,7 @@ public class DataService implements UserDetailsService {
     public void deleteBatch( Long id ) {
         try {
         	Batch foundBatch = batchRepository.getOne( id );
+        	measurementRepository.deleteByBatchId( id );
         	batchRepository.delete( foundBatch );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteBatch: " + e.getMessage());
