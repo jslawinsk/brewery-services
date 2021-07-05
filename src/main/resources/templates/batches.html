@@ -59,11 +59,11 @@
 				 				<div class="modal-header">
 				 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				 					<span aria-hidden="true">×</span></button>
-				 					<h5 class="modal-title">Delete Duplicates</h5>
+				 					<h5 class="modal-title">Delete</h5>
 				 				</div>
 				 				<div class="modal-body">
 				 					<h3>
-				 						<p th:text="'All measurements for batch ' + ${batch.name} + ' will also be deleted.'"></p> 
+				 						<p th:text="'All measurements for batch ' + ${batch.name} + ' will also be deleted. All sensors must be disassiated from this batch before proceeding.'"></p> 
 				 						<p th:text="'Delete batch ' + ${batch.id} + '?'"></p>
 				 					</h3>
 				 				</div>

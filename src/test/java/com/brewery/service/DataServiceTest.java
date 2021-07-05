@@ -32,6 +32,7 @@ import com.brewery.model.MeasureType;
 import com.brewery.model.Measurement;
 import com.brewery.model.Process;
 import com.brewery.model.Sensor;
+import com.brewery.model.SensorType;
 import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.UserRoles;
@@ -44,7 +45,7 @@ import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
 
 @RunWith( SpringRunner.class)
-@SpringBootTest( properties = { "blueTooth.enabled=false" } )
+@SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false" } )
 public class DataServiceTest {
 
 	
@@ -649,9 +650,9 @@ public class DataServiceTest {
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
 		
-		Mockito.when(sensorRepository.findEnabledSensors( )).thenReturn( sensors );
+		Mockito.when(sensorRepository.findEnabledSensors( "Bluetooth" )).thenReturn( sensors );
         
-		List<Sensor> sensorsTest = dataService.getEnabledSensors( );
+		List<Sensor> sensorsTest = dataService.getEnabledSensors( SensorType.BLUETOOTH );
 		assertEquals(  sensorsTest.size(), 1 );
 	}	
 	

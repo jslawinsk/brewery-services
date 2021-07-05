@@ -5,8 +5,10 @@ import com.brewery.model.User;
 import com.brewery.model.UserRoles;
 import com.brewery.actuator.BluetoothStatus;
 import com.brewery.actuator.DataSynchStatus;
+import com.brewery.actuator.WiFiStatus;
 import com.brewery.core.BluetoothThread;
 import com.brewery.core.DataSynchThread;
+import com.brewery.core.WiFiThread;
 import com.brewery.model.Batch;
 import com.brewery.model.DbSync;
 import com.brewery.model.GraphTypes;
@@ -80,6 +82,9 @@ public class BreweryApplication implements CommandLineRunner {
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
 
+    @Value("${wiFi.enabled}")
+    private boolean wiFiEnabled;
+    
     @Value("${dataSynch.enabled}")
     private boolean dataSynchEnabled;
     
@@ -98,6 +103,9 @@ public class BreweryApplication implements CommandLineRunner {
 
     @Autowired
     private BluetoothStatus bluetoothStatus;
+
+    @Autowired
+    private WiFiStatus wiFiStatus;
 
     @Autowired
     private DataSynchStatus dataSynchStatus;
@@ -158,6 +166,18 @@ public class BreweryApplication implements CommandLineRunner {
 		else {
 			LOG.info("Bluetooth Not Enabled" );
 			bluetoothStatus.setMessage( "Not Enabled" );
+		}
+
+		wiFiStatus.setUp(true);	
+		if( wiFiEnabled ) {
+			LOG.info("WiFi Initializing" );
+			WiFiThread wfThread = applicationContext.getBean( WiFiThread.class );
+			wiFiStatus.setMessage( "Initializing" );
+			taskExecutor.execute( wfThread );
+		}
+		else {
+			LOG.info("WiFi Not Enabled" );
+			wiFiStatus.setMessage( "Not Enabled" );
 		}
 		
 		dataSynchStatus.setUp( true );

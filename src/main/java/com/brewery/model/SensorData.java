@@ -2,15 +2,33 @@ package com.brewery.model;
 
 public class SensorData {
 
+	// Sample WiFi Data: {"temperature":78.80, "target":70, "heat":"ON", "cool":"OFF", "control":"Heat", "deviation":1.00, "calibration":0.00, "units":"F"}";
+	
 	private double temperature;
 	private double target;
+	private double deviation;
+	private double calibration;
 	private String heat;
 	private String cool;
 	private String control;
+	private String units;
 
 	public SensorData() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	
+	public SensorData(double temperature, double target, double deviation, double calibration, String heat, String cool, String control, String units) {
+		super();
+		this.temperature = temperature;
+		this.target = target;
+		this.deviation = deviation;
+		this.calibration = calibration;
+		this.heat = heat;
+		this.cool = cool;
+		this.control = control;
+		this.units = units;
 	}
 
 	public SensorData(double temperature, double target, String heat, String cool, String control) {
@@ -20,8 +38,11 @@ public class SensorData {
 		this.heat = heat;
 		this.cool = cool;
 		this.control = control;
+		this.deviation = 0.0;
+		this.calibration = 0.0;
+		this.units = "F";
 	}
-
+	
 	public double getTemperature() {
 		return temperature;
 	}
@@ -36,6 +57,22 @@ public class SensorData {
 
 	public void setTarget(double target) {
 		this.target = target;
+	}
+
+	public double getDeviation() {
+		return deviation;
+	}
+
+	public void setDeviation(double deviation) {
+		this.deviation = deviation;
+	}
+
+	public double getCalibration() {
+		return calibration;
+	}
+
+	public void setCalibration(double calibration) {
+		this.calibration = calibration;
 	}
 
 	public String getHeat() {
@@ -62,10 +99,19 @@ public class SensorData {
 		this.control = control;
 	}
 
-	@Override
-	public String toString() {
-		return "SensorData [temperature=" + temperature + ", target=" + target + ", heat=" + heat + ", cool=" + cool + ", control=" + control
-				+ "]";
+	public String getUnits() {
+		return units;
 	}
 
+	public void setUnits(String units) {
+		this.units = units;
+	}
+
+	@Override
+	public String toString() {
+		return "SensorData [temperature=" + temperature + ", target=" + target + ", deviation=" + deviation
+				+ ", calibration=" + calibration + ", heat=" + heat + ", cool=" + cool + ", control=" + control
+				+ ", units=" + units + "]";
+	}
+	
 }

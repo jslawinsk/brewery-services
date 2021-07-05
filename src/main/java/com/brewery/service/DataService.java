@@ -7,6 +7,7 @@ import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
 import com.brewery.model.Sensor;
+import com.brewery.model.SensorType;
 import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
 import com.brewery.repository.ProcessRepository;
@@ -455,8 +456,15 @@ public class DataService implements UserDetailsService {
     	return sensorRepository.findAll();
     }
 
-    public List<Sensor> getEnabledSensors() {
-    	return sensorRepository.findEnabledSensors();
+    public List<Sensor> getEnabledSensors( SensorType sensorType ) {
+    	String type = "None";
+    	if( sensorType == SensorType.BLUETOOTH ) {
+    		type = "Bluetooth";
+    	}
+    	else if( sensorType == SensorType.WIFI ) {
+    		type = "WiFi";
+    	}
+    	return sensorRepository.findEnabledSensors( type );
     }
 
     public List<Sensor> getSensorsToSynchronize() {

@@ -55,7 +55,7 @@ import com.brewery.model.Sensor;
 @RunWith(PowerMockRunner.class)
 //@PowerMockRunnerDelegate(SpringRunner.class)
 @PrepareForTest( { BlueToothService.class, Connector.class, InputStreamReader.class, BufferedReader.class, LocalDevice.class } )
-//@SpringBootTest( properties = { "blueTooth.enabled=true" } )
+@SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false" } )
 public class BlueToothServiceTest {
 
 	static private Logger LOG = LoggerFactory.getLogger( BlueToothServiceTest.class );

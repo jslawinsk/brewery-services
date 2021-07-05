@@ -4,7 +4,7 @@
     <title>Edit Sensor</title>
     <th:block th:include="layout/header"></th:block>
 </head>
-<body>
+<body onload="selectControls()">
 <div class="container">
     <h2>Edit Sensor</h2>
     <div>
@@ -48,9 +48,10 @@
 			<div class="form-group">
                 <label class="col-sm-2 control-label">Interface:</label>
                 <div class="col-sm-10">
-	    			<select class="form-control" th:field="*{communicationType}">
+	    			<select id="communicationType" class="form-control" th:field="*{communicationType}" onchange="selectControls()">
 	    			 	<option value="None">None</option>
 	    			 	<option value="Bluetooth">Bluetooth</option>
+	    			 	<option value="WiFi">WiFi</option>
 	    			</select>
                 </div>
 			</div>            
@@ -110,31 +111,63 @@
 			</div>            
  
             <div class="form-group">
-                <div class="col-sm-2">
+                <div class="col-sm-2 float-left">
                     <button type="submit" class="btn btn-outline-dark">Save
 						<img th:src="@{/images/save_alt-24px.svg}"/>
                     </button>
                 </div>
+				<div class="col-sm-10 float-right" id="bluetoothControls" style="display: none;" >
+		            <a th:href="${'/sensor/pair/' + sensor.id}" class="btn btn-outline-dark" title="Pair Bluetooth" rel="tooltip">
+						<img th:src="@{/images/settings_bluetooth-24px.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
+						<img th:src="@{/images/all_inclusive-24px.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
+						<img th:src="@{/images/whatshot-24px.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
+						<img th:src="@{/images/ac_unit-24px.svg}"/>
+		            </a>
+		        </div>
+				<div class="col-sm-10 float-right" id="wifiControls" style="display: none;" >
+		            <a th:href="${'/sensor/test/' + sensor.id}" class="btn btn-outline-dark" title="Test Sensor" rel="tooltip">
+						<img th:src="@{/images/sync_alt_black_24dp.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
+						<img th:src="@{/images/all_inclusive-24px.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
+						<img th:src="@{/images/whatshot-24px.svg}"/>
+		            </a>
+		            <a th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
+						<img th:src="@{/images/ac_unit-24px.svg}"/>
+		            </a>
+		        </div>
             </div>
         </form>
-        <div class="container">
-            <a th:if="${blueToothEnabled} == true" th:href="${'/sensor/pair/' + sensor.id}" class="btn btn-outline-dark" title="Pair Bluetooth" rel="tooltip">
-				<img th:src="@{/images/settings_bluetooth-24px.svg}"/>
-            </a>
-        </div>
-        <br/>
-        <div th:if="${blueToothEnabled} == true" class="container-fluid">
-            <a th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
-				<img th:src="@{/images/all_inclusive-24px.svg}"/>
-            </a>
-            <a th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
-				<img th:src="@{/images/whatshot-24px.svg}"/>
-            </a>
-            <a th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
-				<img th:src="@{/images/ac_unit-24px.svg}"/>
-            </a>
-        </div>
     </div>
 </div>
 </body>
+
+<script th:inline="javascript">
+	function selectControls()
+	{
+		var be = /*[[${blueToothEnabled}]]*/ 'false';
+		var we = /*[[${wiFiEnabled}]]*/ 'false';
+		var ct = communicationType.value;
+		if( be && ct == 'Bluetooth' ){
+	 		document.getElementById( "bluetoothControls" ).style.display = 'block';
+	 	}
+	 	else{ 
+	 		document.getElementById( "bluetoothControls" ).style.display = 'none';
+	 	}
+		if( we && ct == 'WiFi' ){
+	 		document.getElementById( "wifiControls" ).style.display = 'block';
+	 	}
+	 	else{ 
+	 		document.getElementById( "wifiControls" ).style.display = 'none';
+	 	}
+	}
+</script>
 </html>
