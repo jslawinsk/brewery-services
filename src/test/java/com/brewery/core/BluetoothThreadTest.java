@@ -21,11 +21,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
+import com.brewery.model.SensorType;
 import com.brewery.service.DataService;
 import com.brewery.util.BluetoothUtil;
 
 @SpringBootTest( properties = { "blueTooth.enabled=false", 
-		"blueTooth.scanSeconds=0"
+		"blueTooth.scanSeconds=0", "wiFi.enabled=false"
 } )
 @RunWith( SpringRunner.class)
 public class BluetoothThreadTest {
@@ -47,7 +48,7 @@ public class BluetoothThreadTest {
 		sensor.setUrl( "testurl" );
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
-		Mockito.when( dataService.getEnabledSensors() ).thenReturn( sensors );
+		Mockito.when( dataService.getEnabledSensors( SensorType.BLUETOOTH ) ).thenReturn( sensors );
 		
 		Message message = new Message( sensor.getName(), "COMMAND:CONTROL:COOL_ON" );
 //		message.setTarget( sensor.getName() );
@@ -67,7 +68,7 @@ public class BluetoothThreadTest {
 		
 		bluetoothThread.run();
 		
-		verify( dataService, atLeast(1)).getEnabledSensors( );		
+		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.BLUETOOTH );		
 	}
 
 }

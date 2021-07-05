@@ -29,6 +29,7 @@ import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorData;
+import com.brewery.model.SensorType;
 import com.brewery.service.DataService;
 import com.brewery.util.BluetoothUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +65,7 @@ public class BluetoothThread implements Runnable {
 				Thread.sleep( 1000 * scanSeconds ); 
 	        	bluetoothStatus.setUp(true);
 
-				List<Sensor> sensors= dataService.getEnabledSensors();
+				List<Sensor> sensors= dataService.getEnabledSensors( SensorType.BLUETOOTH );
 				Thread.sleep(500);
 				
 				Message message = null;

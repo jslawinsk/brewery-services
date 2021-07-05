@@ -41,7 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest( properties = { "blueTooth.enabled=false", 
 								"dataSynch.delayMinutes=0",
 								"dataSynch.url=http://localhost:8080/api/",
-								"dataSynch.apiId=BrewAppTest"
+								"dataSynch.apiId=BrewAppTest", 
+								"wiFi.enabled=false"
 				} )
 @RunWith( SpringRunner.class)
 public class DataSynchThreadTest {

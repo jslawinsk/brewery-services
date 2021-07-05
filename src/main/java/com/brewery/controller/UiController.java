@@ -61,6 +61,9 @@ public class UiController {
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
 	
+    @Value("${wiFi.enabled}")
+    private boolean wiFiEnabled;
+
     @RequestMapping(path = "/")
     public String index( Model model ) {
 
@@ -429,6 +432,7 @@ public class UiController {
     public String getAllSensors( Model model ) {
         model.addAttribute("sensors", dataService.getAllSensors() );
         model.addAttribute("blueToothEnabled", blueToothEnabled );
+        model.addAttribute("wiFiEnabled", blueToothEnabled );
         return "sensors";
     }
 
@@ -444,6 +448,7 @@ public class UiController {
 			e.printStackTrace();
 		}
         model.addAttribute("blueToothEnabled", blueToothEnabled );
+        model.addAttribute("wiFiEnabled", blueToothEnabled );
 
         Sensor sensor = new Sensor();
     	sensor.setId( 0L );
@@ -483,6 +488,7 @@ public class UiController {
         model.addAttribute("processes",  dataService.getAllProcesses() );
         model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
         model.addAttribute("blueToothEnabled", blueToothEnabled );
+        model.addAttribute("wiFiEnabled", blueToothEnabled );
         return "sensorEdit";
     }
 
