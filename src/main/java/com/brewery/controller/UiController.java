@@ -12,6 +12,7 @@ import com.brewery.model.Sensor;
 import com.brewery.dto.ChartAttributes;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
+import com.brewery.service.WiFiService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,12 @@ public class UiController {
     @Autowired
     public void setBlueToothService(BlueToothService blueToothService) {
         this.blueToothService = blueToothService;
+    }
+
+    private WiFiService wifiService;
+    @Autowired
+    public void setWiFiService(WiFiService wifiService) {
+        this.wifiService = wifiService;
     }
     
     @Value("${blueTooth.enabled}")
@@ -463,6 +470,30 @@ public class UiController {
         return "sensorSelect";
     }
 
+    @RequestMapping(path = "/sensor/scanwifi", method = RequestMethod.GET)
+    public String discoverWifiSensors( Model model )  {
+        try {
+			model.addAttribute("sensors", wifiService.discoverSensors() );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        model.addAttribute("blueToothEnabled", blueToothEnabled );
+        model.addAttribute("wiFiEnabled", blueToothEnabled );
+
+        Sensor sensor = new Sensor();
+    	sensor.setId( 0L );
+    	sensor.setEnabled( false );
+    	sensor.setCommunicationType("WiFi");
+    	sensor.setTrigger( "Auto" );
+    	sensor.setUpdateTime( new Date() );
+        model.addAttribute("sensor", sensor );
+        model.addAttribute("batches",  dataService.getAllBatches() );
+        model.addAttribute("processes",  dataService.getAllProcesses() );
+        model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
+        return "sensorSelect";
+    }
+   
     @RequestMapping(path = "/sensor/pair/{id}", method = RequestMethod.GET)
     public String pairSensor(Model model, @PathVariable(value = "id") Long id) {
         Sensor sensor = dataService.getSensor( id );
