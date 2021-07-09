@@ -14,6 +14,9 @@
     	<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-outline-dark btn-lg">Discover Bluetooth
    			<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
     	</a>
+		<a th:if="${wiFiEnabled} == true" th:href="${'/sensor/scanwifi/'}" class="btn btn-outline-dark btn-lg">Scan NetWork
+			<img th:src="@{/images/wifi_black_24dp.svg}"/>
+		</a>
     </div>
     <div th:if="${not #lists.isEmpty(sensors)}">
         <table class="table table-striped">
@@ -28,13 +31,16 @@
                 <th>Sensor Type</th>
                 <th class="d-none d-lg-block">Synched</th>                
                 <th>
-					<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark">
+					<a th:href="${'/sensor/add/'}" class="btn btn-outline-dark" title="Add Sensor" rel="tooltip">
 						<img th:src="@{/images/add-24px.svg}"/>
 					</a>
                 </th>
                 <th>
-					<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-outline-dark">
+					<a th:if="${blueToothEnabled} == true" th:href="${'/sensor/scan/'}" class="btn btn-outline-dark" title="Scan Bluetooth" rel="tooltip">
 						<img th:src="@{/images/bluetooth_searching-24px.svg}"/>
+					</a>
+					<a th:if="${wiFiEnabled} == true" th:href="${'/sensor/scanwifi/'}" class="btn btn-outline-dark" title="Scan NetWork" rel="tooltip">
+						<img th:src="@{/images/wifi_black_24dp.svg}"/>
 					</a>
                 </th>
             </tr>
