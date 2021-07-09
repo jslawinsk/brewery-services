@@ -82,7 +82,7 @@ public class WiFiThread implements Runnable {
 					
 				    HttpEntity<String> request = new HttpEntity<>( "", headers);
 					
-				    URI uri = new URI( sensor.getUrl() + "/tempdata?responseFormat=JSON");
+				    URI uri = new URI( sensor.getUrl() );
 				    
 				    ResponseEntity<String> responseEnt = restTemplate.exchange( uri, HttpMethod.GET, request, String.class );
 				    String response = responseEnt.getBody();

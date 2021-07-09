@@ -53,7 +53,7 @@ public class WiFiService {
             for (String ip : allIps ) {
             	if( checkIp( ip ) ) {
 	            	Sensor sensor = new Sensor();
-	            	sensor.setUrl( "http://" + ip ); 
+	            	sensor.setUrl( "http://" + ip + "/tempdata?responseFormat=JSON" ); 
 	            	sensor.setName( ip );
 	                sensors.add( sensor );
             	}
