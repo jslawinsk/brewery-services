@@ -130,22 +130,26 @@
 						<img th:src="@{/images/ac_unit-24px.svg}"/>
 		            </a>
 		        </div>
-				<div class="col-sm-10 float-right" id="wifiControls" style="display: none;" >
-		            <a th:href="${'/sensor/test/' + sensor.id}" class="btn btn-outline-dark" title="Test Sensor" rel="tooltip">
-						<img th:src="@{/images/sync_alt_black_24dp.svg}"/>
-		            </a>
-		            <a th:href="${'/sensor/controlauto/' + sensor.id}" class="btn btn-outline-dark" title="Control Auto" rel="tooltip">
-						<img th:src="@{/images/all_inclusive-24px.svg}"/>
-		            </a>
-		            <a th:href="${'/sensor/controlheat/' + sensor.id}" class="btn btn-outline-dark" title="Heat On" rel="tooltip">
-						<img th:src="@{/images/whatshot-24px.svg}"/>
-		            </a>
-		            <a th:href="${'/sensor/controlcool/' + sensor.id}" class="btn btn-outline-dark" title="Cool On" rel="tooltip">
-						<img th:src="@{/images/ac_unit-24px.svg}"/>
-		            </a>
-		        </div>
             </div>
-        </form>
+        	</form>
+			<div class="col-sm-10 float-right" id="wifiControls" style="display: none;" >
+		       <form class="form-horizontal" id="wifitools-form">
+	                <button type="submit" id="bth-test" nclass="btn btn-primary btn-outline-dark" title="Test Sensor" rel="tooltip" value="Test">
+	                	<img th:src="@{/images/sync_alt_black_24dp.svg}"/>
+                    </button>	       
+	                <button type="submit" id="bth-control-auto" nclass="btn btn-primary btn-outline-dark" title="Control Auto" rel="tooltip" value="Auto">
+						<img th:src="@{/images/all_inclusive-24px.svg}"/>
+                    </button>	       
+	                <button type="submit" id="bth-heat" nclass="btn btn-primary btn-outline-dark" title="Heat On" rel="tooltip" value="Heat">
+						<img th:src="@{/images/whatshot-24px.svg}"/>
+                    </button>	       
+	                <button type="submit" id="bth-cool" nclass="btn btn-primary btn-outline-dark" title="Cool On" rel="tooltip" value="Cool">
+						<img th:src="@{/images/ac_unit-24px.svg}"/>
+                    </button>	       
+	            </form>
+        		<div id="feedback"></div>
+	        </div>
+	        
     </div>
 </div>
 </body>
@@ -169,5 +173,64 @@
 	 		document.getElementById( "wifiControls" ).style.display = 'none';
 	 	}
 	}
+</script>	
+	
+<script type="text/javascript">
+	$(document).ready(function () {
+		console.log("ready function:" );
+	
+	    $("#wifitools-form button").click(function (event) {
+			console.log("wifitools-form click: " + $(this).attr("value"));
+			event.preventDefault();
+			var command = "";
+	    	if ($(this).attr("value") == "Auto") {
+	    		command = "&command=contolauto";
+		    }
+	    	else if ($(this).attr("value") == "Heat") {
+	    		command = "&command=contolheat";
+		    }
+	    	else if ($(this).attr("value") == "Cool") {
+	    		command = "&command=contolcool";
+		    }
+		    fire_ajax_submit( command );
+	    });
+	});
+
+	function fire_ajax_submit( command ) {
+		console.log("fire_ajax_submit : ", $("#url").val() + command );
+    	var search = {}
+    	var xhr = new XMLHttpRequest();
+ 
+    	$.ajax({
+    	
+    		beforeSend: function (xhr) {
+        		xhr.setRequestHeader( 'Authorization', 'Basic ' + btoa( $("#userId").val() + ':' + $("#pin").val() ) );
+        		xhr.setRequestHeader( 'Access-Control-Allow-Origin', '*' );
+    		},	
+    		crossOrigin: true,
+        	type: "GET",
+        	contentType: "application/json",
+        	url: $("#url").val() + command,
+        	dataType: 'json',
+        	cache: false,
+        	timeout: 600000,
+        	success: function (data) {
+            	var json = "<h4>Sensor Settings</h4>" + JSON.stringify(data, null, 4);
+            	$('#feedback').html(json);
+
+            	console.log("SUCCESS : ", data);
+            	window.scrollTo(0,document.body.scrollHeight);
+        	},
+        	error: function (e) {
+            	var json = "<h4>Sensor Communication Error</h4>" + e.responseText;
+            	$('#feedback').html(json);
+
+            	console.log("ERROR : ", e);
+            	window.scrollTo(0,document.body.scrollHeight);
+        	}
+    	});
+	}	
+	
 </script>
+
 </html>

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.brewery.actuator.WiFiStatus;
 import com.brewery.model.Measurement;
-import com.brewery.model.Message;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorData;
 import com.brewery.model.SensorType;
@@ -34,8 +32,6 @@ public class WiFiThread implements Runnable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger( WiFiThread.class );
 
-	private static ArrayBlockingQueue<Message> wiFiQueue = new ArrayBlockingQueue<Message>( 100 ); 
-	
     @Autowired
     private DataService dataService;
 	
@@ -56,12 +52,6 @@ public class WiFiThread implements Runnable {
 
 				List<Sensor> sensors= dataService.getEnabledSensors( SensorType.WIFI );
 				Thread.sleep(500);
-				
-				Message message = null;
-				if( !wiFiQueue.isEmpty() ) {
-					message = wiFiQueue.remove();
-					LOG.info("Message: " + message );						
-				}
 				
 				statusMessage = "";
 				for( Sensor sensor : sensors ) {
@@ -106,37 +96,14 @@ public class WiFiThread implements Runnable {
 				    	}
 		    	        statusMessage = statusMessage + " data retrieved ";
 			        }
-/*					
-					if( message != null ) {
-						LOG.info("Message: " + message  );								
-						String target = message.getTarget();
-						if( target != null ) {
-							LOG.info("Sensor: " + sensor  );								
-							if( target.equals( sensor.getName() ) ){
-								LOG.info("Sending Message: " + message );								
-								OutputStream outStream=streamConnection.openOutputStream();
-								PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
-								pWriter.write( message.getData() + "\n\r");
-								pWriter.flush();
-				    	        outStream.close();
-				    	        statusMessage = statusMessage + " Message Sent ";
-							}
-						}
-					}
-			*/
-
 				}    			        
 				wifiStatus.setMessage( statusMessage );
-				if( scanSeconds == 0 && wiFiQueue.isEmpty() )  break;
+				if( scanSeconds == 0 )  break;
 			} catch( Exception e ) {
 				e.printStackTrace();
 		        statusMessage = statusMessage + ": exeception ";
 		        wifiStatus.setUp( false );
 			}
         }
-    }
-    
-    static public void sendMessage( Message message ) {
-    	wiFiQueue.add( message );
     }
 }
