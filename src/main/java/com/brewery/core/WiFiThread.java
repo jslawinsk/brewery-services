@@ -37,6 +37,9 @@ public class WiFiThread implements Runnable {
 	
     @Autowired
     private WiFiStatus wifiStatus;
+ 
+    @Autowired
+    private RestTemplate restTemplate;
     
     @Value("${wiFi.scanSeconds}")
     private int scanSeconds;
@@ -64,7 +67,6 @@ public class WiFiThread implements Runnable {
 					byte[] base64CredentialBytes = Base64.getEncoder().encode(credentialBytes);
 					String base64Credentials = new String(base64CredentialBytes);
 					
-					RestTemplate restTemplate = new RestTemplate();
 					HttpHeaders headers = new HttpHeaders();
 					headers.add("Authorization", "Basic " + base64Credentials );				
 					
@@ -98,12 +100,12 @@ public class WiFiThread implements Runnable {
 			        }
 				}    			        
 				wifiStatus.setMessage( statusMessage );
-				if( scanSeconds == 0 )  break;
 			} catch( Exception e ) {
 				e.printStackTrace();
 		        statusMessage = statusMessage + ": exeception ";
 		        wifiStatus.setUp( false );
 			}
+			if( scanSeconds == 0 )  break;
         }
     }
 }
