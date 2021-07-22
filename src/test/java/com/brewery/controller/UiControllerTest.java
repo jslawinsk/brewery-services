@@ -555,6 +555,22 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
+	public void discoverWifiSensors() throws Exception
+	{
+		Sensor sensor = new Sensor();
+    	List<Sensor> sensors = new ArrayList<>();
+    	sensors.add( sensor );			
+		Mockito.when( blueToothService.discoverSensors( )).thenReturn( sensors );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/scanwifi")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+	}	
+
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
 	public void pairSensor() throws Exception
 	{
 		Sensor sensor = new Sensor();
