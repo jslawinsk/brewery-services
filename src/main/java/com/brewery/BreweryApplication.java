@@ -36,6 +36,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 public class BreweryApplication implements CommandLineRunner {
@@ -90,6 +91,9 @@ public class BreweryApplication implements CommandLineRunner {
     
     @Value("${testdata.create}")
     private boolean createTestData;
+
+    @Value("${testdata.createAdmin}")
+    private boolean createTestAdmin;
     
     @Autowired
     private TaskExecutor taskExecutor;
@@ -152,7 +156,11 @@ public class BreweryApplication implements CommandLineRunner {
 			measurement = new Measurement( 60.5, "{\"target\":70.0}", testBatch2, process, measureType, new Date() );
 			measurementRepository.save( measurement );
 			
-			User user = new User( "ADMIN", "admin", DbSync.ADD, UserRoles.ADMIN.toString() );
+			User user = new User( "ADMIN", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString() );
+			userRepository.save( user );
+		}
+		else if ( createTestAdmin ) {
+			User user = new User( "ADMIN", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString() );
 			userRepository.save( user );
 		}
 

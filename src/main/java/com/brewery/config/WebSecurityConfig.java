@@ -1,5 +1,7 @@
 package com.brewery.config;
 
+import java.security.SecureRandom;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,13 +30,18 @@ import com.brewery.security.JWTAuthorizationFilter;
 @EnableWebSecurity
 public class WebSecurityConfig{
 	
+//	@Bean
+//	public BCryptPasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	};
+	
     @Configuration
     @Order(1)
     public static class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
         private Logger LOG = LoggerFactory.getLogger( RestApiSecurityConfig.class );
 
     	@Override
-    	protected void configure(HttpSecurity http) throws Exception {
+    	protected void configure(final HttpSecurity http) throws Exception {
     		LOG.info("configure: " + http.toString() );		
     		http
     			.antMatcher("/api/**")
@@ -67,6 +76,9 @@ public class WebSecurityConfig{
           return dataService;
         };
         
+//        @Autowired
+//        private PasswordEncoder passwordEncoder;
+
     	@Bean
     	public BCryptPasswordEncoder passwordEncoder() {
     		return new BCryptPasswordEncoder();
@@ -78,7 +90,7 @@ public class WebSecurityConfig{
     	}	
         
     	@Override
-    	protected void configure(HttpSecurity http) throws Exception {
+    	protected void configure(final HttpSecurity http) throws Exception {
     		LOG.info("configure: " + http.toString() );		
     		http
     			.authorizeRequests()

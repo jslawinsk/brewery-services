@@ -34,6 +34,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +50,9 @@ public class RestApiController {
     public void setDataService(DataService dataService) {
         this.dataService = dataService;
     }
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     //
     // Heartbeat - Used to verify service is running
@@ -250,7 +254,7 @@ public class RestApiController {
 	public User login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
 		User foundUser = dataService.getUserByName( username );
 		if( foundUser != null ) {
-			if( foundUser.getPassword().equals( pwd )) {
+			if( foundUser.getPassword().equals( pwd ) || passwordEncoder.matches( pwd, foundUser.getPassword() ) ) {
 				LOG.info( "Passwords Match");
 				String token = getJWTToken( foundUser );
 				foundUser.setToken(token);		
