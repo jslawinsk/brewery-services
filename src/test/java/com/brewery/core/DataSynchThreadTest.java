@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 								"dataSynch.delayMinutes=0",
 								"dataSynch.url=http://localhost:8080/api/",
 								"dataSynch.apiId=BrewAppTest", 
+								"dataSynch.apiPassword=BrewAppTest", 
 								"wiFi.enabled=false"
 				} )
 @RunWith( SpringRunner.class)

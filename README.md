@@ -4,6 +4,10 @@ Brewery Services Spring REST API Project and Web UI interface. Allows to retriev
 
 Refer to the Wiki page for design and more details: https://github.com/jslawinsk/brewery-services/wiki
 
+## Notable Release Notes
+
+August 21, 2021: User password encryption/hashing added to this release. Refer to Wiki Release Notes for migrating user passwords.
+
 ## Brewery Services Dashboard
 
 The Dashboard will display measurements for all measurements for active batches. The measurement type table will determine the type of sensor gauge displayed.

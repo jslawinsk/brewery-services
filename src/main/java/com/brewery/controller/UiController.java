@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,6 +65,9 @@ public class UiController {
     public void setWiFiService(WiFiService wifiService) {
         this.wifiService = wifiService;
     }
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
@@ -581,12 +585,22 @@ public class UiController {
     @RequestMapping(path = "/user/add", method = RequestMethod.GET)
     public String createUser(Model model) {
         model.addAttribute("user", new User());
-        return "userEdit";
+        return "userAdd";
     }
 
+    @RequestMapping(path = "/user/add", method = RequestMethod.POST)
+    public String saveNewUser(User user) {
+    	String pw = user.getPassword();
+    	if( pw != null && pw.length() > 0 ) {
+    		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
+        	dataService.saveUser(user);
+    	}
+        return "redirect:/user";
+    }
+    
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public String saveUser(User user) {
-    	dataService.saveUser(user);
+        dataService.saveUser(user);
         return "redirect:/user";
     }
     
@@ -598,10 +612,30 @@ public class UiController {
 
     @RequestMapping(path = "/user/edit/{id}", method = RequestMethod.GET)
     public String editUser(Model model, @PathVariable(value = "id") Long id) {
-        model.addAttribute("user", dataService.getUser(id) );
+    	User user = dataService.getUser(id);
+        model.addAttribute("user", user );
         return "userEdit";
     }
 
+    @RequestMapping(path = "/user/password/{id}", method = RequestMethod.GET)
+    public String editUserPassword(Model model, @PathVariable(value = "id") Long id) {
+    	User user = dataService.getUser(id);
+    	user.setPassword( "" );
+        model.addAttribute("user", user );
+        return "userPasswordEdit";
+    }
+
+    @RequestMapping(path = "/user/password", method = RequestMethod.POST)
+    public String updateUserPw(User user) {
+        LOG.info("UiController: updateUserPw: User:" + user );   	
+    	String pw = user.getPassword();
+    	if( pw != null && pw.length() > 0 ) {
+    		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
+        	dataService.saveUser(user);
+    	}
+        return "redirect:/user";
+    }
+    
     @RequestMapping(path = "/user/delete/{id}", method = RequestMethod.GET)
     public String deleteUser(@PathVariable(name = "id") Long id) {
     	dataService.deleteUser(id);
