@@ -70,6 +70,9 @@ public class DataSynchThread implements Runnable {
     @Value("${dataSynch.apiId}")
     private String apiUserId;    
 
+    @Value("${dataSynch.apiPassword}")
+    private String apiUserPassword;    
+    
     @Value("${dataSynch.deleteDuplicates}")
     private boolean deleteDuplicates;
     
@@ -99,8 +102,8 @@ public class DataSynchThread implements Runnable {
 							HttpHeaders headers = new HttpHeaders();
 							headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 							MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-							map.add("user", apiUser.getUsername() );
-							map.add("password", apiUser.getPassword() );
+							map.add("user", apiUserId );
+							map.add("password", apiUserPassword );
 							HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 							ResponseEntity<User> respUser = restTemplate.postForEntity( dataSynchUrl + "authorize", request , User.class );							
