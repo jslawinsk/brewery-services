@@ -6,6 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -680,12 +683,59 @@ public class UiControllerTest {
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<h2>Edit User</h2>")));
 	}		
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void saveNewUser() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		LOG.info( "Test saveNewUser: " + user );
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/user/add")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "username", user.getUsername(), 
+	                "password", user.getPassword()
+	                )
+	            )
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/user"))
+				;
+		
+	}		
+	
+	private String buildUrlEncodedFormEntity(String... params) {
+	    if( (params.length % 2) > 0 ) {
+	       throw new IllegalArgumentException("Need to give an even number of parameters");
+	    }
+	    StringBuilder result = new StringBuilder();
+	    for (int i=0; i<params.length; i+=2) {
+	        if( i > 0 ) {
+	            result.append('&');
+	        }
+	        try {
+	            result.
+	            append(URLEncoder.encode(params[i], StandardCharsets.UTF_8.name())).
+	            append('=').
+	            append(URLEncoder.encode(params[i+1], StandardCharsets.UTF_8.name()));
+	        }
+	        catch (UnsupportedEncodingException e) {
+	            throw new RuntimeException(e);
+	        }
+	    }
+	    return result.toString();
+	 }	
+	
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	public void saveUser() throws Exception
 	{
-		User user = new User( );
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		LOG.info( "Test saveUser: " + user );
 
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/user" )
 				.with(csrf())
@@ -709,7 +759,8 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void editUser() throws Exception
 	{
-		User user = new User( );
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
 		Mockito.when(dataService.getUser( 1L )).thenReturn( user );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/edit/1")
@@ -717,6 +768,42 @@ public class UiControllerTest {
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<h2>Edit User</h2>")));
 	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void editUserPassword() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		Mockito.when(dataService.getUser( 1L )).thenReturn( user );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/password/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Change Password for:")));
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void updateUserPw() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		LOG.info( "Test saveNewUser: " + user );
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/user/password")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "username", user.getUsername(), 
+	                "password", user.getPassword()
+	                )
+	            )
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/user"))
+				;
+		
+	}			
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
