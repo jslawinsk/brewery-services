@@ -627,7 +627,6 @@ public class UiController {
 
     @RequestMapping(path = "/user/password", method = RequestMethod.POST)
     public String updateUserPw(User user) {
-        LOG.info("UiController: updateUserPw: User:" + user );   	
     	String pw = user.getPassword();
     	if( pw != null && pw.length() > 0 ) {
     		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
