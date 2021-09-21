@@ -94,13 +94,13 @@ public class WebSecurityConfig{
     		LOG.info("configure: " + http.toString() );		
     		http
     			.authorizeRequests()
-    				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**" ).permitAll()		
+    				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**", "/validate/**" ).permitAll()		
     				.and()
     			.authorizeRequests()
     				.antMatchers( "/style/**", "/process/**", "/measureType/**", "/batch/**", "/measurement/**", "/sensor/**", "/user/**"  ).hasRole( "ADMIN" )
     				.and()
     			.authorizeRequests()
-    				.antMatchers( "/" ).hasAnyRole( "ADMIN", "USER" )
+    				.antMatchers( "/", "/profile/**" ).hasAnyRole( "ADMIN", "USER" )
     				.and()
     			.formLogin()
     				.loginPage("/login")

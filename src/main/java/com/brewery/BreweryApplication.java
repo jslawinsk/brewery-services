@@ -156,11 +156,11 @@ public class BreweryApplication implements CommandLineRunner {
 			measurement = new Measurement( 60.5, "{\"target\":70.0}", testBatch2, process, measureType, new Date() );
 			measurementRepository.save( measurement );
 			
-			User user = new User( "ADMIN", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString() );
+			User user = new User( "ADMIN", "admin@breweryservices.com", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString(), true );
 			userRepository.save( user );
 		}
 		else if ( createTestAdmin ) {
-			User user = new User( "ADMIN", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString() );
+			User user = new User( "ADMIN", "admin@breweryservices.com", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString(), true );
 			userRepository.save( user );
 		}
 

@@ -2,6 +2,7 @@ package com.brewery.service;
 
 import com.brewery.model.Style;
 import com.brewery.model.User;
+import com.brewery.model.VerificationToken;
 import com.brewery.model.Process;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
@@ -10,6 +11,7 @@ import com.brewery.model.Sensor;
 import com.brewery.model.SensorType;
 import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
+import com.brewery.repository.VerificationTokenRepository;
 import com.brewery.repository.ProcessRepository;
 import com.brewery.repository.MeasureTypeRepository;
 import com.brewery.repository.BatchRepository;
@@ -81,6 +83,12 @@ public class DataService implements UserDetailsService {
     @Autowired
 	public void userRepository( UserRepository userRepository ) {
 		this.userRepository = userRepository;
+	}
+    
+    private VerificationTokenRepository verificationTokenRepository;
+    @Autowired
+	public void verificationTokenRepository( VerificationTokenRepository verificationTokenRepository ) {
+		this.verificationTokenRepository = verificationTokenRepository;
 	}
     
 	//
@@ -543,10 +551,9 @@ public class DataService implements UserDetailsService {
     	User user = userRepository.findByUsername(username);
         
         UserBuilder builder = null;
-        if (user != null) {
+        if (user != null && user.isValidated() ) {
           builder = org.springframework.security.core.userdetails.User.withUsername(username);
           builder.password( user.getPassword() );
-//          builder.password(new BCryptPasswordEncoder().encode(user.getPassword()));
           builder.roles(user.getRoles());
         } else {
           throw new UsernameNotFoundException("User not found.");
@@ -608,5 +615,50 @@ public class DataService implements UserDetailsService {
             LOG.error("DataService: Exception: deleteUser: " + e.getMessage());
         }
     }
+    
+	//
+	//	VerificationToken table access methods
+	//
+	//
+    public VerificationToken getVerificationToken( String token ) {
+        LOG.info("Getting VerificationToken:" + token );
+        return verificationTokenRepository.getOne( token );
+    }
+    
+    public VerificationToken saveVerificationToken( VerificationToken verificationToken ) {
+    	VerificationToken verificationTokenToSave;
+        LOG.info("Saving VerificationToken:" + verificationToken);
+        try {
+            LOG.info("Saving VerificationToken: " + verificationToken );
+            verificationTokenToSave = verificationTokenRepository.save( verificationToken );
+            return verificationTokenToSave;
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: saveVerificationToken: " + e.getMessage());
+        }
+        return new VerificationToken();
+    }
+
+    public VerificationToken updateVerificationToken( VerificationToken verificationTokenToUpdate ) {
+        LOG.info("Update VerificationToken:" + verificationTokenToUpdate);
+        VerificationToken foundVerificationToken = verificationTokenRepository.getOne( verificationTokenToUpdate.getToken() );
+        try {
+        	foundVerificationToken.setUsername( verificationTokenToUpdate.getUsername() );
+        	foundVerificationToken.setExpiryDate( verificationTokenToUpdate.getExpiryDate() );
+            return verificationTokenRepository.save( foundVerificationToken );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: updateVerificationToken: " + e.getMessage());
+        }
+        return verificationTokenToUpdate;
+    }
+
+    public void deleteVerificationToken( String token ) {
+        try {
+        	VerificationToken foundVerificationToken = verificationTokenRepository.getOne( token );
+        	verificationTokenRepository.delete( foundVerificationToken );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: deleteVerificationToken: " + e.getMessage());
+        }
+    }
+
     
 }

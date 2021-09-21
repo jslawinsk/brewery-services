@@ -18,6 +18,8 @@
                 <th>Id</th>
                 <th>User Name</th>
                 <th>Role</th>
+                <th class="d-none d-lg-block">Validated</th>
+                <th></th>
                 <th class="d-none d-lg-block">DB Synch</th>
                 <th></th>
                 <th>
@@ -30,6 +32,8 @@
                 <td th:text="${user.id}">Id</td>
                 <td th:text="${user.username}">Name</td>
                 <td th:text="${user.roles}">Roles</td>
+                <td th:text="${user.validated}" class="d-none d-lg-block">Validated</td>
+                <td></td>
                 <td th:text="${user.dbSynch}" class="d-none d-lg-block">Synched</td>
                 <td><a th:href="${'/user/edit/' + user.id}" class="btn btn-default">
 					<img th:src="@{/images/edit-24px.svg}"/>

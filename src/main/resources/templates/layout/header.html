@@ -40,12 +40,19 @@
   					</li>
         		</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li class="nav-item">
-						<form method="post" th:action="@{/logout}">
-						  	<input type="hidden" name="name" value="value" /> 
-						  	<a class="nav-link" onclick="this.parentNode.submit();">Logout</a>
-						</form>  					
-  					</li>
+					<div class="dropdown">
+						<a href="#" id="imageDropdown" data-toggle="dropdown">
+							<img th:src="@{/images/account_circle_white_24dp.svg}"/>
+						</a>						
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							<a class="dropdown-item" th:href="@{/profile/edit}">Profile</a>
+							<a class="dropdown-item" th:href="@{/profile/password}">Change Password</a>
+							<form method="post" th:action="@{/logout}">
+							  	<input type="hidden" name="name" value="value" /> 
+							  	<a class="dropdown-item" onclick="this.parentNode.submit();">Logout</a>
+							</form>  	
+						</div>
+					</div>					
 				</ul>        		
       		</div>
     	</nav>        
