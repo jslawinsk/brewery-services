@@ -607,7 +607,7 @@ public class UiController {
         if (session != null) {
             session.invalidate();
         }        
-    	return "login";
+    	return "redirect:/";
     }
     
     //
@@ -640,10 +640,9 @@ public class UiController {
                 if (session != null) {
                     session.invalidate();
                 }        
-                return "login";
         	}
     	}
-        return "/";
+        return "redirect:/";
     }
     
     @RequestMapping(path = "/profile/password", method = RequestMethod.GET)

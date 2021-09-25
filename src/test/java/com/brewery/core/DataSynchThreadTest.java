@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -53,6 +54,9 @@ public class DataSynchThreadTest {
 	@MockBean
 	DataService dataService;
 
+	@MockBean
+	JavaMailSender mailSender;
+	
 	@Autowired
 	RestTemplate  restTemplate;
     //private RestTemplate restTemplate = new RestTemplate();
