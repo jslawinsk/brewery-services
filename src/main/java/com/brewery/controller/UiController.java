@@ -1,9 +1,9 @@
 package com.brewery.controller;
 
-
 import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.Process;
+import com.brewery.model.ProfilePassword;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
@@ -12,11 +12,13 @@ import com.brewery.model.Sensor;
 import com.brewery.dto.ChartAttributes;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
+import com.brewery.service.UserService;
 import com.brewery.service.WiFiService;
+import com.brewery.util.OnCreateUserEvent;
+import com.brewery.core.BluetoothThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.brewery.core.BluetoothThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,18 +30,29 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @Controller
@@ -68,13 +81,19 @@ public class UiController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
 	
     @Value("${wiFi.enabled}")
     private boolean wiFiEnabled;
-
+    
     @RequestMapping(path = "/")
     public String index( Model model ) {
 
@@ -578,6 +597,86 @@ public class UiController {
         return "login";
     }
     
+    @GetMapping("/validate")
+    public String validateUser( Model model, @RequestParam("token") String token, HttpServletRequest request) {
+        LOG.info("UiController: validateUser: " + token );   	
+        userService.confirmUser( token );
+        model.addAttribute("userValidated", true );
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }        
+    	return "redirect:/";
+    }
+    
+    //
+    //	User table Profile UI routines
+    //
+    //
+    @RequestMapping(path = "/profile/edit", method = RequestMethod.GET)
+    public String editProfile( Model model ) {
+    	
+    	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();    	
+    	
+    	User user = dataService.getUserByName( userDetails.getUsername() );
+        model.addAttribute("user", user );
+        return "profileEdit";
+    }
+    
+    @RequestMapping(path = "/profile", method = RequestMethod.POST)
+    public String saveProfile(Model model, HttpServletRequest request, User user) {
+
+    	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
+        request.setAttribute( View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
+    	if( user.getUsername().equals( userDetails.getUsername() ) ) {
+    		dataService.saveUser(user);
+        	if( !user.isValidated() ) {
+        	    String serverUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();    
+        		eventPublisher.publishEvent( new OnCreateUserEvent( user, serverUrl, "validate" ) );
+                model.addAttribute("validateUser", true );
+                SecurityContextHolder.clearContext();
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }        
+        	}
+    	}
+        return "redirect:/";
+    }
+    
+    @RequestMapping(path = "/profile/password", method = RequestMethod.GET)
+    public String profilePassword( Model model ) {
+    	
+    	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();    	
+    	
+    	User user = dataService.getUserByName( userDetails.getUsername() );
+    	ProfilePassword profilePassword = new ProfilePassword( user.getUsername() );
+        model.addAttribute("profilePassword", profilePassword );
+        return "profilePassword";
+    }
+    
+    @RequestMapping(path = "/profile/password", method = RequestMethod.POST)
+    public String profileUpdatePw( Model model, ProfilePassword profilePassword ) {
+    	
+		LOG.info( "profileUpdatePw: " + profilePassword );
+    	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();    	
+    	
+    	User user = dataService.getUserByName( userDetails.getUsername() );
+		if( passwordEncoder.matches( profilePassword.getPassword(), user.getPassword() ) ) {
+			LOG.info( "Passwords Match");
+    		user.setPassword( passwordEncoder.encode( profilePassword.getNewPassword() ) );
+        	dataService.saveUser(user);
+		}
+		else {
+			LOG.info( "Invalid current password");
+	    	profilePassword = new ProfilePassword( user.getUsername() );
+	        model.addAttribute("profilePassword", profilePassword );
+	        return "profilePassword";
+		}
+        return "redirect:/";
+    }
+    
     //
     //	User table UI routines
     //
@@ -594,6 +693,10 @@ public class UiController {
     	if( pw != null && pw.length() > 0 ) {
     		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
         	dataService.saveUser(user);
+        	if( !user.isValidated() ) {
+        	    String serverUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();    
+        		eventPublisher.publishEvent( new OnCreateUserEvent( user, serverUrl, "validate" ) );
+        	}
     	}
         return "redirect:/user";
     }
@@ -601,6 +704,10 @@ public class UiController {
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public String saveUser(User user) {
         dataService.saveUser(user);
+    	if( !user.isValidated() ) {
+    	    String serverUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();    
+    		eventPublisher.publishEvent( new OnCreateUserEvent( user, serverUrl, "validate" ) );
+    	}
         return "redirect:/user";
     }
     

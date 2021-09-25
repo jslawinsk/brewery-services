@@ -15,6 +15,12 @@
         <div th:if="${param.logout}">
             You have been logged out.
         </div>
+        <div th:if="${userValidated}">
+            User validation successful.
+        </div>
+        <div th:if="${validateUser}">
+            An email has been sent to validate your user id. Please press the email link.
+        </div>
         
         <form class="form-horizontal" th:action="@{/login}" method="post">
             <div class="form-group">

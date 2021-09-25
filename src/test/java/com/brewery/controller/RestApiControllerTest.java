@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,6 +65,9 @@ public class RestApiControllerTest {
 	
 	@MockBean
 	DataService dataService;
+	
+	@MockBean
+	JavaMailSender mailSender;
 	
 	private Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 	private Process process = new Process( "FRM", "Fermentation" );

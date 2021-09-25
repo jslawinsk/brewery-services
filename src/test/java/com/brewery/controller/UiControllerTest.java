@@ -24,9 +24,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -49,6 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 				properties = { "blueTooth.enabled=false", "wiFi.enabled=false" }
 			)
+//@TestPropertySource("classpath:resources/appliaction-local.properties")
 @AutoConfigureMockMvc
 public class UiControllerTest {
 
@@ -68,6 +71,9 @@ public class UiControllerTest {
 	
 	@MockBean
 	BlueToothService blueToothService;
+
+	@MockBean
+	JavaMailSender mailSender;
 	
 	//
 	//	Index Dash board tests 

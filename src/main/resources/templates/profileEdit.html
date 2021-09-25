@@ -8,19 +8,20 @@
 <div class="container">
     <h2>Edit User</h2>
     <div>
-        <form class="form-horizontal" th:object="${user}" th:action="@{/user}" method="post">
+        <form class="form-horizontal" th:object="${user}" th:action="@{/profile}" method="post">
             <input type="hidden" class="form-control" th:field="*{id}"/>
             <input type="hidden" class="form-control" th:field="*{password}"/>
+            <input type="hidden" class="form-control" th:field="*{dbSynch}"/>
             <div class="form-group">
                 <label class="col-sm-2 control-label">User Name:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" th:field="*{username}" />
+                    <input type="text" class="form-control" th:field="*{username}" readonly/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">EMail:</label>
                 <div class="col-sm-10">
-                    <input type="text" id="email" class="form-control" th:field="*{email}"
+                    <input type="text" id="email" class="form-control" th:field="*{email}" 
                     	required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" 
 						title="Must be a valid email address."
 					/>
@@ -30,36 +31,21 @@
 			<div class="form-group">
                 <label class="col-sm-2 control-label">Role:</label>
                 <div class="col-sm-10">
-	    			<select class="form-control" th:field="*{roles}">
-	    				<option th:each="role : ${T(com.brewery.model.UserRoles).values()}" th:value="${role}" th:text="${role}"></option>
-	    			</select>
+                    <input type="text" class="form-control" th:field="*{roles}" readonly/>
                 </div>
 			</div>            
 
-            <div class="form-group form-check">
+            <div class="form-group">
                 <label class="col-sm-2 control-label">Validated:</label>
                 <div class="col-sm-10">
-	                <input type="checkbox" class="form-check-input" id="validated" name="validated" th:checked="*{validated}"/>
+                    <input type="text" id="validated" class="form-control" th:field="*{validated}" readonly/>
                 </div>
             </div>
 			
-			<div class="form-group">
-                <label class="col-sm-2 control-label">Synch Status:</label>
-                <div class="col-sm-10">
-	    			<select class="form-control" th:field="*{dbSynch}">
-	    				<option th:each="dbSync : ${T(com.brewery.model.DbSync).values()}" th:value="${dbSync}" th:text="${dbSync}"></option>
-	    			</select>
-                </div>
-			</div>            
-            
 			<div class="col-sm-10 float-right" >
                 <button type="submit" class="btn btn-outline-dark">Save
 					<img th:src="@{/images/save_alt-24px.svg}"/>
                 </button>
-				<a th:href="${'/user/password/' } + *{id}" class="btn btn-outline-dark">
-					Password
-					<img th:src="@{/images/password_black_24dp.svg}"/>
-            	</a>                
             </div>
 
         </form>
@@ -70,7 +56,7 @@
  	
 	 $('#email' ).on('keyup', function () {
 		var validatedVar = document.getElementById("validated");
-		validatedVar.checked = false;
+		validatedVar.value = "false";
 	 });
  	
 </script>

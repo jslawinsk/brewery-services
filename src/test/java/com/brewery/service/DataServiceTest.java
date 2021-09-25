@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -63,6 +64,9 @@ public class DataServiceTest {
 	private SensorRepository sensorRepository;
 	@MockBean
 	private UserRepository userRepository;
+
+	@MockBean
+	JavaMailSender mailSender;
 
 	@Autowired
 	DataService dataService;
@@ -739,6 +743,7 @@ public class DataServiceTest {
 	@Test
 	public void loadUserByUsername() throws Exception
 	{
+		user.setValidated( true );
         Mockito.when(userRepository.findByUsername( "ADMIN" )).thenReturn( user );
         
         UserDetails userDetails = dataService.loadUserByUsername( "ADMIN" );

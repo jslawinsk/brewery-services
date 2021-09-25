@@ -8,6 +8,8 @@ Refer to the Wiki page for design and more details: https://github.com/jslawinsk
 
 August 21, 2021: User password encryption/hashing added to this release. Refer to Wiki Release Notes for migrating user passwords.
 
+Please refer to Wiki release notes to migrate from all earlier versions.
+
 ## Brewery Services Dashboard
 
 The Dashboard will display measurements for all measurements for active batches. The measurement type table will determine the type of sensor gauge displayed.

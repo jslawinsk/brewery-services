@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.brewery.model.Message;
@@ -37,6 +38,9 @@ public class BluetoothThreadTest {
 	@MockBean
     BluetoothUtil bluetoothUtil;
 	
+	@MockBean
+	JavaMailSender mailSender;
+
 	@Autowired
 	BluetoothThread bluetoothThread;
 	
