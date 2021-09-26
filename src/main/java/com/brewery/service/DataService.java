@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -622,7 +624,7 @@ public class DataService implements UserDetailsService {
 	//
     public VerificationToken getVerificationToken( String token ) {
         LOG.info("Getting VerificationToken:" + token );
-        return verificationTokenRepository.getOne( token );
+	    return verificationTokenRepository.findById( token ).orElse(null);
     }
     
     public VerificationToken saveVerificationToken( VerificationToken verificationToken ) {

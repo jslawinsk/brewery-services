@@ -39,18 +39,20 @@ public class UserService {
         dataService.saveVerificationToken( verificationToken );
     }
 
-    public void confirmUser(String token) {
+    public boolean confirmUser(String token) {
         //retrieve token
         VerificationToken verificationToken = dataService.getVerificationToken( token );
         //verify date
         LOG.info("UserService: confirmUser: " + verificationToken ); 
-        if(verificationToken.getExpiryDate().after(new Date())) {
+        if(verificationToken != null && verificationToken.getExpiryDate().after(new Date())) {
         	User user = dataService.getUserByName( verificationToken.getUsername() );
             //update user details
         	user.setValidated( true );
         	dataService.saveUser( user );
             //delete from tokens
             dataService.deleteVerificationToken(token);
+            return true;
         }
+        return false;
     }
 }

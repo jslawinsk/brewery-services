@@ -6,6 +6,7 @@ import com.brewery.model.Process;
 import com.brewery.model.ProfilePassword;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
+import com.brewery.model.Info;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
@@ -600,14 +601,23 @@ public class UiController {
     @GetMapping("/validate")
     public String validateUser( Model model, @RequestParam("token") String token, HttpServletRequest request) {
         LOG.info("UiController: validateUser: " + token );   	
-        userService.confirmUser( token );
-        model.addAttribute("userValidated", true );
+        Info info = new Info();
+        info.setHeader( "User Validation");
+        if( userService.confirmUser( token ) ) {
+        	info.setMessage( "User validation successful." );
+        	info.setHrefLink( "/" );
+        	info.setHrefText( "Login" );
+        }
+        else {
+        	info.setMessage( "User validation failed. Contact administator to generate a new verification token." );
+        }
+        model.addAttribute("info", info );
         SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }        
-    	return "redirect:/";
+    	return "info";
     }
     
     //
