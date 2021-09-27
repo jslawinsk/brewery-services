@@ -663,6 +663,10 @@ public class UiController {
     	User user = dataService.getUserByName( userDetails.getUsername() );
     	ProfilePassword profilePassword = new ProfilePassword( user.getUsername() );
         model.addAttribute("profilePassword", profilePassword );
+        
+        Info info = new Info();
+        model.addAttribute("info", info );
+        
         return "profilePassword";
     }
     
@@ -671,6 +675,8 @@ public class UiController {
     	
 		LOG.info( "profileUpdatePw: " + profilePassword );
     	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();    	
+
+        Info info = new Info();
     	
     	User user = dataService.getUserByName( userDetails.getUsername() );
 		if( passwordEncoder.matches( profilePassword.getPassword(), user.getPassword() ) ) {
@@ -682,8 +688,11 @@ public class UiController {
 			LOG.info( "Invalid current password");
 	    	profilePassword = new ProfilePassword( user.getUsername() );
 	        model.addAttribute("profilePassword", profilePassword );
+	        info.setMessage( "Password change failed, please enter current password." );
+	        model.addAttribute("info", info );
 	        return "profilePassword";
 		}
+        model.addAttribute("info", info );
         return "redirect:/";
     }
     
