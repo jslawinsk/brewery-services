@@ -6,16 +6,12 @@
 </head>
 <body>
   <div class="container">
-    <div class="row">
-	  <h2 th:inline="text">[[${info.header}]]</h2>
-    </div>
+	<h2 th:inline="text">[[${info.header}]]</h2>
     <br/>
-    <div class="row rowDesign">
-      <div class="col-md-8">
+	<div class="col-md-8">
 		<h4 th:inline="text">[[${info.message}]]</h4>
 		<a href="#" th:href="${info.hrefLink}" th:inline="text">[[${info.hrefText}]]</a>        
-      </div>
-    </div>
+	</div>
   </div>
 </body>
 </html>

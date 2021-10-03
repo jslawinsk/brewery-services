@@ -4,18 +4,21 @@ import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.Process;
 import com.brewery.model.ProfilePassword;
+import com.brewery.model.ResetToken;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Info;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
 import com.brewery.model.Sensor;
+import com.brewery.model.Password;
 import com.brewery.dto.ChartAttributes;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 import com.brewery.service.UserService;
 import com.brewery.service.WiFiService;
 import com.brewery.util.OnCreateUserEvent;
+import com.brewery.util.OnPasswordResetEvent;
 import com.brewery.core.BluetoothThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,6 +36,7 @@ import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +50,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -619,6 +626,69 @@ public class UiController {
         }        
     	return "info";
     }
+    
+    @GetMapping("password")
+    public String getPasswordReset(@ModelAttribute("password") Password password) {
+        return "password";
+    }
+    
+    @PostMapping("password")
+    public String sendEmailToReset( Model model, @Valid @ModelAttribute("password") Password password, BindingResult result) {
+    	User user = dataService.getUserByName( password.getUsername() );
+    	if( user != null && user.getEmail().length() > 0 && user.getEmail().equals( password.getEmail() ) ){
+		    String serverUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();    
+	        eventPublisher.publishEvent(new OnPasswordResetEvent(password, serverUrl, "password"));
+            Info info = new Info();
+            info.setHeader( "Password Reset");
+        	info.setMessage( "Password reset token sent to registered email." );
+            model.addAttribute("info", info );
+        	return "info";
+    	}
+        Password passwordNew = new Password();
+        model.addAttribute("password", passwordNew );
+        model.addAttribute("error", true );
+        return "password";
+    }
+    
+
+    @GetMapping("passwordReset")
+    public String getNewPassword( Model model, @RequestParam("token") String token) {
+        //verify token
+        Password password = new Password();
+        password.setToken(token);
+        model.addAttribute("password", password );
+
+        return "passwordReset";
+    }
+
+    @PostMapping("passwordReset")
+    public String saveNewPassword( Model model, @ModelAttribute("password") Password password) {
+    	// verify user name
+        //verify token
+    	LOG.info( "passwordReset: " + password );
+        Info info = new Info();
+        info.setHeader( "Password Reset");
+    	info.setHrefLink( "/" );
+    	info.setHrefText( "Login" );
+
+        ResetToken resetToken = dataService.getResetToken( password.getToken() );
+    	LOG.info( "passwordReset: " + resetToken );
+        dataService.deleteResetToken(  password.getToken() );
+        if (resetToken.getExpiryDate().after(new Date())) {
+        	if( password.getUsername().equals( resetToken.getUsername() )) {
+	        	User user = dataService.getUserByName( password.getUsername() );
+	    		user.setPassword( passwordEncoder.encode( password.getPassword() ) );
+	        	dataService.saveUser(user);
+	        	info.setMessage( "Password reset successfully." );
+        	} else {
+	        	info.setMessage( "Password reset failed." );        		
+        	}
+        } else {
+        	info.setMessage( "Password reset token expired." );
+        }
+        model.addAttribute("info", info );
+        return "info";
+    }    
     
     //
     //	User table Profile UI routines

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.brewery.model.Password;
+import com.brewery.model.ResetToken;
 import com.brewery.model.User;
 import com.brewery.model.VerificationToken;
 import com.brewery.service.DataService;
@@ -55,4 +57,14 @@ public class UserService {
         }
         return false;
     }
+
+	public void createResetToken(Password password, String token) {
+        ResetToken resetToken = new ResetToken();
+        resetToken.setToken(token);
+        resetToken.setEmail(password.getEmail());
+        resetToken.setUsername(password.getUsername());
+        resetToken.setExpiryDate( resetToken.calculateExpiryDate( 20 ) );
+
+        dataService.saveResetToken(resetToken);
+	}
 }
