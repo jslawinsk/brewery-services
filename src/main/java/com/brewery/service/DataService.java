@@ -4,6 +4,7 @@ import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.VerificationToken;
 import com.brewery.model.Process;
+import com.brewery.model.ResetToken;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
 import com.brewery.model.Measurement;
@@ -13,6 +14,7 @@ import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
 import com.brewery.repository.VerificationTokenRepository;
 import com.brewery.repository.ProcessRepository;
+import com.brewery.repository.ResetTokenRepository;
 import com.brewery.repository.MeasureTypeRepository;
 import com.brewery.repository.BatchRepository;
 import com.brewery.repository.MeasurementRepository;
@@ -91,6 +93,12 @@ public class DataService implements UserDetailsService {
     @Autowired
 	public void verificationTokenRepository( VerificationTokenRepository verificationTokenRepository ) {
 		this.verificationTokenRepository = verificationTokenRepository;
+	}
+    
+    private ResetTokenRepository resetTokenRepository;
+    @Autowired
+	public void resetTokenRepository( ResetTokenRepository resetTokenRepository ) {
+		this.resetTokenRepository = resetTokenRepository;
 	}
     
 	//
@@ -659,6 +667,50 @@ public class DataService implements UserDetailsService {
         	verificationTokenRepository.delete( foundVerificationToken );
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteVerificationToken: " + e.getMessage());
+        }
+    }
+
+	//
+	//	ResetToken table access methods
+	//
+	//
+    public ResetToken getResetToken( String token ) {
+        LOG.info("Getting ResetTokenRepository:" + token );
+	    return resetTokenRepository.findById( token ).orElse(null);
+    }
+    
+    public ResetToken saveResetToken( ResetToken resetToken ) {
+    	ResetToken resetTokenToSave;
+        LOG.info("Saving VerificationToken:" + resetToken);
+        try {
+            LOG.info("Saving ResetToken: " + resetToken );
+            resetTokenToSave = resetTokenRepository.save( resetToken );
+            return resetTokenToSave;
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: saveResetToken: " + e.getMessage());
+        }
+        return new ResetToken();
+    }
+
+    public ResetToken updateResetToken( ResetToken resetTokenToUpdate ) {
+        LOG.info("Update ResetToken:" + resetTokenToUpdate);
+        ResetToken foundResetToken= resetTokenRepository.getOne( resetTokenToUpdate.getToken() );
+        try {
+        	foundResetToken.setUsername( resetTokenToUpdate.getUsername() );
+        	foundResetToken.setEmail( resetTokenToUpdate.getEmail() );
+            return resetTokenRepository.save( foundResetToken );
+        } catch (Exception e) { 
+            LOG.error("DataService: Exception: updateResetToken: " + e.getMessage());
+        }
+        return resetTokenToUpdate;
+    }
+
+    public void deleteResetToken( String token ) {
+        try {
+        	ResetToken foundResetToken = resetTokenRepository.getOne( token );
+        	resetTokenRepository.delete( foundResetToken );
+        } catch (Exception e) {
+            LOG.error("DataService: Exception: deleteResetToken: " + e.getMessage());
         }
     }
 

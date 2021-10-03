@@ -94,7 +94,7 @@ public class WebSecurityConfig{
     		LOG.info("configure: " + http.toString() );		
     		http
     			.authorizeRequests()
-    				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**", "/validate/**" ).permitAll()		
+    				.antMatchers( "/css/**", "/js/**", "/webjars/**", "/images/**", "/validate/**", "/password/**", "/passwordReset/**" ).permitAll()		
     				.and()
     			.authorizeRequests()
     				.antMatchers( "/style/**", "/process/**", "/measureType/**", "/batch/**", "/measurement/**", "/sensor/**", "/user/**"  ).hasRole( "ADMIN" )
