@@ -665,14 +665,11 @@ public class UiController {
     public String saveNewPassword( Model model, @ModelAttribute("password") Password password) {
     	// verify user name
         //verify token
-    	LOG.info( "passwordReset: " + password );
-        Info info = new Info();
-        info.setHeader( "Password Reset");
+        Info info = new Info( "Password Reset", "Password Reset Error" );
     	info.setHrefLink( "/" );
     	info.setHrefText( "Login" );
 
         ResetToken resetToken = dataService.getResetToken( password.getToken() );
-    	LOG.info( "passwordReset: " + resetToken );
         dataService.deleteResetToken(  password.getToken() );
         if (resetToken.getExpiryDate().after(new Date())) {
         	if( password.getUsername().equals( resetToken.getUsername() )) {
@@ -705,7 +702,7 @@ public class UiController {
     }
     
     @RequestMapping(path = "/profile", method = RequestMethod.POST)
-    public String saveProfile(Model model, HttpServletRequest request, User user) {
+    public String saveProfile( User user, HttpServletRequest request ) {
 
     	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
         request.setAttribute( View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
@@ -714,12 +711,11 @@ public class UiController {
         	if( !user.isValidated() ) {
         	    String serverUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();    
         		eventPublisher.publishEvent( new OnCreateUserEvent( user, serverUrl, "validate" ) );
-                model.addAttribute("validateUser", true );
                 SecurityContextHolder.clearContext();
                 HttpSession session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
-                }        
+                }
         	}
     	}
         return "redirect:/";
@@ -743,13 +739,12 @@ public class UiController {
     @RequestMapping(path = "/profile/password", method = RequestMethod.POST)
     public String profileUpdatePw( Model model, ProfilePassword profilePassword ) {
     	
-		LOG.info( "profileUpdatePw: " + profilePassword );
     	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();    	
-
         Info info = new Info();
-    	
+
     	User user = dataService.getUserByName( userDetails.getUsername() );
-		if( passwordEncoder.matches( profilePassword.getPassword(), user.getPassword() ) ) {
+
+    	if( passwordEncoder.matches( profilePassword.getPassword(), user.getPassword() ) ) {
 			LOG.info( "Passwords Match");
     		user.setPassword( passwordEncoder.encode( profilePassword.getNewPassword() ) );
         	dataService.saveUser(user);

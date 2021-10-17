@@ -3,6 +3,7 @@ package com.brewery.service;
 import static org.hamcrest.CoreMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -109,7 +111,10 @@ public class BlueToothServiceTest {
 	{
 		LOG.info( "BlueToothServiceTest: run");
 		PowerMockito.mockStatic( LocalDevice.class ); 
-	    PowerMockito.when( LocalDevice.getLocalDevice() ).thenReturn( localDevice );
+	    
+		// PowerMockito.when( LocalDevice.getLocalDevice() ).thenReturn( localDevice );
+		when( LocalDevice.getLocalDevice() ).thenAnswer((Answer<LocalDevice>) invocation -> localDevice );	    
+	    
 	    Mockito.when( localDevice.getBluetoothAddress() ).thenReturn( "010101010101" );
 	    Mockito.when( localDevice.getFriendlyName() ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
 	    
@@ -161,7 +166,9 @@ public class BlueToothServiceTest {
 		PowerMockito.whenNew(InputStreamReader.class).withArguments(inStream).thenReturn(inr);
 		PowerMockito.whenNew(BufferedReader.class).withArguments(inr).thenReturn(bufferedReader);
 		
-		PowerMockito.when( Connector.open( "test" ) ).thenReturn( streamConnection );
+//		PowerMockito.when( Connector.open( "test" ) ).thenReturn( streamConnection );
+		when( Connector.open( "test" ) ).thenAnswer((Answer<StreamConnection>) invocation -> streamConnection );	    
+		
 		Mockito.when( streamConnection.openOutputStream( ) ).thenReturn( outStream );
 				
 		PowerMockito.when( bufferedReader.readLine( ) ).thenReturn( "Test data" );

@@ -1,5 +1,7 @@
 package com.brewery.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,6 +16,8 @@ import java.util.UUID;
 @Component
 public class PasswordListener implements ApplicationListener<OnPasswordResetEvent> {
 
+	private Logger LOG = LoggerFactory.getLogger( PasswordListener.class );
+	
     @Autowired
     private JavaMailSender mailSender;
 
@@ -27,6 +31,7 @@ public class PasswordListener implements ApplicationListener<OnPasswordResetEven
 
     private void resetPassword(OnPasswordResetEvent event) {
         //create password token
+        LOG.info("resetPassword" ); 
         Password password = event.getPassword();
         String token = UUID.randomUUID().toString();
         userService.createResetToken(password, token);
@@ -41,5 +46,6 @@ public class PasswordListener implements ApplicationListener<OnPasswordResetEven
         email.setSubject(subject);
         email.setText(message + "\r\n" + confirmationUrl );
         mailSender.send(email);
+        LOG.info("resetPassword: sent" ); 
     }
 }

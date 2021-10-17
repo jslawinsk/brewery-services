@@ -28,10 +28,6 @@ public class UserService {
         this.dataService = dataService;
     }
 
-    public User create(User user) {
-    	return dataService.saveUser(user);
-    }
-
     public void createVerificationToken(User user, String token) {
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setToken(token);
@@ -45,7 +41,7 @@ public class UserService {
         //retrieve token
         VerificationToken verificationToken = dataService.getVerificationToken( token );
         //verify date
-        LOG.info("UserService: confirmUser: " + verificationToken ); 
+        LOG.info("confirmUser: " ); 
         if(verificationToken != null && verificationToken.getExpiryDate().after(new Date())) {
         	User user = dataService.getUserByName( verificationToken.getUsername() );
             //update user details
@@ -59,6 +55,7 @@ public class UserService {
     }
 
 	public void createResetToken(Password password, String token) {
+        LOG.info("createResetToken: " ); 
         ResetToken resetToken = new ResetToken();
         resetToken.setToken(token);
         resetToken.setEmail(password.getEmail());
@@ -66,5 +63,6 @@ public class UserService {
         resetToken.setExpiryDate( resetToken.calculateExpiryDate( 20 ) );
 
         dataService.saveResetToken(resetToken);
+        LOG.info("createResetToken: created" ); 
 	}
 }
