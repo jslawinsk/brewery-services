@@ -16,6 +16,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,10 +43,14 @@ import com.brewery.model.DbSync;
 import com.brewery.model.GraphTypes;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Measurement;
+import com.brewery.model.Password;
 import com.brewery.model.Process;
+import com.brewery.model.ProfilePassword;
+import com.brewery.model.ResetToken;
 import com.brewery.model.Sensor;
 import com.brewery.model.Style;
 import com.brewery.model.User;
+import com.brewery.model.VerificationToken;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,12 +77,15 @@ public class UiControllerTest {
 	@MockBean
 	DataService dataService;
 	
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+	
 	@MockBean
 	BlueToothService blueToothService;
 
 	@MockBean
 	JavaMailSender mailSender;
-	
+
 	//
 	//	Index Dash board tests 
 	//
@@ -667,6 +678,247 @@ public class UiControllerTest {
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<title>Error</title>")));
 	}	
+
+	//
+	//	User Validation and Password Reset Methods tests 
+	//	
+	@Test
+	public void validateUser() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		LOG.info( "Test validateUser: " + user );
+
+		VerificationToken verificationToken = new VerificationToken();
+		verificationToken.setToken( "test123" );
+        verificationToken.setUsername( user.getUsername() );
+        verificationToken.setExpiryDate(  verificationToken.calculateExpiryDate( 20 ) );
+
+		Mockito.when(dataService.getUserByName( Mockito.any(String.class)) ).thenReturn( user );
+		Mockito.when( dataService.getVerificationToken( "test123" ) ).thenReturn( verificationToken );
+		Mockito.when( dataService.getVerificationToken( "test456" ) ).thenReturn( null );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/validate?token=test123")
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( user ))		
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>User Validation</h2>")));
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/validate?token=test456")
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( user ))		
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>User Validation</h2>")));
+	}		
+
+	@Test
+	public void getPasswordReset() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/password")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Reset Password</h2>")));
+	}		
+	
+	@Test
+	public void sendEmailToReset() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		user.setEmail( "test@gmail.com");
+		LOG.info( "Test sendEmailToReset: " + user );
+
+		Mockito.when(dataService.getUserByName( Mockito.any(String.class)) ).thenReturn( user );
+
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/password")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "username", "test",
+	                "email", "test@gmail.com"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Password Reset</h2>")));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/password")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "username", "test",
+	                "email", "invalid@gmail.com"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Reset Password</h2>")));
+	}		
+
+	@Test
+	public void getNewPassword() throws Exception
+	{
+        Password password = new Password();
+        password.setToken( "test123" );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/passwordReset?token=test123")
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( password ))		
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Reset Password</h2>")));
+	}		
+
+	@Test
+	public void saveNewPassword() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		user.setEmail( "test@gmail.com");
+		LOG.info( "Test sendEmailToReset: " + user );
+		Mockito.when(dataService.getUserByName( "test" ) ).thenReturn( user );
+
+		ResetToken resetToken = new ResetToken();
+		resetToken.setUsername( "test" );
+		resetToken.setToken( "test123" );
+        resetToken.setExpiryDate( resetToken.calculateExpiryDate( 20 ) );
+		Mockito.when(dataService.getResetToken( "test123" ) ).thenReturn( resetToken );
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/passwordReset")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	            	"token", "test123",
+	                "username", "test",
+	                "password", "test"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("Password reset successfully.")));
+
+		resetToken.setUsername( "invalid" );
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/passwordReset")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	            	"token", "test123",
+	                "username", "test",
+	                "password", "test"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("Password reset failed.")));
+
+        resetToken.setExpiryDate( resetToken.calculateExpiryDate( -20 ) );
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/passwordReset")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	            	"token", "test123",
+	                "username", "test",
+	                "password", "test"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("Password reset token expired.")));
+	}		
+	
+	//
+	//	User Profile Methods tests 
+	//	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void editProfile() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		LOG.info( "Test saveNewUser: " + user );
+
+		Mockito.when(dataService.getUserByName( Mockito.any(String.class)) ).thenReturn( user );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/profile/edit")
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( user ))		
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit User</h2>")));
+	}		
+
+	@Test
+	@WithMockUser(roles = "ADMIN", username = "test")
+	public void saveProfile() throws Exception
+	{
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/profile")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "username", "test" 
+	                )
+	            )		        
+	            .accept(MediaType.ALL) )
+				.andExpect( status().isTemporaryRedirect() );
+	}		
+	
+	@Test
+	@WithMockUser(roles = "ADMIN", username = "test")
+	public void profilePassword() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		user.setPassword( passwordEncoder.encode( "test" ));
+		LOG.info( "Test saveNewUser: " + user );
+
+		Mockito.when(dataService.getUserByName( Mockito.any(String.class)) ).thenReturn( user );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/profile/password")
+				.contentType(MediaType.APPLICATION_JSON)
+		        .content(objectMapper.writeValueAsString( user ))		
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Change Password for: test</h2>")));
+	}		
+
+	@Test
+	@WithMockUser(roles = "ADMIN", username = "test")
+	public void profileUpdatePw() throws Exception
+	{
+		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		user.setId( 1L );
+		user.setPassword( passwordEncoder.encode( "test" ));
+		Mockito.when(dataService.getUserByName( "test" )).thenReturn( user );
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/profile/password")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "password", "test",
+	                "newPassword", "testNew"
+	                )
+	            )		        
+	            .accept(MediaType.ALL) )
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/")
+			);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/profile/password")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "password", "invalidPassword",
+	                "newPassword", "testNew"
+	                )
+	            )		        
+	            .accept(MediaType.ALL) )
+		        .andExpect(status().isOk())
+		        .andExpect(content().string(containsString("<h2>Change Password for: test</h2>"))
+			);
+	}		
+	
+
 	
 	//
 	//	User Methods tests 
