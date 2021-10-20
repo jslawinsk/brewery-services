@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -32,18 +33,22 @@ import com.brewery.model.GraphTypes;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Measurement;
 import com.brewery.model.Process;
+import com.brewery.model.ResetToken;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorType;
 import com.brewery.model.Style;
 import com.brewery.model.User;
 import com.brewery.model.UserRoles;
+import com.brewery.model.VerificationToken;
 import com.brewery.repository.BatchRepository;
 import com.brewery.repository.MeasureTypeRepository;
 import com.brewery.repository.MeasurementRepository;
 import com.brewery.repository.ProcessRepository;
+import com.brewery.repository.ResetTokenRepository;
 import com.brewery.repository.SensorRepository;
 import com.brewery.repository.StyleRepository;
 import com.brewery.repository.UserRepository;
+import com.brewery.repository.VerificationTokenRepository;
 
 @RunWith( SpringRunner.class)
 @SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false" } )
@@ -64,6 +69,10 @@ public class DataServiceTest {
 	private SensorRepository sensorRepository;
 	@MockBean
 	private UserRepository userRepository;
+	@MockBean
+    private VerificationTokenRepository verificationTokenRepository;
+	@MockBean
+    private ResetTokenRepository resetTokenRepository;
 
 	@MockBean
 	JavaMailSender mailSender;
@@ -655,8 +664,12 @@ public class DataServiceTest {
     	sensors.add( sensor );
 		
 		Mockito.when(sensorRepository.findEnabledSensors( "Bluetooth" )).thenReturn( sensors );
+		Mockito.when(sensorRepository.findEnabledSensors( "WiFi" )).thenReturn( sensors );
         
 		List<Sensor> sensorsTest = dataService.getEnabledSensors( SensorType.BLUETOOTH );
+		assertEquals(  sensorsTest.size(), 1 );
+
+		sensorsTest = dataService.getEnabledSensors( SensorType.WIFI );
 		assertEquals(  sensorsTest.size(), 1 );
 	}	
 	
@@ -848,4 +861,129 @@ public class DataServiceTest {
         dataService.deleteUser( -1L );
         verify( userRepository, times(1)).getOne( -1L );
 	}	
+	
+	//
+	//	VerificationToken Table test methods
+	//
+	@Test
+	public void getVerificationToken() throws Exception
+	{
+		VerificationToken verificationToken= new VerificationToken();
+		verificationToken.setToken( "test123" );
+		Mockito.when(verificationTokenRepository.findById( "test123" )).thenReturn( Optional.of(verificationToken) );
+        
+		VerificationToken tmpVerificationToken = dataService.getVerificationToken( "test123" );
+        assertEquals( "test123", tmpVerificationToken.getToken() );
+	}	
+	
+	@Test
+	public void saveVerificationToken() throws Exception
+	{
+		VerificationToken verificationToken= new VerificationToken();
+		verificationToken.setToken( "test123" );
+		Mockito.when(verificationTokenRepository.save( verificationToken )).thenReturn( verificationToken );
+        
+		VerificationToken verificationTokenTmp = dataService.saveVerificationToken( verificationToken );
+        assertEquals( verificationTokenTmp.getToken(), "test123" );
+        
+        Mockito.when(verificationTokenRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        verificationTokenTmp = dataService.saveVerificationToken( null );
+        assertNull( verificationTokenTmp.getToken() );
+	}	
+
+	@Test
+	public void updateVerificationToken() throws Exception
+	{
+		VerificationToken verificationToken = new VerificationToken();
+		verificationToken.setToken( "test123" );
+        Mockito.when( verificationTokenRepository.getOne( "test123" )).thenReturn( verificationToken );
+        Mockito.when(verificationTokenRepository.save( verificationToken )).thenReturn( verificationToken );
+        
+        VerificationToken verificationTokenTmp = dataService.updateVerificationToken( verificationToken );
+        assertEquals( verificationTokenTmp.getToken(), "test123");
+
+		VerificationToken verificationToken2 = new VerificationToken();
+		verificationToken2.setToken( "test456" );
+         
+		verificationTokenTmp = dataService.updateVerificationToken( verificationToken2 );
+        assertEquals( verificationTokenTmp.getToken(), "test456" );
+	}	
+	
+	@Test
+	public void deleteVerificationToken() throws Exception
+	{
+		VerificationToken verificationToken = new VerificationToken();
+		verificationToken.setToken( "test123" );
+        Mockito.when( verificationTokenRepository.getOne( "test123" )).thenReturn( verificationToken );
+        dataService.deleteVerificationToken( "test123" );
+        verify( verificationTokenRepository, times(1)).getOne( "test123" );
+        
+        Mockito.when( verificationTokenRepository.getOne( "tes456" )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteVerificationToken( "tes456" );
+        verify( verificationTokenRepository, times(1)).getOne( "tes456" );
+	}	
+
+	//
+	//	ResetToken Table test methods
+	//
+	@Test
+	public void getResetToken() throws Exception
+	{
+		ResetToken resetToken= new ResetToken();
+		resetToken.setToken( "test123" );
+		Mockito.when(resetTokenRepository.findById( "test123" )).thenReturn( Optional.of(resetToken) );
+        
+		ResetToken tmpResetToken = dataService.getResetToken( "test123" );
+        assertEquals( "test123", tmpResetToken.getToken() );
+	}	
+	
+	@Test
+	public void saveResetToken() throws Exception
+	{
+		ResetToken resetToken= new ResetToken();
+		resetToken.setToken( "test123" );
+		Mockito.when(resetTokenRepository.save( resetToken )).thenReturn( resetToken );
+        
+		ResetToken resetTokenTmp = dataService.saveResetToken( resetToken );
+        assertEquals( resetTokenTmp.getToken(), "test123" );
+        
+        Mockito.when( resetTokenRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
+        resetTokenTmp = dataService.saveResetToken( null );
+        assertNull( resetTokenTmp.getToken() );
+	}	
+
+	@Test
+	public void updateResetToken() throws Exception
+	{
+		ResetToken resetToken = new ResetToken();
+		resetToken.setToken( "test123" );
+        Mockito.when( resetTokenRepository.getOne( "test123" )).thenReturn( resetToken );
+        Mockito.when(resetTokenRepository.save( resetToken )).thenReturn( resetToken );
+         
+        ResetToken resetTokenTmp = dataService.updateResetToken( resetToken );
+        assertEquals( resetTokenTmp.getToken(), "test123");
+
+        ResetToken resetToken2 = new ResetToken();
+        resetToken2.setToken( "test456" );
+         
+        resetTokenTmp = dataService.updateResetToken( resetToken2 );
+        assertEquals( resetTokenTmp.getToken(), "test456" );
+	}	
+	
+	@Test
+	public void deleteResetToken() throws Exception
+	{
+		ResetToken resetToken = new ResetToken();
+		resetToken.setToken( "test123" );
+        Mockito.when( resetTokenRepository.getOne( "test123" )).thenReturn( resetToken );
+        dataService.deleteResetToken( "test123" );
+        verify( resetTokenRepository, times(1)).getOne( "test123" );
+        
+        Mockito.when( resetTokenRepository.getOne( "tes456" )).thenThrow( new EntityNotFoundException("Test") );
+        dataService.deleteResetToken( "tes456" );
+        verify( resetTokenRepository, times(1)).getOne( "tes456" );
+	}	
+
+	
+	
 }

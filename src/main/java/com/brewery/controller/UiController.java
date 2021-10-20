@@ -702,10 +702,11 @@ public class UiController {
     }
     
     @RequestMapping(path = "/profile", method = RequestMethod.POST)
-    public String saveProfile( User user, HttpServletRequest request ) {
+    public String saveProfile( Model model, User user, HttpServletRequest request ) {
 
     	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
-        request.setAttribute( View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
+        Info info = new Info( "Profile Update", "Profile updated." );
+        
     	if( user.getUsername().equals( userDetails.getUsername() ) ) {
     		dataService.saveUser(user);
         	if( !user.isValidated() ) {
@@ -716,9 +717,11 @@ public class UiController {
                 if (session != null) {
                     session.invalidate();
                 }
+                info.setMessage( "Profile updated. An email has been sent to validate your profile.");
         	}
     	}
-        return "redirect:/";
+        model.addAttribute("info", info );
+        return "info";
     }
     
     @RequestMapping(path = "/profile/password", method = RequestMethod.GET)
