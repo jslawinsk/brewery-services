@@ -861,7 +861,9 @@ public class UiControllerTest {
 	                )
 	            )		        
 	            .accept(MediaType.ALL) )
-				.andExpect( status().isTemporaryRedirect() );
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("<h2>Profile Update</h2>")));
+//				.andExpect( status().isTemporaryRedirect() );
 	}		
 	
 	@Test
