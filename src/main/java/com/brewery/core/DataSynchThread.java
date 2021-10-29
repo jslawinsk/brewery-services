@@ -114,7 +114,7 @@ public class DataSynchThread implements Runnable {
 								token = autheticatedUser.getToken();
 							}
 						} catch( Exception e ) {
-							LOG.error( e.getMessage() );
+							LOG.error( "User Authentication Exception: " + e.getMessage() );
 						}	
 						attempt++;
 		        	}
@@ -139,7 +139,7 @@ public class DataSynchThread implements Runnable {
 							    
 								LOG.info( "DB Synch health response: " + response );
 							} catch( Exception e ) {
-								LOG.error( e.getMessage() );
+								LOG.error( "heartBeat: " + e.getMessage() );
 							}	
 							attempt++;
 			        	}
@@ -358,11 +358,6 @@ public class DataSynchThread implements Runnable {
 			    	statusMessage = statusMessage +  "API User not found ";
 			    	dataSynchStatus.setUp( false );
 				}
-				
-			} catch (InterruptedException e) {
-				LOG.error( e.getMessage() );
-				statusMessage = statusMessage + "InterruptedException ";
-				dataSynchStatus.setUp( false );
 			} catch( Exception e ) {
 				LOG.error( e.getMessage() );
 				statusMessage = statusMessage + "Exception";
