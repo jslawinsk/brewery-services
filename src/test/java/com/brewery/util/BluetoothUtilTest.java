@@ -27,7 +27,7 @@ class BluetoothUtilTest {
 	StreamConnection streamConnection;
 	
 	@Test
-	void testGetStreamConnection() throws IOException {
+	public void testGetStreamConnection() throws IOException {
 		try (MockedStatic<Connector> connector = Mockito.mockStatic(Connector.class)) {
 			connector.when(() -> Connector.open( "test" )).thenReturn( streamConnection );
 			assertThat( ((InputConnection) Connector.open( "test" )) ).isNull();

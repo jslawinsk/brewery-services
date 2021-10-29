@@ -2,6 +2,7 @@ package com.brewery.core;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -22,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.support.RestGatewaySupport;
@@ -162,6 +165,7 @@ public class DataSynchThreadTest {
 		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
+    	measurements.add( new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() ) );
 		Mockito.when( dataService.getMeasurementsToSynchronize() ).thenReturn( measurements );
         
 		mockServer.expect( requestTo("http://localhost:8080/api/measurement") )
@@ -175,4 +179,5 @@ public class DataSynchThreadTest {
 		
 		mockServer.verify();
 	}
+	
 }
