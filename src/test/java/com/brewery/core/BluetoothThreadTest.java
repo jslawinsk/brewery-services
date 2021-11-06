@@ -4,6 +4,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -75,4 +76,32 @@ public class BluetoothThreadTest {
 		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.BLUETOOTH );		
 	}
 
+	@Test
+	public void runExceptions() throws Exception
+	{
+		Sensor sensor = new Sensor();
+		sensor.setName( "TEST" );
+		sensor.setUrl( "testurl" );
+    	List<Sensor> sensors = new ArrayList<Sensor>();
+    	sensors.add( sensor );
+		Mockito.when( dataService.getEnabledSensors( SensorType.BLUETOOTH ) ).thenReturn( sensors );
+		
+		BufferedReader bufferedReader = Mockito.mock( BufferedReader.class );
+		StreamConnection streamConnection = Mockito.mock( StreamConnection.class );
+		OutputStream outStream = Mockito.mock( OutputStream.class );
+		InputStream inStream = Mockito.mock( InputStream.class );
+
+		Mockito.when( bluetoothUtil.getStreamConnection( Mockito.any( String.class ) ) ).thenReturn( streamConnection );
+		Mockito.when( bluetoothUtil.getBufferedReader( Mockito.any( InputStream.class ) ) ).thenReturn( bufferedReader );
+		Mockito.when( streamConnection.openInputStream( ) ).thenReturn( inStream );
+		Mockito.when( streamConnection.openOutputStream( ) ).thenReturn( outStream );
+
+		Mockito.when( bufferedReader.readLine( ) ).thenThrow( new IOException( "test" ) );
+		Mockito.doThrow( new IOException( "test") ).when( inStream ).close();
+		bluetoothThread.run();
+		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.BLUETOOTH );		
+
+	}
+	
+	
 }
