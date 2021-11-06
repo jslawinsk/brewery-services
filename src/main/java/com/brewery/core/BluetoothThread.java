@@ -127,25 +127,15 @@ public class BluetoothThread implements Runnable {
 			    	        statusMessage = statusMessage + " data retrieved ";
 				        }
     				} catch( Exception e ) {
-    					e.printStackTrace();
+    					LOG.error( "Bluetooth Read exeception: ", e);
 		    	        statusMessage = statusMessage + ": exeception ";
 		    	        bluetoothStatus.setUp( false );
     				}
 			        inStream.close();
 	    	        streamConnection.close();
 				}    			        
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-    	        statusMessage = statusMessage + ": IOException ";
-    	        bluetoothStatus.setUp( false );
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-    	        statusMessage = statusMessage + ": InterruptedException ";
-    	        bluetoothStatus.setUp( false );
 			} catch( Exception e ) {
-				e.printStackTrace();
+				LOG.error( "Exception: ", e);
     	        statusMessage = statusMessage + ": Exception ";
     	        bluetoothStatus.setUp( false );
 			}	
