@@ -25,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,6 +57,9 @@ public class RestApiControllerTest {
 	
 	@LocalServerPort
 	private int port;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -469,7 +473,8 @@ public class RestApiControllerTest {
 	public void login() throws Exception
 	{
 		User user = new User( "TEST", "test", DbSync.ADD, UserRoles.ADMIN.toString() );
-        Mockito.when(dataService.getUserByName( "TEST" )).thenReturn( user );
+		user.setPassword( passwordEncoder.encode( "test" ));
+		Mockito.when(dataService.getUserByName( "TEST" )).thenReturn( user );
 
         mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "api/authorize?user=TEST&password=test")
 	            .accept(MediaType.ALL))

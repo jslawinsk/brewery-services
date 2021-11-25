@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import com.brewery.model.User;
 import com.brewery.model.VerificationToken;
 import com.brewery.service.BlueToothService;
 import com.brewery.service.DataService;
+import com.brewery.service.WiFiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith( SpringRunner.class)
@@ -84,6 +87,9 @@ public class UiControllerTest {
 	BlueToothService blueToothService;
 
 	@MockBean
+    WiFiService wifiService;
+	
+	@MockBean
 	JavaMailSender mailSender;
 
 	//
@@ -108,9 +114,12 @@ public class UiControllerTest {
 		measureType2.setGraphType( GraphTypes.SOLID_GUAGE );
 		Measurement measurement2 = new Measurement( 7.0, "{\"target\":7.0}", testBatch, process, measureType2, new Date() );
 
+		Measurement measurement3 = new Measurement( 70.3, "{\"target\":}", testBatch, process, measureType, new Date() );
+		
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
     	measurements.add( measurement2 );
+    	measurements.add( measurement3 );
 		
         Mockito.when(dataService.getActiveBatches()).thenReturn( batches );
         Mockito.when(dataService.getRecentMeasurement( 1L )).thenReturn( measurements );
@@ -571,24 +580,36 @@ public class UiControllerTest {
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+
+		Mockito.when( blueToothService.discoverSensors( )).thenThrow( new IOException( "test") );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/scan")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
 	}	
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	public void discoverWifiSensors() throws Exception
 	{
+		
 		Sensor sensor = new Sensor();
     	List<Sensor> sensors = new ArrayList<>();
     	sensors.add( sensor );			
-		Mockito.when( blueToothService.discoverSensors( )).thenReturn( sensors );
+		Mockito.when( wifiService.discoverSensors( "" )).thenReturn( sensors );
 		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/scanwifi")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+
+		Mockito.when( wifiService.discoverSensors( "" )).thenThrow( new SocketException( "test") );
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/scanwifi")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
 	}	
 
-	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	public void pairSensor() throws Exception
@@ -602,6 +623,12 @@ public class UiControllerTest {
 		Mockito.when( blueToothService.pairSensor( sensor.getName(), sensor.getPin() )).thenReturn( true );
 		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
 		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/pair/1")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString("<title>Error</title>")));
+
+		Mockito.when( blueToothService.pairSensor( sensor.getName(), sensor.getPin() )).thenThrow( new IOException( "test") );
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/pair/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())

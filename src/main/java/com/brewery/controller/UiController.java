@@ -131,7 +131,7 @@ public class UiController {
 						target = (double)map.get( "target" );
 						btarget = true;
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOG.error( "index: Exception", e );
 					}
 	        	}
 	        	
@@ -478,12 +478,8 @@ public class UiController {
     public String discoverSensors( Model model )  {
         try {
 			model.addAttribute("sensors", blueToothService.discoverSensors() );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch( Exception e) {
+			LOG.error( "discoverWifiSensors: Exception", e );
 		}
         model.addAttribute("blueToothEnabled", blueToothEnabled );
         model.addAttribute("wiFiEnabled", blueToothEnabled );
@@ -504,10 +500,9 @@ public class UiController {
     @RequestMapping(path = "/sensor/scanwifi", method = RequestMethod.GET)
     public String discoverWifiSensors( Model model )  {
         try {
-			model.addAttribute("sensors", wifiService.discoverSensors() );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("sensors", wifiService.discoverSensors( "" ) );
+		} catch ( Exception e ) {
+			LOG.error( "discoverWifiSensors: Exception", e );
 		}
         model.addAttribute("blueToothEnabled", blueToothEnabled );
         model.addAttribute("wiFiEnabled", blueToothEnabled );
@@ -532,12 +527,8 @@ public class UiController {
         boolean result = false;
 		try {
 			result = blueToothService.pairSensor( sensor.getName(), sensor.getPin() );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch ( Exception e) {
+			LOG.error( "pairSensor: Exception", e );
 		}
         model.addAttribute("message",  "Pair " +  (result ? "successful" : "failed") );
         return "results";
@@ -706,6 +697,13 @@ public class UiController {
 
     	UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
         Info info = new Info( "Profile Update", "Profile updated." );
+        
+	    String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+	            .replacePath(null)
+	            .build()
+	            .toUriString();
+	    
+        LOG.info( "saveProfile: baseUrl: " + baseUrl );
         
     	if( user.getUsername().equals( userDetails.getUsername() ) ) {
     		dataService.saveUser(user);

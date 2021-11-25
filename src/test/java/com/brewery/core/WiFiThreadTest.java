@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -53,6 +54,7 @@ public class WiFiThreadTest {
 	WiFiThread wiFiThread;
 
 	@Autowired
+    @Qualifier( "restTemplate" )
 	RestTemplate  restTemplate;
 
 	@Autowired
@@ -64,7 +66,7 @@ public class WiFiThreadTest {
     public void init() {
     	LOG.info( "Initiaizing MockRestServiceServer" );
         RestGatewaySupport gateway = new RestGatewaySupport();
-        gateway.setRestTemplate(restTemplate);
+        gateway.setRestTemplate( restTemplate );
         mockServer = MockRestServiceServer.createServer(gateway);
     }
 	

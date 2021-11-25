@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
@@ -39,6 +40,7 @@ public class WiFiThread implements Runnable {
     private WiFiStatus wifiStatus;
  
     @Autowired
+    @Qualifier( "restTemplate" )
     private RestTemplate restTemplate;
     
     @Value("${wiFi.scanSeconds}")
