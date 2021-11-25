@@ -254,7 +254,7 @@ public class RestApiController {
 	public User login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
 		User foundUser = dataService.getUserByName( username );
 		if( foundUser != null ) {
-			if( foundUser.getPassword().equals( pwd ) || passwordEncoder.matches( pwd, foundUser.getPassword() ) ) {
+			if( passwordEncoder.matches( pwd, foundUser.getPassword() ) ) {
 				LOG.info( "Passwords Match");
 				String token = getJWTToken( foundUser );
 				foundUser.setToken(token);		

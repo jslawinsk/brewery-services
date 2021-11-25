@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -61,8 +62,8 @@ public class DataSynchThreadTest {
 	JavaMailSender mailSender;
 	
 	@Autowired
+    @Qualifier( "restTemplate" )
 	RestTemplate  restTemplate;
-    //private RestTemplate restTemplate = new RestTemplate();
 	
 	@Autowired
 	private ObjectMapper objectMapper;	
@@ -75,7 +76,6 @@ public class DataSynchThreadTest {
     @Before
     public void init() {
     	LOG.info( "Initiaizing MockRestServiceServer" );
-//		RestTemplate restTemplate = new RestTemplate();
         RestGatewaySupport gateway = new RestGatewaySupport();
         gateway.setRestTemplate(restTemplate);
         mockServer = MockRestServiceServer.createServer(gateway);

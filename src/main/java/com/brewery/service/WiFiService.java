@@ -1,26 +1,21 @@
 package com.brewery.service;
 
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -33,7 +28,11 @@ public class WiFiService {
 
 	private Logger LOG = LoggerFactory.getLogger( WiFiService.class );
 	
-    public List<Sensor> discoverSensors( ) throws SocketException {
+    @Autowired
+    @Qualifier( "restTemplateWifi" )
+    private RestTemplate restTemplateWifi;
+	
+    public List<Sensor> discoverSensors( String pSubnetmask ) throws SocketException {
     	List<Sensor> sensors = new ArrayList<Sensor>();    	
         try {
 			InetAddress inetAddress = InetAddress.getLocalHost();
@@ -44,6 +43,9 @@ public class WiFiService {
         	if( i> -1) {
         		subNetMask = subNetMask.substring( 0, i+1 );
         		subNetMask = subNetMask + "0/24";
+        	}
+        	if( pSubnetmask.length() > 0 ) {
+        		subNetMask = pSubnetmask;
         	}
         	LOG.info("SubNet Mask: " + subNetMask );
         	
@@ -67,7 +69,6 @@ public class WiFiService {
     private boolean checkIp( String ip )
     {
 		LOG.info("Checking Ip: " + ip );
-	    RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
@@ -78,24 +79,18 @@ public class WiFiService {
 	    URI uri;
 		try {
 			uri = new URI( "http://" + ip + "/tempdata?responseFormat=JSON");
-		    responseEnt = restTemplate.exchange( uri, HttpMethod.GET, request, String.class );
+			LOG.error( "checkIp: URI: " + uri);
+		    responseEnt = restTemplateWifi.exchange( uri, HttpMethod.GET, request, String.class );
 		} catch ( HttpClientErrorException e ) {
-			  if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+			LOG.info( "checkIp: HttpClientErrorException: " );
+			if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
 				LOG.info( "checkIp: Exception: UNAUTHORIZED" );
 				return true;
-			  }
-			
-		} catch (Exception e) {}
+			}
+		} catch (Exception e) {
+			LOG.error( "checkIp: Exception: " );
+		}
 		return false;
     }
     
-    //Override timeouts in request factory
-    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() 
-    {
-        SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-        clientHttpRequestFactory.setConnectTimeout(250);
-        clientHttpRequestFactory.setReadTimeout(250);
-        return clientHttpRequestFactory;
-    }    
-
 }
