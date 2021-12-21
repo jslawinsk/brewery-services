@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
-    <title>Edit Style</title>
+    <title>Add Style</title>
     <th:block th:include="layout/header"></th:block>
 </head>
 <body>
 <div class="container">
     <h2>Edit Style</h2>
     <div>
-        <form class="form-horizontal" th:object="${style}" th:action="@{/style/update}" method="post">
+        <form class="form-horizontal" th:object="${style}" th:action="@{/style}" method="post">
             <div class="form-group">
                 <div class="col-sm-10">
                     <input type="hidden" class="form-control" th:field="*{id}"/>

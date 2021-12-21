@@ -40,6 +40,7 @@ public class Sensor {
 
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
+	private String dbSynchToken;
 	
 	@ManyToOne
     @JoinColumn
@@ -89,7 +90,7 @@ public class Sensor {
 		this.dbSynch = DbSync.ADD; 
 	}
 	public Sensor(Long id, boolean enabled, String name, String url, String userId, String pin, String communicationType, String trigger,
-			Batch batch, Process process, MeasureType measureType, Date updateTime, DbSync dbSynch ) {
+			Batch batch, Process process, MeasureType measureType, Date updateTime, DbSync dbSynch, String dbSynchToken ) {
 		super();
 		this.id = id;
 		this.enabled = enabled;
@@ -104,8 +105,9 @@ public class Sensor {
 		this.measureType = measureType;
 		this.updateTime = updateTime;
     	this.dbSynch = dbSynch;
+    	this.dbSynchToken = dbSynchToken;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -203,12 +205,19 @@ public class Sensor {
 		this.dbSynch = dbSynch;
 	}
 	
+	public String getDbSynchToken() {
+		return dbSynchToken;
+	}
+	public void setDbSynchToken(String dbSynchToken) {
+		this.dbSynchToken = dbSynchToken;
+	}
+	
 	@Override
 	public String toString() {
 		return "Sensor [id=" + id + ", enabled=" + enabled + ", name=" + name + ", url=" + url + ", userId=" + userId + ", pin=" + pin
 				+ ", communicationType=" + communicationType + ", trigger=" + trigger 
 				+", batch=" + batch + ", process=" + process + ", measureType=" + measureType + ", updateTime=" + updateTime 
-				+ ", dbSynch=" + dbSynch
+				+ ", dbSynch=" + dbSynch + ", dbSynchToken=" + dbSynchToken
 				+ "]";
 	}
 	

@@ -7,6 +7,7 @@ import com.brewery.model.ProfilePassword;
 import com.brewery.model.ResetToken;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
+import com.brewery.model.DbSync;
 import com.brewery.model.Info;
 import com.brewery.model.Measurement;
 import com.brewery.model.Message;
@@ -60,6 +61,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
@@ -101,6 +103,9 @@ public class UiController {
 	
     @Value("${wiFi.enabled}")
     private boolean wiFiEnabled;
+    
+    @Value("${dataSynch.enabled}")
+    private boolean dataSynchEnabled;
     
     @RequestMapping(path = "/")
     public String index( Model model ) {
@@ -190,13 +195,23 @@ public class UiController {
     @RequestMapping(path = "/style/add", method = RequestMethod.GET)
     public String createStyle(Model model) {
         model.addAttribute("style", new Style());
-        return "styleEdit";
+        return "styleAdd";
     }
 
     @RequestMapping(path = "/style", method = RequestMethod.POST)
     public String saveStyle(Style style) {
         LOG.info("UiController: Style Post: " );   	
     	dataService.saveStyle(style);
+        return "redirect:/style";
+    }
+    
+    @RequestMapping(path = "/style/update", method = RequestMethod.POST)
+    public String updateStyle(Style style) {
+        LOG.info("UiController: updatStyle: " + style );
+        if( style.getDbSynch() != DbSync.ADD ) {
+        	style.setDbSynch( DbSync.UPDATE );
+        }
+    	dataService.updateStyle( style );
         return "redirect:/style";
     }
     
@@ -208,13 +223,22 @@ public class UiController {
 
     @RequestMapping(path = "/style/edit/{id}", method = RequestMethod.GET)
     public String editStyle(Model model, @PathVariable(value = "id") Long id) {
-        model.addAttribute("style", dataService.getStyle(id) );
+		Style style = dataService.getStyle(id);
+        model.addAttribute("style", style );
         return "styleEdit";
     }
 
     @RequestMapping(path = "/style/delete/{id}", method = RequestMethod.GET)
     public String deleteStyle(@PathVariable(name = "id") Long id) {
-    	dataService.deleteStyle(id);
+ /*   	if( dataSynchEnabled ) {
+    		Style style = dataService.getStyle(id);
+            style.setDbSynch( DbSync.DELETE );
+        	dataService.updateStyle( style );
+    	}
+    	else {
+*/    	
+    		dataService.deleteStyle(id);
+//    	}
         return "redirect:/style";
     }
     
@@ -235,14 +259,16 @@ public class UiController {
         return "redirect:/process";
     }
 
-    @RequestMapping(path = "/process", method = RequestMethod.PUT)
+    @RequestMapping(path = "/process/update", method = RequestMethod.POST)
     public String updateProcess(Process process) {
-        LOG.info("UiController: updateProcess Process: " + process );   	
+        LOG.info("UiController: updateProcess: " + process );   	
+        if( process.getDbSynch() != DbSync.ADD ) {
+        	process.setDbSynch( DbSync.UPDATE );
+        }
     	dataService.updateProcess( process );
         return "redirect:/process";
     }
-    
-    
+        
     @RequestMapping(path = "/process", method = RequestMethod.GET)
     public String getAllProcesses(Model model) {
         model.addAttribute("processes",  dataService.getAllProcesses() );
@@ -256,9 +282,36 @@ public class UiController {
     }
 
     @RequestMapping(path = "/process/delete/{code}", method = RequestMethod.GET)
-    public String deleteProcess(@PathVariable(name = "code") String code) {
-    	dataService.deleteProcess(code);
-        return "redirect:/process";
+    public String deleteProcess( RedirectAttributes redirectAttributes, @PathVariable(name = "code") String code) {
+        Info info = new Info();
+        String message = "";
+
+    	Long sensorCount = dataService.getProcessSensorCount( code );
+    	Long measurementCount = dataService.getProcessMeasurementCount( code );
+        if( sensorCount == 0L && measurementCount == 0L ) {
+	    	if( dataSynchEnabled ) {
+        		message = message + "Process " + code + " scheduled for deletion.";
+	    		Process process = dataService.getProcess( code );
+	    		process.setDbSynch( DbSync.DELETE );
+		    	dataService.updateProcess( process );
+	    	}
+	    	else {
+        		message = message + "Process " + code + " deleted.";
+	    		dataService.deleteProcess( code );
+	    	}
+    	}
+    	else {
+        	if( sensorCount > 0L ) {            
+        		message = message + "Process " + code + " has " + sensorCount + " sensor" + ((sensorCount > 1L) ? "s" : "" ) + " configured. ";
+        	}
+        	if( measurementCount > 0L ) {            
+        		message = message + "Process " + code + " has " + measurementCount + " measurement" + ((measurementCount > 1L) ? "s" : "" ) + " logged. ";
+        	}
+            message = message + "Associations must be removed before deleting process.";
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
+    	return "redirect:/process";
     }
 
     //
@@ -278,9 +331,12 @@ public class UiController {
         return "redirect:/measureType";
     }
 
-    @RequestMapping(path = "/measureType", method = RequestMethod.PUT)
+    @RequestMapping(path = "/measureType/update", method = RequestMethod.POST)
     public String updateMeasureType( MeasureType measureType ) {
         LOG.info("UiController: updateMeasureType MeasureType: " + measureType );   	
+        if( measureType.getDbSynch() != DbSync.ADD ) {
+        	measureType.setDbSynch( DbSync.UPDATE );
+        }
     	dataService.updateMeasureType( measureType );
         return "redirect:/measureType";
     }
@@ -298,9 +354,36 @@ public class UiController {
     }
 
     @RequestMapping(path = "/measureType/delete/{code}", method = RequestMethod.GET)
-    public String deleteMeasureType(@PathVariable(name = "code") String code) {
-    	dataService.deleteMeasureType(code);
-        return "redirect:/measureType";
+    public String deleteMeasureType( RedirectAttributes redirectAttributes, @PathVariable(name = "code") String code ) {
+        Info info = new Info();
+        String message = "";
+
+    	Long sensorCount = dataService.getMeasureTypeSensorCount( code );
+    	Long measurementCount = dataService.getMeasureTypeMeasurementCount( code );
+        if( sensorCount == 0L && measurementCount == 0L ) {
+	    	if( dataSynchEnabled ) {
+        		message = message + "Measure Type " + code + " scheduled for deletion.";
+        		MeasureType measureType = dataService.getMeasureType( code );
+        		measureType.setDbSynch( DbSync.DELETE );
+		    	dataService.updateMeasureType( measureType );
+	    	}
+	    	else {
+        		message = message + "Measure Type " + code + " deleted.";
+        		dataService.deleteMeasureType(code);
+	    	}
+    	}
+    	else {
+        	if( sensorCount > 0L ) {            
+        		message = message + "Measure Type " + code + " has " + sensorCount + " sensor" + ((sensorCount > 1L) ? "s" : "" ) + " configured. ";
+        	}
+        	if( measurementCount > 0L ) {            
+        		message = message + "Measure Type " + code + " has " + measurementCount + " measurement" + ((measurementCount > 1L) ? "s" : "" ) + " logged. ";
+        	}
+            message = message + "Associations must be removed before deleting Measure Type.";
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
+	    return "redirect:/measureType";
     }
 
     //

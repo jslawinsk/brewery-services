@@ -49,6 +49,7 @@ public class Measurement {
 
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
+	private String dbSynchToken;
 
 	@Column( name = "startTime" )
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,7 +72,7 @@ public class Measurement {
 		this.measurementTime = measurementTime;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public Measurement( double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime, DbSync dbSynch) 
+	public Measurement( double valueNumber, String valueText, Batch batch, Process process, MeasureType type, Date measurementTime, DbSync dbSynch, String dbSynchToken) 
 	{
 		super();
 		this.valueNumber = valueNumber;
@@ -81,6 +82,7 @@ public class Measurement {
 		this.type = type;
 		this.measurementTime = measurementTime;
     	this.dbSynch = dbSynch;
+    	this.dbSynchToken = dbSynchToken;
 	}
 
 	public Long getId() {
@@ -138,11 +140,18 @@ public class Measurement {
 		this.dbSynch = dbSynch;
 	}
 	
+	public String getDbSynchToken() {
+		return dbSynchToken;
+	}
+	public void setDbSynchToken(String dbSynchToken) {
+		this.dbSynchToken = dbSynchToken;
+	}
+	
 	@Override
 	public String toString() {
 		return "Measurement [id=" + id + ", valueNumber=" + valueNumber + ", valueText=" + valueText + ", batch="
 				+ batch + ", process=" + process + ", type=" + type + ", measurementTime=" + measurementTime 
-				+ ", dbSynch=" + dbSynch
+				+ ", dbSynch=" + dbSynch + ", dbSynchToken=" + dbSynchToken
 				+ "]";
 	}
 }
