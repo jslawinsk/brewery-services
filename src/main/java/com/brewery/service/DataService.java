@@ -131,6 +131,7 @@ public class DataService implements UserDetailsService {
     }
 
     public Style updateStyle( Style styleToUpdate ) {
+        LOG.info("Update Style: " + styleToUpdate );
     	Style foundStyle = styleRepository.getOne( styleToUpdate.getId() );
         try {
         	foundStyle.setName( styleToUpdate.getName() );
@@ -205,13 +206,25 @@ public class DataService implements UserDetailsService {
             LOG.error("DataService: Exception: deleteProcess: " + e.getMessage());
         }
     }
+    
+    public Long getProcessSensorCount( String code ) {
+        Long count = sensorRepository.processCount( code );
+        LOG.info("getProcessSensorCount, code:" + code + " sensors: " + count );
+        return count;
+    }
 
+    public Long getProcessMeasurementCount( String code ) {
+        Long count = measurementRepository.processCount( code );
+        LOG.info("getProcessMeasurementCount, code:" + code + " measurements: " + count );
+        return count;
+    }
+    
 	//
 	//	MeasurementType table access methods
 	//
 	//
     public MeasureType getMeasureType( String code ) {
-        LOG.info("Getting Process, code:" + code);
+        LOG.info("Getting MeasureType, code:" + code);
         return measureTypeRepository.getOne( code );
     }
 
@@ -265,6 +278,18 @@ public class DataService implements UserDetailsService {
         }
     }
 
+    public Long getMeasureTypeSensorCount( String code ) {
+        Long count = sensorRepository.measureTypeCount( code );
+        LOG.info("getMeasureTypeSensorCount, code:" + code + " sensors: " + count );
+        return count;
+    }
+
+    public Long getMeasureTypeMeasurementCount( String code ) {
+        Long count = measurementRepository.measureTypeCount( code );
+        LOG.info("getMeasureTypeMeasurementCount, code:" + code + " measurements: " + count );
+        return count;
+    }
+    
 	//
 	//	Batch table access methods
 	//

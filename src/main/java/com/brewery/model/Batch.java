@@ -42,6 +42,7 @@ public class Batch {
 	@ApiModelProperty( value="Status of syncronizing data with another instance of the service" )
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
+	private String dbSynchToken;
 	
 	@ManyToOne
     @JoinColumn
@@ -69,7 +70,7 @@ public class Batch {
 		this.startTime = startTime;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime, DbSync dbSynch ) {
+	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime, DbSync dbSynch, String dbSynchToken ) {
 		super();
 		this.active = active;
 		this.name = name;
@@ -77,6 +78,7 @@ public class Batch {
 		this.style = style;
 		this.startTime = startTime;
     	this.dbSynch = dbSynch;
+    	this.dbSynchToken = dbSynchToken;
 	}
 	
 	public Long getId() {
@@ -126,10 +128,17 @@ public class Batch {
 		this.dbSynch = dbSynch;
 	}
 	
+	public String getDbSynchToken() {
+		return dbSynchToken;
+	}
+	public void setDbSynchToken(String dbSynchToken) {
+		this.dbSynchToken = dbSynchToken;
+	}
+	
 	@Override
 	public String toString() {
 		return "Batch [active=" + active + ", name=" + name + ", id=" + id + ", description=" + description + ", style=" + style + ", startTime=" + startTime
-				+ ", dbSynch=" + dbSynch
+				+ ", dbSynch=" + dbSynch + ", dbSynchToken=" + dbSynchToken
 				+ "]";
 	}
 

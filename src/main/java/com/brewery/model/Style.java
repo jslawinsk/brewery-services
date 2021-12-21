@@ -33,6 +33,7 @@ public class Style {
 	
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
+	private String dbSynchToken;
 	
 	public Style() {
 		super();
@@ -44,11 +45,12 @@ public class Style {
     	this.description = description;
 		this.dbSynch = DbSync.ADD; 
     }
-    public Style( String name, String bjcpCategory, String description, DbSync dbSynch ) {
+    public Style( String name, String bjcpCategory, String description, DbSync dbSynch, String dbSynchToken ) {
     	this.name = name;
     	this.bjcpCategory = bjcpCategory;
     	this.description = description;
     	this.dbSynch = dbSynch;
+    	this.dbSynchToken = dbSynchToken;
     }
     
 	public Long getId() {
@@ -83,11 +85,18 @@ public class Style {
 	public void setDbSynch(DbSync dbSynch) {
 		this.dbSynch = dbSynch;
 	}
+
+	public String getDbSynchToken() {
+		return dbSynchToken;
+	}
+	public void setDbSynchToken(String dbSynchToken) {
+		this.dbSynchToken = dbSynchToken;
+	}
 	
 	@Override
 	public String toString() {
 		return "Style [id=" + id + ", name=" + name + ", description=" + description + ", bjcpCategory=" + bjcpCategory 
-				+ ", dbSynch=" + dbSynch
+				+ ", dbSynch=" + dbSynch + ", dbSynchToken=" + dbSynchToken
 				+ "]";
 	}
 	

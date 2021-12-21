@@ -169,6 +169,21 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
+	public void updateStyle() throws Exception
+	{
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/style/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "DbSynch", "SYNCHED"
+	                )
+	            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
+	}	
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
 	public void editStyle() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -200,7 +215,7 @@ public class UiControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process/add")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Process</h2>")));
+	            .andExpect(content().string(containsString("<h2>Add Process</h2>")));
 	}			
 	
 	@Test
@@ -223,10 +238,13 @@ public class UiControllerTest {
 	{
 		Process process = new Process( "FRM", "Fermentation" );
 
-		mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/process" )
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/process/update" )
 				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-		        .content(objectMapper.writeValueAsString( process ))		
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+	                "DbSynch", "SYNCHED"
+	                )
+	            )		        
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/process"));
 	}	
@@ -298,7 +316,7 @@ public class UiControllerTest {
 	{
 		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 
-		mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/measureType" )
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measureType/update" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measureType ))		

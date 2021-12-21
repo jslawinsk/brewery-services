@@ -9,7 +9,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.microedition.io.Connector;
@@ -146,6 +148,9 @@ public class DataSynchThread implements Runnable {
 							attempt++;
 			        	}
 						
+		        	//
+		        	// 1st Phase Process Adding New Data
+		        	//
 			        	//
 			        	//	Synchronize Style Table
 			        	//
@@ -174,22 +179,18 @@ public class DataSynchThread implements Runnable {
 						}
 		
 			        	//
-			        	//	Synchronize Process Table
+			        	//	Synchronize Process Table for adding new data
 			        	//
-						//Thread.sleep(500);
 						List<Process> processes = dataService.getProcessesToSynchronize();
 						for( Process process: processes ) {
-							LOG.info( "Process to Synchronize: " + process );
 							if( process.getDbSynch() == DbSync.ADD ) {
-								LOG.info( "Synchronize Add: " + process.getName() );
+								LOG.info( "Synchronize Add Process: " + process.getName() );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
-								
 							    HttpEntity<Process> request = new HttpEntity<>(process, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "process");
-							     
 							    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
@@ -201,22 +202,18 @@ public class DataSynchThread implements Runnable {
 						}
 		
 			        	//
-			        	//	Synchronize Measure Types Table
+			        	//	Synchronize Measure Types Table for adding new data
 			        	//
-						//Thread.sleep(500);
 						List<MeasureType> measureTypes = dataService.getMeasureTypesToSynchronize();
 						for( MeasureType measureType: measureTypes ) {
-							LOG.info( "MeasureType to Synchronize: " + measureType );
 							if( measureType.getDbSynch() == DbSync.ADD ) {
-								LOG.info( "Synchronize Add: " + measureType.getName() );
+								LOG.info( "Synchronize Add MeasureType: " + measureType.getName() );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
-								
 							    HttpEntity<MeasureType> request = new HttpEntity<>(measureType, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "measureType");
-							     
 							    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
@@ -291,8 +288,8 @@ public class DataSynchThread implements Runnable {
 						//Thread.sleep(500);
 						Long batchId = -1L;
 						Double value = -1D;
-						String measureType = "";
-						String process = "";
+						String measureTypeStr = "";
+						String processStr = "";
 						
 						List<Measurement> measurements = dataService.getMeasurementsToSynchronize();
 						for( Measurement measurement: measurements ) {
@@ -302,14 +299,14 @@ public class DataSynchThread implements Runnable {
 								if( batchId != measurement.getBatch().getId() 
 										|| value + .5 < measurement.getValueNumber()
 										|| value -.5 > measurement.getValueNumber()
-										|| !measureType.equals( measurement.getType().getCode() )
-										|| !process.equals( measurement.getProcess().getCode() )
+										|| !measureTypeStr.equals( measurement.getType().getCode() )
+										|| !processStr.equals( measurement.getProcess().getCode() )
 									) {
 									publish = true;
 									batchId = measurement.getBatch().getId();
 									value = measurement.getValueNumber();
-									measureType = measurement.getType().getCode();
-									process = measurement.getProcess().getCode();
+									measureTypeStr = measurement.getType().getCode();
+									processStr = measurement.getProcess().getCode();
 								}
 								if( publish ) {
 									LOG.info( "Synchronize Add: " + measurement.getId() );
@@ -348,6 +345,99 @@ public class DataSynchThread implements Runnable {
 								}
 							}
 						}
+						
+		        	//
+		        	// 2nd Phase Process Updating Existing Data
+		        	//
+			        	//
+			        	//	Synchronize Process Table for updating data
+			        	//
+						for( Process process: processes ) {
+							if( process.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Synchronize Update Process: " + process.getName() );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setContentType(MediaType.APPLICATION_JSON);		
+								headers.setBearerAuth(token);
+							    HttpEntity<Process> request = new HttpEntity<>(process, headers);
+								
+							    URI uri = new URI( dataSynchUrl + "process");
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Synchronize Process local update" );
+									process.setDbSynch( DbSync.SYNCHED );
+							    	dataService.updateProcess( process );
+							    }
+							}
+						}
+						
+			        	//
+			        	//	Synchronize Measure Types Table for updating data
+			        	//
+						for( MeasureType measureType: measureTypes ) {
+							if( measureType.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Synchronize Add MeasureType: " + measureType.getName() );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setContentType(MediaType.APPLICATION_JSON);		
+								headers.setBearerAuth(token);
+							    HttpEntity<MeasureType> request = new HttpEntity<>(measureType, headers);
+								
+							    URI uri = new URI( dataSynchUrl + "measureType");
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Synchronize MeasureType local update" );
+									measureType.setDbSynch( DbSync.SYNCHED );
+							    	dataService.updateMeasureType( measureType );
+							    }
+							}
+						}
+		
+	        	//
+	        	// 3rd Phase Process Data Deletion
+	        	//
+
+			        	//
+			        	//	Synchronize Measure Types Table for updating data
+			        	//
+						for( MeasureType measureType: measureTypes ) {
+							if( measureType.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Synchronize Delete MeasureType: " + measureType.getName() );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setBearerAuth(token);
+							    HttpEntity<MeasureType> request = new HttpEntity<>( headers );
+								
+							    URI uri = new URI( dataSynchUrl + "measureType/" + measureType.getCode() );
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Synchronize MeasureType local delete" );
+							    	dataService.deleteMeasureType( measureType.getCode() );
+							    }
+							}
+						}
+						
+						//
+			        	//	Synchronize Process Table for deleting data
+			        	//
+						for( Process process: processes ) {
+							if( process.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Synchronize Delete Process: " + process.getName() );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setBearerAuth(token);
+							    HttpEntity<Process> request = new HttpEntity<>( headers );
+								
+							    URI uri = new URI( dataSynchUrl + "process/" + process.getCode() );
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Synchronize Process local delete" );
+							    	dataService.deleteProcess( process.getCode() );
+							    }
+							}
+						}
+			        	
+						
 		        	}
 		        	else {
 				    	LOG.info( "API User not autheticated" );
