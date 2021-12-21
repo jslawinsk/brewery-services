@@ -26,7 +26,7 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
 	 @Query( value = "SELECT DISTINCT ON (type_code) type_code, start_time, id, db_synch, value_number, value_text, batch_id, process_code, db_synch_token FROM brewery.measurement WHERE batch_id = ?1 ORDER BY type_code, start_time DESC LIMIT 10", nativeQuery = true )
 	 List<Measurement> findMostRecent( Long id );
 
-	 @Query( value = "SELECT type_code, start_time, id, db_synch, value_number, value_text, batch_id, process_code FROM brewery.measurement WHERE batch_id = ?1 AND type_code = ?2 ORDER BY type_code, start_time", nativeQuery = true )
+	 @Query( value = "SELECT type_code, start_time, id, db_synch, value_number, value_text, batch_id, process_code, db_synch_token FROM brewery.measurement WHERE batch_id = ?1 AND type_code = ?2 ORDER BY type_code, start_time", nativeQuery = true )
 	 List<Measurement> findByBatchIdType( Long id, String type );
 
 	 @Modifying
