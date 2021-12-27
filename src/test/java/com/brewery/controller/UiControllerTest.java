@@ -150,7 +150,7 @@ public class UiControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/add")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Style</h2>")));
+	            .andExpect(content().string(containsString("<h2>Add Style</h2>")));
 	}		
 	
 	@Test
@@ -192,7 +192,7 @@ public class UiControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/edit/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Style</h2>")));
+	            .andExpect(content().string(containsString("<h2>Edit Style:")));
 	}		
 	
 	@Test

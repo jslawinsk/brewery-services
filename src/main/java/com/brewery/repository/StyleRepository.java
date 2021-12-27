@@ -17,4 +17,7 @@ public interface StyleRepository extends JpaRepository<Style, Long> {
 	 @Query( value = "SELECT * FROM brewery.style WHERE name = ?" , nativeQuery = true )
 	 Style findStyleByName( String name );	
 	 
+	 @Query( value = "SELECT * FROM brewery.style WHERE db_synch_token = ?" , nativeQuery = true )
+	 Style findStyleBySynchToken( String dbSynchToken );	
+	 
 }

@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>Edit Style</h2>
+    <h2 th:inline="text">Edit Style: Id [[${style.id}]]</h2>
     <div>
         <form class="form-horizontal" th:object="${style}" th:action="@{/style/update}" method="post">
             <div class="form-group">
@@ -40,6 +40,12 @@
 	    			</select>
                 </div>
 			</div>            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Synch Token:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{dbSynchToken}" />
+                </div>
+            </div>
             
             <div class="form-group">
                 <div class="col-sm-2">
