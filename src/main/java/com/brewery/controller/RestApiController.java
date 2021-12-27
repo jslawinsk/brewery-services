@@ -123,7 +123,7 @@ public class RestApiController {
     	dataService.deleteStyle(id);
     }
 
-    @RequestMapping(path = "style/synchToken/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "style/synchToken/{token}", method = RequestMethod.DELETE)
     public void deleteStyleRemote(@PathVariable(name = "token") String token) {
 		Style foundStyle = dataService.getStyle( token );
     	dataService.deleteStyle( foundStyle.getId() );
