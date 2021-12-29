@@ -20,9 +20,12 @@ import com.brewery.repository.BatchRepository;
 import com.brewery.repository.MeasurementRepository;
 import com.brewery.repository.SensorRepository;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -106,8 +109,13 @@ public class DataService implements UserDetailsService {
 	//
 	//
     public Style getStyle( Long id ) {
-        LOG.info("Getting Stype, id:" + id);
+        LOG.info("Getting Style, id: " + id);
         return styleRepository.getOne(id);
+    }
+    
+    public Style getStyle( String dbSynchToken ) {
+        LOG.info("Getting Style, SynchToken: " + dbSynchToken );
+        return styleRepository.findStyleBySynchToken( dbSynchToken );
     }
     
     public List<Style> getAllStyles() {
@@ -117,11 +125,14 @@ public class DataService implements UserDetailsService {
     public List<Style> getStylesToSynchronize() {
     	return styleRepository.findStylesToSynchronize();
     }
-    
+
     public Style saveStyle( Style style ) {
     	Style styleToSave;
         try {
-            LOG.info("Saving Style...");
+            LOG.info("Saving Style: " + style );
+        	if( style.getDbSynchToken() == null || style.getDbSynchToken().length() <= 0 ) {
+        		style.setDbSynchToken( getSynchToken() );
+        	}
             styleToSave = styleRepository.save(style);
             return styleToSave;
         } catch (Exception e) {
@@ -138,6 +149,12 @@ public class DataService implements UserDetailsService {
         	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
         	foundStyle.setDescription( styleToUpdate.getDescription() );
         	foundStyle.setDbSynch( styleToUpdate.getDbSynch() );
+        	if( styleToUpdate.getDbSynchToken() != null && styleToUpdate.getDbSynchToken().length() > 0 ) {
+            	foundStyle.setDbSynchToken( styleToUpdate.getDbSynchToken() );
+        	}
+        	else {
+        		foundStyle.setDbSynchToken( getSynchToken() );
+        	}
             return styleRepository.save( foundStyle );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateStyle: " + e.getMessage());
@@ -154,6 +171,12 @@ public class DataService implements UserDetailsService {
         }
     }
 
+    public Long getStyleBatchCount( Long id ) {
+        Long count = batchRepository.styleCount( id );
+        LOG.info("getStyleBatchCount, id:" + id + " batches: " + count );
+        return count;
+    }
+    
 	//
 	//	Process table access methods
 	//
@@ -739,5 +762,22 @@ public class DataService implements UserDetailsService {
         }
     }
 
+    //
+    //
+    //
+    //
+    private String getSynchToken() {
+    	String synchToken = "";
+    	
+    	try {
+			String hostName = InetAddress.getLocalHost().getHostName();
+			synchToken = synchToken + hostName + ":";
+		} catch (UnknownHostException e) {
+            LOG.error("DataService: getSynchToken getHostName Exception: " + e.getMessage());
+		}
+        synchToken = synchToken + UUID.randomUUID().toString();
+    	return synchToken;
+    }
+    
     
 }

@@ -6,14 +6,11 @@
 </head>
 <body>
 <div class="container">
-    <h2>Edit Style</h2>
+    <h2>Add Style</h2>
     <div>
         <form class="form-horizontal" th:object="${style}" th:action="@{/style}" method="post">
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <input type="hidden" class="form-control" th:field="*{id}"/>
-                </div>
-            </div>
+            <input type="hidden" class="form-control" th:field="*{id}"/>
+            <input type="hidden" class="form-control" th:field="*{dbSynchToken}"/>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Name:</label>
                 <div class="col-sm-10">

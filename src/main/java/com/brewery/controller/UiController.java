@@ -229,16 +229,29 @@ public class UiController {
     }
 
     @RequestMapping(path = "/style/delete/{id}", method = RequestMethod.GET)
-    public String deleteStyle(@PathVariable(name = "id") Long id) {
- /*   	if( dataSynchEnabled ) {
-    		Style style = dataService.getStyle(id);
-            style.setDbSynch( DbSync.DELETE );
-        	dataService.updateStyle( style );
+    public String deleteStyle( RedirectAttributes redirectAttributes, @PathVariable(name = "id" ) Long id) {
+        Info info = new Info();
+        String message = "";
+        
+    	Long batchCount = dataService.getStyleBatchCount( id );
+        if( batchCount == 0L ) {
+	    	if( dataSynchEnabled ) {
+        		message = message + "Style " + id + " scheduled for deletion.";
+	    		Style style = dataService.getStyle(id);
+	            style.setDbSynch( DbSync.DELETE );
+	        	dataService.updateStyle( style );
+	    	}
+	    	else {
+        		message = message + "Style " + id + " deleted.";
+	    		dataService.deleteStyle(id);
+	    	}
     	}
     	else {
-*/    	
-    		dataService.deleteStyle(id);
-//    	}
+        	message = message + "Style " + id + " has " + batchCount + " batch" + ((batchCount > 1L) ? "es" : "" ) + " configured. ";
+            message = message + "Associations must be removed before deleting style.";
+    	}
+    	info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
         return "redirect:/style";
     }
     

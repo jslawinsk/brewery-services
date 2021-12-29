@@ -152,22 +152,19 @@ public class DataSynchThread implements Runnable {
 		        	// 1st Phase Process Adding New Data
 		        	//
 			        	//
-			        	//	Synchronize Style Table
+			        	//	Synchronize Style Table for adding new data
 			        	//
-						//Thread.sleep(500);
 						List<Style> styles= dataService.getStylesToSynchronize();
 						for( Style style: styles ) {
 							LOG.info( "Style to Synchronize: " + style );
 							if( style.getDbSynch() == DbSync.ADD ) {
-								LOG.info( "Synchronize Add: " + style.getName() );
+								LOG.info( "Synchronize Add: " + style );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);
 								headers.setBearerAuth(token);
-								
 							    HttpEntity<Style> request = new HttpEntity<>(style, headers);
 								
 							    URI uri = new URI( dataSynchUrl + "style");
-							     
 							    ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
 								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
@@ -184,7 +181,7 @@ public class DataSynchThread implements Runnable {
 						List<Process> processes = dataService.getProcessesToSynchronize();
 						for( Process process: processes ) {
 							if( process.getDbSynch() == DbSync.ADD ) {
-								LOG.info( "Synchronize Add Process: " + process.getName() );
+								LOG.info( "Synchronize Add Process: " + process );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -207,7 +204,7 @@ public class DataSynchThread implements Runnable {
 						List<MeasureType> measureTypes = dataService.getMeasureTypesToSynchronize();
 						for( MeasureType measureType: measureTypes ) {
 							if( measureType.getDbSynch() == DbSync.ADD ) {
-								LOG.info( "Synchronize Add MeasureType: " + measureType.getName() );
+								LOG.info( "Synchronize Add MeasureType: " + measureType );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -350,11 +347,40 @@ public class DataSynchThread implements Runnable {
 		        	// 2nd Phase Process Updating Existing Data
 		        	//
 			        	//
+			        	//	Synchronize Style Table for updating data
+			        	//
+						for( Style style: styles ) {
+							if( style.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Synchronize Update Style: " + style );
+								if( style.getDbSynchToken() != null && style.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setContentType(MediaType.APPLICATION_JSON);
+									headers.setBearerAuth(token);
+								    HttpEntity<Style> request = new HttpEntity<>(style, headers);
+									
+								    URI uri = new URI( dataSynchUrl + "style");
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Style local update" );
+										style.setDbSynch( DbSync.SYNCHED );
+								    	dataService.updateStyle( style );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Update Style: Invalid DbSynchToken: " + style );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Update Style: Invalid DbSynchToken: " + style;
+								}
+							}
+						}
+						
+			        	//
 			        	//	Synchronize Process Table for updating data
 			        	//
 						for( Process process: processes ) {
 							if( process.getDbSynch() == DbSync.UPDATE ) {
-								LOG.info( "Synchronize Update Process: " + process.getName() );
+								LOG.info( "Synchronize Update Process: " + process );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -376,7 +402,7 @@ public class DataSynchThread implements Runnable {
 			        	//
 						for( MeasureType measureType: measureTypes ) {
 							if( measureType.getDbSynch() == DbSync.UPDATE ) {
-								LOG.info( "Synchronize Add MeasureType: " + measureType.getName() );
+								LOG.info( "Synchronize Add MeasureType: " + measureType );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -437,6 +463,32 @@ public class DataSynchThread implements Runnable {
 							}
 						}
 			        	
+						//
+			        	//	Synchronize Style Table for deleting data
+			        	//
+						for( Style style: styles ) {
+							if( style.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Synchronize Delete Style: " + style );
+								if( style.getDbSynchToken() != null && style.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setBearerAuth(token);
+								    HttpEntity<Style> request = new HttpEntity<>( headers);
+									
+								    URI uri = new URI( dataSynchUrl + "style/synchToken/" + style.getDbSynchToken() );
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Style local update" );
+								    	dataService.deleteStyle( style.getId() );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Delete Style: Invalid DbSynchToken: " + style );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Delete Style: Invalid DbSynchToken: " + style;
+								}
+							}
+						}
 						
 		        	}
 		        	else {

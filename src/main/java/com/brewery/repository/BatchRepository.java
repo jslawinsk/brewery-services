@@ -21,4 +21,7 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 	 @Query( value = "SELECT * FROM brewery.batch WHERE name = ?", nativeQuery = true )
 	 Batch findBatchByName( String name );	
 	 
+	@Query(value = "SELECT count(id) FROM brewery.batch where style_id = ?1", nativeQuery = true)
+	public Long styleCount( Long id );	 
+	 
 }
