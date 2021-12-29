@@ -109,12 +109,12 @@ public class DataService implements UserDetailsService {
 	//
 	//
     public Style getStyle( Long id ) {
-        LOG.info("Getting Style, id:" + id);
+        LOG.info("Getting Style, id: " + id);
         return styleRepository.getOne(id);
     }
     
     public Style getStyle( String dbSynchToken ) {
-        LOG.info("Getting Style, SynchToken:" + dbSynchToken );
+        LOG.info("Getting Style, SynchToken: " + dbSynchToken );
         return styleRepository.findStyleBySynchToken( dbSynchToken );
     }
     

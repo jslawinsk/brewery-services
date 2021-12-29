@@ -479,8 +479,7 @@ public class DataSynchThread implements Runnable {
 									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 								    if( result.getStatusCode() == HttpStatus.OK ) {
 								    	LOG.info( "Synchronize Style local update" );
-										style.setDbSynch( DbSync.SYNCHED );
-								    	dataService.updateStyle( style );
+								    	dataService.deleteStyle( style.getId() );
 								    }
 								}
 								else{

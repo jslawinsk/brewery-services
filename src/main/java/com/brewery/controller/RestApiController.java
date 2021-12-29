@@ -106,11 +106,13 @@ public class RestApiController {
     	Style style = new Style();
     	if( styleToUpdate.getDbSynchToken() != null && styleToUpdate.getDbSynchToken().length() > 0 ) {
     		Style foundStyle = dataService.getStyle( styleToUpdate.getDbSynchToken() );
-           	foundStyle.setName( styleToUpdate.getName() );
-        	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
-        	foundStyle.setDescription( styleToUpdate.getDescription() );
-        	foundStyle.setDbSynch( styleToUpdate.getDbSynch() );
-    		style = dataService.updateStyle( foundStyle );
+    		if( foundStyle != null ) {
+	           	foundStyle.setName( styleToUpdate.getName() );
+	        	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
+	        	foundStyle.setDescription( styleToUpdate.getDescription() );
+	        	foundStyle.setDbSynch( styleToUpdate.getDbSynch() );
+	    		style = dataService.updateStyle( foundStyle );
+    		}
     	}
     	else {
     		style = dataService.updateStyle( styleToUpdate );
@@ -126,7 +128,10 @@ public class RestApiController {
     @RequestMapping(path = "style/synchToken/{token}", method = RequestMethod.DELETE)
     public void deleteStyleRemote(@PathVariable(name = "token") String token) {
 		Style foundStyle = dataService.getStyle( token );
-    	dataService.deleteStyle( foundStyle.getId() );
+        LOG.info("RestApiController: deleteStyleRemote: " + foundStyle );    	
+        if( foundStyle != null ) {
+        	dataService.deleteStyle( foundStyle.getId() );
+        }
     }
     
     //
