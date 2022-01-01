@@ -355,7 +355,9 @@ public class DataService implements UserDetailsService {
             	style = styleRepository.findStyleByName( batch.getStyle().getName() );
             	batch.setStyle( style );
             }
-            
+        	if( batch.getDbSynchToken() == null || batch.getDbSynchToken().length() <= 0 ) {
+        		batch.setDbSynchToken( getSynchToken() );
+        	}
             batchToSave = batchRepository.save( batch );
             return batchToSave;
         } catch (Exception e) {
@@ -381,6 +383,12 @@ public class DataService implements UserDetailsService {
         	}
         	if( style == null ) {
             	foundBatch.setStyle( batchToUpdate.getStyle() );        		
+        	}
+        	if( batchToUpdate.getDbSynchToken() != null && batchToUpdate.getDbSynchToken().length() > 0 ) {
+        		foundBatch.setDbSynchToken( batchToUpdate.getDbSynchToken() );
+        	}
+        	else {
+        		foundBatch.setDbSynchToken( getSynchToken() );
         	}
         	
         	foundBatch.setActive( batchToUpdate.isActive() );
