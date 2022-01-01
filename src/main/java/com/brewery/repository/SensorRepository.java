@@ -24,4 +24,7 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
 	@Query(value = "SELECT count(id) FROM brewery.sensor where measure_type_code = ?1", nativeQuery = true)
 	public Long measureTypeCount( String code);	 
 	
+	@Query(value = "SELECT count(id) FROM brewery.sensor where batch_id = ?1", nativeQuery = true)
+	public Long batchCount( Long id );	 
+	
 }

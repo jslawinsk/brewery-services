@@ -222,12 +222,10 @@ public class DataSynchThread implements Runnable {
 						}
 		
 			        	//
-			        	//	Synchronize Batch Table
+			        	//	Synchronize Batch Table for adding new data
 			        	//
-						//Thread.sleep(500);
 						List<Batch> batches = dataService.getBatchesToSynchronize();
 						for( Batch batch: batches ) {
-							LOG.info( "Batch to Synchronize: " + batch );
 							if( batch.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + batch.getName() );
 								HttpHeaders headers = new HttpHeaders();
@@ -402,7 +400,7 @@ public class DataSynchThread implements Runnable {
 			        	//
 						for( MeasureType measureType: measureTypes ) {
 							if( measureType.getDbSynch() == DbSync.UPDATE ) {
-								LOG.info( "Synchronize Add MeasureType: " + measureType );
+								LOG.info( "Synchronize Update MeasureType: " + measureType );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setContentType(MediaType.APPLICATION_JSON);		
 								headers.setBearerAuth(token);
@@ -418,13 +416,62 @@ public class DataSynchThread implements Runnable {
 							    }
 							}
 						}
-		
+
+			        	//
+			        	//	Synchronize Batch Table for updating data
+			        	//
+						for( Batch batch: batches ) {
+							if( batch.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Synchronize Update Batch: " + batch.getName() );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setContentType(MediaType.APPLICATION_JSON);		
+								headers.setBearerAuth(token);
+							    HttpEntity<Batch> request = new HttpEntity<>(batch, headers);
+								
+							    URI uri = new URI( dataSynchUrl + "batch");
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Synchronize Batch local update" );
+									batch.setDbSynch( DbSync.SYNCHED );
+							    	dataService.updateBatch( batch );
+							    }
+							}
+						}
+						
 	        	//
 	        	// 3rd Phase Process Data Deletion
 	        	//
+			        	//
+			        	//	Synchronize Batch Table for deleting data
+			        	//
+						for( Batch batch: batches ) {
+							if( batch.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Synchronize Delete Batch: " + batch.getName() );
+								if( batch.getDbSynchToken() != null && batch.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setBearerAuth(token);
+								    HttpEntity<Batch> request = new HttpEntity<>( headers );
+									
+								    URI uri = new URI( dataSynchUrl + "batch/synchToken/" + batch.getDbSynchToken() );
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Batch local update" );
+										batch.setDbSynch( DbSync.SYNCHED );
+								    	dataService.updateBatch( batch );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Delete Batch: Invalid DbSynchToken: " + batch );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  " Synchronize Delete Batch: Invalid DbSynchToken: " + batch;
+								}
+							}
+						}
 
 			        	//
-			        	//	Synchronize Measure Types Table for updating data
+			        	//	Synchronize Measure Types Table for deleting data
 			        	//
 						for( MeasureType measureType: measureTypes ) {
 							if( measureType.getDbSynch() == DbSync.DELETE ) {
@@ -485,7 +532,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize Delete Style: Invalid DbSynchToken: " + style );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Delete Style: Invalid DbSynchToken: " + style;
+									statusMessage = statusMessage +  " Synchronize Delete Style: Invalid DbSynchToken: " + style;
 								}
 							}
 						}

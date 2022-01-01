@@ -322,6 +322,11 @@ public class DataService implements UserDetailsService {
         return batchRepository.getOne( id );
     }
 
+    public Batch getBatch( String dbSynchToken ) {
+        LOG.info("Getting Batch, SynchToken: " + dbSynchToken );
+        return batchRepository.findBatchBySynchToken( dbSynchToken );
+    }
+    
     public List<Batch> getAllBatches() {
     	return batchRepository.findAll();
     }
@@ -341,8 +346,13 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-            if( batch.getStyle() !=null && batch.getStyle().getName() != null ) {
-            	Style style = styleRepository.findStyleByName( batch.getStyle().getName() );
+        	Style style = null;
+        	if( batch.getStyle() != null && batch.getStyle().getDbSynchToken() != null && batch.getStyle().getDbSynchToken().length() > 0 ) {
+        		style = styleRepository.findStyleBySynchToken( batch.getStyle().getDbSynchToken() );
+        		batch.setStyle( style );
+        	}
+            if( style == null && batch.getStyle() !=null && batch.getStyle().getName() != null ) {
+            	style = styleRepository.findStyleByName( batch.getStyle().getName() );
             	batch.setStyle( style );
             }
             
@@ -360,11 +370,16 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
-        		Style style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+        	Style style = null;
+        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getDbSynchToken() != null && batchToUpdate.getStyle().getDbSynchToken().length() > 0 ) {
+        		style = styleRepository.findStyleBySynchToken( batchToUpdate.getStyle().getDbSynchToken() );
             	foundBatch.setStyle( style );
         	}
-        	else {
+        	if( style == null && batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
+        		style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+            	foundBatch.setStyle( style );
+        	}
+        	if( style == null ) {
             	foundBatch.setStyle( batchToUpdate.getStyle() );        		
         	}
         	
@@ -388,6 +403,12 @@ public class DataService implements UserDetailsService {
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteBatch: " + e.getMessage());
         }
+    }
+    
+    public Long getBatchSensorCount( Long id ) {
+        Long count = sensorRepository.batchCount( id );
+        LOG.info("getBatchSensorCount, id:" + id + " sensors: " + count );
+        return count; 
     }
 
 	//

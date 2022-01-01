@@ -6,587 +6,651 @@
 	},
 	"item": [
 		{
-			"name": "http://localhost:8080/api/style/100",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/style/100",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"style",
-						"100"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/style",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"bjcpCategory\": \"1\",\r\n  \"description\": \"Tan Beer\",\r\n  \"name\": \"Amber Ale\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Style API",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/style",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"let styleId = jsonData.id;\r",
+									"let styleSynchToken = jsonData.dbSynchToken;\r",
+									"pm.environment.set(\"styleId\", styleId);\r",
+									"pm.environment.set(\"styleSynchToken\", styleSynchToken);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/style",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "8080",
-					"path": [
-						"api",
-						"style"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/style",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 100,\r\n    \"name\": \"IPA\",\r\n    \"description\": \"Hoppy\",\r\n    \"bjcpCategory\": \"18a\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 101,\r\n  \"bjcpCategory\": \"1\",\r\n  \"dbSynch\": \"SYNCHED\",\r\n  \"dbSynchToken\": \"QATest2\",\r\n  \"description\": \"API Test2\",\r\n  \"name\": \"QA Test Ale\"\r\n}\r\n\r\n "
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/style",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/style",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"style"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/style/101",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/style/101",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"style",
-						"101"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/process/FRM",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"roles\" : [ \"ADMIN\" ],\r\n  \"username\" : \"Test\"\r\n}"
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/process/FRM",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"process",
-						"FRM"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/process",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"code\": \"BOL\",\r\n  \"name\": \"Boil\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/style/{{styleId}}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/style/{{styleId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style",
+								"{{styleId}}"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/process",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"process"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/process",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"code\": \"BOL\",\r\n  \"name\": \"Werth Boil\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/style",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"let styleId = jsonData.id;\r",
+									"let styleSynchToken = jsonData.dbSynchToken;\r",
+									"pm.environment.set(\"styleId\", styleId);\r",
+									"pm.environment.set(\"styleSynchToken\", styleSynchToken);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/process",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "8080",
-					"path": [
-						"api",
-						"process"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/process/BOL",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/process/BOL",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"process",
-						"BOL"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measureType/TMP",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/measureType/TMP",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measureType",
-						"TMP"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measureType",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"code\": \"PH\",\r\n  \"name\": \"PH\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": {{styleId}},\r\n  \"bjcpCategory\": \"1\",\r\n  \"dbSynch\": \"SYNCHED\",\r\n  \"dbSynchToken\": \"QATest2\",\r\n  \"description\": \"API Test Update\",\r\n  \"name\": \"QA Test Ale\"\r\n}\r\n\r\n "
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/style",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/measureType",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measureType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measureType",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"code\": \"PH\",\r\n  \"name\": \"Potential Hydrogen\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/style/{{styleId}}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/style/{{styleId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style",
+								"{{styleId}}"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/measureType",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measureType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measureType/PH",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/measureType/PH",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measureType",
-						"PH"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/batch",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Joe's IPA 2\",\r\n    \"description\": \"test IPA\",\r\n    \"style\": {\r\n        \"id\": 100\r\n\r\n    },\r\n    \"startTime\": \"2019-11-29 13:05:01\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/style/synchToken/{{styleSynchToken}}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/style/synchToken/{{styleSynchToken}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style",
+								"synchToken",
+								"{{styleSynchToken}}"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/batch",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"batch"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "http://localhost:8080/api/batch",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 6,\r\n    \"name\": \"Killer IPA 3\",\r\n    \"description\": \"stupid test IPA\",\r\n    \"style\": {\r\n        \"id\": 100\r\n    },\r\n    \"startTime\": \"2019-11-29 13:07:01\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Process API",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/process/FRM",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"roles\" : [ \"ADMIN\" ],\r\n  \"username\" : \"Test\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/process/FRM",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process",
+								"FRM"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/batch",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"batch"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/batch/6",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/batch/6",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"batch",
-						"6"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/batch/2",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/batch/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"batch",
-						"2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measurement/4",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/measurement/4",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measurement",
-						"4"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measurement",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"batch\": {\r\n    \"id\": 2\r\n  },\r\n  \"measurement\": 71,\r\n  \"measurementTime\": \"2019-11-29 13:05:01\",\r\n  \"observation\": \"test\",\r\n  \"process\": {\r\n    \"code\": \"FRM\"\r\n  },\r\n  \"type\": {\r\n    \"code\": \"TST\",\r\n    \"name\": \"TEST\"\r\n  }\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/process",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"BOL\",\r\n  \"name\": \"Boil\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/process",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/measurement",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measurement"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/api/measurement",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"id\": 5,\r\n  \"batch\": {\r\n    \"id\": 2\r\n  },\r\n  \"measurement\": 71,\r\n  \"measurementTime\": \"2019-11-29 13:05:01\",\r\n  \"observation\": \"test update\",\r\n  \"process\": {\r\n    \"code\": \"FRM\"\r\n  },\r\n  \"type\": {\r\n    \"code\": \"TMP\"\r\n  }\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "http://localhost:8080/api/process/BOL",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/process/BOL",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process",
+								"BOL"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/measurement",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measurement"
-					]
+				{
+					"name": "http://localhost:8080/api/process",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"BOL\",\r\n  \"name\": \"Werth Boil\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/process",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "http://localhost:8080/api/measurement/5",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/measurement/5",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"measurement",
-						"5"
-					]
+			"name": "Measyre Type API",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/measureType/TMP",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measureType/TMP",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType",
+								"TMP"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measureType",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"PH\",\r\n  \"name\": \"PH\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/measureType",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measureType",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"PH\",\r\n  \"name\": \"Potential Hydrogen\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/measureType",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measureType/PH",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measureType/PH",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType",
+								"PH"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Batch API",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/batch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"let batchId = jsonData.id;\r",
+									"let batchSynchToken = jsonData.dbSynchToken;\r",
+									"pm.environment.set( \"batchId\", batchId );\r",
+									"pm.environment.set( \"batchSynchToken\", batchSynchToken );"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 0,\r\n    \"active\": false,\r\n    \"name\": \"QA Test\",\r\n    \"description\": \"test IPA\",\r\n    \"style\": {\r\n        \"id\": {{styleId}},\r\n        \"name\": \"QA Test Ale\",\r\n        \"description\": \"API Test2\",\r\n        \"bjcpCategory\": \"1\",\r\n        \"dbSynch\": \"SYNCHED\",\r\n        \"dbSynchToken\": \"{{styleSynchToken}}\"\r\n    },\r\n    \"startTime\": \"2019-11-29 13:05:01\",\r\n    \"dbSynch\": \"SYNCHED\",\r\n    \"dbSynchToken\": \"QATest1\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/batch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/batch",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{batchId}},\r\n    \"active\": false,\r\n    \"name\": \"QA Test\",\r\n    \"description\": \"test IPA update\",\r\n    \"style\": {\r\n        \"id\": {{styleId}},\r\n        \"name\": \"QA Test Ale\",\r\n        \"description\": \"API Test2\",\r\n        \"bjcpCategory\": \"1\",\r\n        \"dbSynch\": \"SYNCHED\",\r\n        \"dbSynchToken\": \"{{styleSynchToken}}\"\r\n    },\r\n    \"startTime\": \"2019-11-29 13:05:01\",\r\n    \"dbSynch\": \"SYNCHED\",\r\n    \"dbSynchToken\": \"QATest1\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/batch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/batch/{{batchId}}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/batch/{{batchId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch",
+								"{{batchId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/batch/{{batchId}}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/batch/{{batchId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch",
+								"{{batchId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/batch/synchToken/{{batchSynchToken}}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/batch/synchToken/{{batchSynchToken}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch",
+								"synchToken",
+								"{{batchSynchToken}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Measurement API",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/measurement/4",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measurement/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measurement",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measurement",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"batch\": {\r\n    \"id\": 2\r\n  },\r\n  \"measurement\": 71,\r\n  \"measurementTime\": \"2019-11-29 13:05:01\",\r\n  \"observation\": \"test\",\r\n  \"process\": {\r\n    \"code\": \"FRM\"\r\n  },\r\n  \"type\": {\r\n    \"code\": \"TST\",\r\n    \"name\": \"TEST\"\r\n  }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/measurement",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measurement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measurement",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"id\": 5,\r\n  \"batch\": {\r\n    \"id\": 2\r\n  },\r\n  \"measurement\": 71,\r\n  \"measurementTime\": \"2019-11-29 13:05:01\",\r\n  \"observation\": \"test update\",\r\n  \"process\": {\r\n    \"code\": \"FRM\"\r\n  },\r\n  \"type\": {\r\n    \"code\": \"TMP\"\r\n  }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/measurement",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measurement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/api/measurement/5",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measurement/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measurement",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "http://localhost:8080/auth/authorize",
@@ -655,12 +719,32 @@
 			"response": []
 		},
 		{
-			"name": "localhost:8080/api/authorize?user=ADMIN&password=admin",
+			"name": "http://localhost:8080/api/authorize?user=API2&password=api",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let token = jsonData.token;\r",
+							"pm.environment.set(\"accessToken\", token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
-					"raw": "localhost:8080/api/authorize?user=ADMIN&password=admin",
+					"raw": "localhost:8080/api/authorize?user=API2&password=api",
 					"host": [
 						"localhost"
 					],
@@ -672,23 +756,63 @@
 					"query": [
 						{
 							"key": "user",
-							"value": "ADMIN"
+							"value": "API2"
 						},
 						{
 							"key": "password",
-							"value": "admin"
+							"value": "api"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://brewery-services.herokuapp.com/api/summary",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJzb2Z0dGVrSldUIiwic3ViIjoiUm9iQVBJIiwiYXV0aG9yaXRpZXMiOlsiQVBJIl0sImlhdCI6MTYxODMzMjQzNCwiZXhwIjoxNjE4MzMzMDM0fQ.Qx8qDPoz_wHM0NR1QBfyyZk1rhClTk_yMFcVdPezp-otvlecRc2dvztlMxsbomFUfYfrV_FabgBfdDcmc9ywCw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://brewery-services.herokuapp.com/api/summary",
+					"protocol": "http",
+					"host": [
+						"brewery-services",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"summary"
 					]
 				}
 			},
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "0e43d909-2521-459f-9616-4be38054c5ef",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -698,13 +822,11 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "3a715aaf-9f7a-4ffc-89ce-00cb0d2d13c8",
 				"type": "text/javascript",
 				"exec": [
 					""
 				]
 			}
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
