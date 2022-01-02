@@ -466,7 +466,7 @@ public class DataSynchThread implements Runnable {
 								    if( result.getStatusCode() == HttpStatus.OK ) {
 								    	LOG.info( "Synchronize Batch local update" );
 										batch.setDbSynch( DbSync.SYNCHED );
-								    	dataService.updateBatch( batch );
+								    	dataService.deleteBatch( batch.getId() );
 								    }
 								}
 								else{
