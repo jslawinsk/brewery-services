@@ -7,6 +7,7 @@
 <body>
 <div class="container">
 	<h2>Batches</h2>
+    <th:block th:include="layout/info"></th:block>
     <div th:if="${#lists.isEmpty(batches)}">
     	<a th:href="@{/batch/add}" class="btn btn-outline-dark btn-lg">Add Batch
 			<img th:src="@{/images/add-24px.svg}"/>

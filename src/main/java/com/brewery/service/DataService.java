@@ -115,7 +115,15 @@ public class DataService implements UserDetailsService {
     
     public Style getStyle( String dbSynchToken ) {
         LOG.info("Getting Style, SynchToken: " + dbSynchToken );
-        return styleRepository.findStyleBySynchToken( dbSynchToken );
+        try {
+	        Style style = styleRepository.findStyleBySynchToken( dbSynchToken );
+	        LOG.info("getStyle: " + style );
+	        return style;
+        }
+        catch( Exception e ) {
+        	LOG.error( "getStyle findStyleBySynchToken: Execption",  e );
+        }
+        return new Style();
     }
     
     public List<Style> getAllStyles() {
@@ -322,6 +330,11 @@ public class DataService implements UserDetailsService {
         return batchRepository.getOne( id );
     }
 
+    public Batch getBatch( String dbSynchToken ) {
+        LOG.info("Getting Batch, SynchToken: " + dbSynchToken );
+        return batchRepository.findBatchBySynchToken( dbSynchToken );
+    }
+    
     public List<Batch> getAllBatches() {
     	return batchRepository.findAll();
     }
@@ -341,11 +354,18 @@ public class DataService implements UserDetailsService {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-            if( batch.getStyle() !=null && batch.getStyle().getName() != null ) {
-            	Style style = styleRepository.findStyleByName( batch.getStyle().getName() );
+        	Style style = null;
+        	if( batch.getStyle() != null && batch.getStyle().getDbSynchToken() != null && batch.getStyle().getDbSynchToken().length() > 0 ) {
+        		style = styleRepository.findStyleBySynchToken( batch.getStyle().getDbSynchToken() );
+        		batch.setStyle( style );
+        	}
+            if( style == null && batch.getStyle() !=null && batch.getStyle().getName() != null ) {
+            	style = styleRepository.findStyleByName( batch.getStyle().getName() );
             	batch.setStyle( style );
             }
-            
+        	if( batch.getDbSynchToken() == null || batch.getDbSynchToken().length() <= 0 ) {
+        		batch.setDbSynchToken( getSynchToken() );
+        	}
             batchToSave = batchRepository.save( batch );
             return batchToSave;
         } catch (Exception e) {
@@ -355,17 +375,31 @@ public class DataService implements UserDetailsService {
     }
 
     public Batch updateBatch( Batch batchToUpdate ) {
+        LOG.info("Update Batch: " + batchToUpdate );
     	Batch foundBatch = batchRepository.getOne( batchToUpdate.getId() );
         try {
         	//
         	//	Can't use primary key for as remote DB may have different value
         	//
-        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
-        		Style style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+        	Style style = null;
+        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getDbSynchToken() != null && batchToUpdate.getStyle().getDbSynchToken().length() > 0 ) {
+        		style = getStyle( batchToUpdate.getStyle().getDbSynchToken() );
+                LOG.info("Update Batch Style: " + style );
             	foundBatch.setStyle( style );
         	}
-        	else {
+        	if( style == null && batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
+        		style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+                LOG.info("Update Batch Style 2: " + style );
+            	foundBatch.setStyle( style );
+        	}
+        	if( style == null ) {
             	foundBatch.setStyle( batchToUpdate.getStyle() );        		
+        	}
+        	if( batchToUpdate.getDbSynchToken() != null && batchToUpdate.getDbSynchToken().length() > 0 ) {
+        		foundBatch.setDbSynchToken( batchToUpdate.getDbSynchToken() );
+        	}
+        	else {
+        		foundBatch.setDbSynchToken( getSynchToken() );
         	}
         	
         	foundBatch.setActive( batchToUpdate.isActive() );
@@ -388,6 +422,12 @@ public class DataService implements UserDetailsService {
         } catch (Exception e) {
             LOG.error("DataService: Exception: deleteBatch: " + e.getMessage());
         }
+    }
+    
+    public Long getBatchSensorCount( Long id ) {
+        Long count = sensorRepository.batchCount( id );
+        LOG.info("getBatchSensorCount, id:" + id + " sensors: " + count );
+        return count; 
     }
 
 	//

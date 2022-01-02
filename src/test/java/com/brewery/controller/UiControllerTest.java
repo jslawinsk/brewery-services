@@ -367,7 +367,7 @@ public class UiControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/add")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Batch</h2>")));
+	            .andExpect(content().string(containsString("<h2>Add Batch</h2>")));
 	}		
 	
 	@Test

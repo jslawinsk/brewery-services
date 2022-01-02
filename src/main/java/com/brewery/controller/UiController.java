@@ -411,13 +411,23 @@ public class UiController {
     	batch.setStartTime( new Date() );
         model.addAttribute("batch", batch );
         model.addAttribute("styles",  dataService.getAllStyles() );
-        return "batchEdit";
+        return "batchAdd";
     }
 
     @RequestMapping(path = "/batch", method = RequestMethod.POST)
     public String saveBatch( Batch batch ) {
         LOG.info("UiController: saveBatch Batch: " + batch );   
     	dataService.saveBatch(batch);
+        return "redirect:/batch";
+    }
+
+    @RequestMapping(path = "/batch/update", method = RequestMethod.POST)
+    public String updateBatch( Batch batch ) {
+        LOG.info("UiController: updateBatch Batch: " + batch );   
+        if( batch.getDbSynch() != DbSync.ADD ) {
+        	batch.setDbSynch( DbSync.UPDATE );
+        }
+    	dataService.updateBatch( batch );
         return "redirect:/batch";
     }
     
@@ -458,8 +468,29 @@ public class UiController {
     }
 
     @RequestMapping(path = "/batch/delete/{id}", method = RequestMethod.GET)
-    public String deleteBatch(@PathVariable(name = "id") Long id) {
-    	dataService.deleteBatch( id );
+    public String deleteBatch( RedirectAttributes redirectAttributes, @PathVariable(name = "id") Long id) {
+    	
+        Info info = new Info();
+        String message = "";
+    	Long sensorCount = dataService.getBatchSensorCount( id );
+        if( sensorCount == 0L ) {
+	    	if( dataSynchEnabled ) {
+        		message = message + "Batch " + id + " scheduled for deletion.";
+        		Batch batch =  dataService.getBatch( id );
+        		batch.setDbSynch( DbSync.DELETE );
+		    	dataService.updateBatch( batch );
+	    	}
+	    	else {
+        		message = message + "Batch " + id + " deleted.";
+            	dataService.deleteBatch( id );
+	    	}
+    	}
+    	else {
+        	message = message + "Batch ID " + id + " has " + sensorCount + " sensor" + ((sensorCount > 1L) ? "s" : "" ) + " configured. ";
+            message = message + "Associations must be removed before deleting batch.";
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
         return "redirect:/batch";
     }
 

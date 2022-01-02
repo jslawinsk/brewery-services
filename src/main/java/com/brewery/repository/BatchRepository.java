@@ -1,6 +1,7 @@
 package com.brewery.repository;
 
 import com.brewery.model.Batch;
+import com.brewery.model.Style;
 
 import java.util.List;
 
@@ -21,7 +22,11 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 	 @Query( value = "SELECT * FROM brewery.batch WHERE name = ?", nativeQuery = true )
 	 Batch findBatchByName( String name );	
 	 
+	 @Query( value = "SELECT * FROM brewery.batch WHERE db_synch_token = ?" , nativeQuery = true )
+	 Batch findBatchBySynchToken( String dbSynchToken );	
+	 
 	@Query(value = "SELECT count(id) FROM brewery.batch where style_id = ?1", nativeQuery = true)
 	public Long styleCount( Long id );	 
-	 
+
+	
 }
