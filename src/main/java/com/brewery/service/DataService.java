@@ -115,7 +115,15 @@ public class DataService implements UserDetailsService {
     
     public Style getStyle( String dbSynchToken ) {
         LOG.info("Getting Style, SynchToken: " + dbSynchToken );
-        return styleRepository.findStyleBySynchToken( dbSynchToken );
+        try {
+	        Style style = styleRepository.findStyleBySynchToken( dbSynchToken );
+	        LOG.info("getStyle: " + style );
+	        return style;
+        }
+        catch( Exception e ) {
+        	LOG.error( "getStyle findStyleBySynchToken: Execption",  e );
+        }
+        return new Style();
     }
     
     public List<Style> getAllStyles() {
@@ -367,6 +375,7 @@ public class DataService implements UserDetailsService {
     }
 
     public Batch updateBatch( Batch batchToUpdate ) {
+        LOG.info("Update Batch: " + batchToUpdate );
     	Batch foundBatch = batchRepository.getOne( batchToUpdate.getId() );
         try {
         	//
@@ -374,11 +383,13 @@ public class DataService implements UserDetailsService {
         	//
         	Style style = null;
         	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getDbSynchToken() != null && batchToUpdate.getStyle().getDbSynchToken().length() > 0 ) {
-        		style = styleRepository.findStyleBySynchToken( batchToUpdate.getStyle().getDbSynchToken() );
+        		style = getStyle( batchToUpdate.getStyle().getDbSynchToken() );
+                LOG.info("Update Batch Style: " + style );
             	foundBatch.setStyle( style );
         	}
         	if( style == null && batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
         		style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
+                LOG.info("Update Batch Style 2: " + style );
             	foundBatch.setStyle( style );
         	}
         	if( style == null ) {

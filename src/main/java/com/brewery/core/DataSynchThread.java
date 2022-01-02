@@ -423,19 +423,26 @@ public class DataSynchThread implements Runnable {
 						for( Batch batch: batches ) {
 							if( batch.getDbSynch() == DbSync.UPDATE ) {
 								LOG.info( "Synchronize Update Batch: " + batch.getName() );
-								HttpHeaders headers = new HttpHeaders();
-								headers.setContentType(MediaType.APPLICATION_JSON);		
-								headers.setBearerAuth(token);
-							    HttpEntity<Batch> request = new HttpEntity<>(batch, headers);
-								
-							    URI uri = new URI( dataSynchUrl + "batch");
-							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
-								LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
-							    if( result.getStatusCode() == HttpStatus.OK ) {
-							    	LOG.info( "Synchronize Batch local update" );
-									batch.setDbSynch( DbSync.SYNCHED );
-							    	dataService.updateBatch( batch );
-							    }
+								if( batch.getDbSynchToken() != null && batch.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setContentType(MediaType.APPLICATION_JSON);		
+									headers.setBearerAuth(token);
+								    HttpEntity<Batch> request = new HttpEntity<>(batch, headers);
+									
+								    URI uri = new URI( dataSynchUrl + "batch");
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Batch local update" );
+										batch.setDbSynch( DbSync.SYNCHED );
+								    	dataService.updateBatch( batch );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Update Batch: Invalid DbSynchToken: " + batch );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Update Batch: Invalid DbSynchToken: " + batch;
+								}
 							}
 						}
 						

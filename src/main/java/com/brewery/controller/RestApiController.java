@@ -207,19 +207,30 @@ public class RestApiController {
     @RequestMapping(path = "batch", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Batch updateBatch( @RequestBody Batch batchToUpdate ) {
     	Batch batch = new Batch();
+    	
+    	Style foundStyle = null;
+    	if( batchToUpdate.getStyle().getDbSynchToken() != null && batchToUpdate.getStyle().getDbSynchToken().length() > 0 ) {
+    		foundStyle = dataService.getStyle( batchToUpdate.getStyle().getDbSynchToken() );
+    	}
+    	else {
+    		foundStyle = batchToUpdate.getStyle();
+    	}
+    	
     	if( batchToUpdate.getDbSynchToken() != null && batchToUpdate.getDbSynchToken().length() > 0 ) {
     		Batch foundBatch = dataService.getBatch( batchToUpdate.getDbSynchToken() );
     		if( foundBatch != null ) {
+    			LOG.info( "updateBatch: found by token: " + foundBatch );
             	foundBatch.setActive( batchToUpdate.isActive() );
             	foundBatch.setName( batchToUpdate.getName() );
             	foundBatch.setDescription( batchToUpdate.getDescription() );
             	foundBatch.setStartTime( batchToUpdate.getStartTime() );
             	foundBatch.setDbSynch( batchToUpdate.getDbSynch() );
-            	foundBatch.setStyle( batchToUpdate.getStyle() );        		
+            	foundBatch.setStyle( foundStyle );        		
 	        	batch = dataService.updateBatch( foundBatch );
     		}
     	}
     	else {
+    		batchToUpdate.setStyle( foundStyle );        		
     		batch = dataService.updateBatch( batchToUpdate );
     	}
         return batch;
