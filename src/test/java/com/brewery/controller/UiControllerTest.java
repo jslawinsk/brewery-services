@@ -454,7 +454,7 @@ public class UiControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/add/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Measurement</h2>")));
+	            .andExpect(content().string(containsString("<h2>Add Measurement</h2>")));
 	}		
 	
 	@Test
@@ -532,10 +532,19 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteMeasurement() throws Exception
 	{
+    	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+		testBatch.setId( 1L );
+    	Process process = new Process( "FRM", "Fermentation" );
+		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
+		measurement.setId( 1L );
+        Mockito.when(dataService.getMeasurement( 1L )).thenReturn( measurement );
+		
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/delete/1")
 				.with(csrf())
 	            .accept(MediaType.ALL))
-				.andExpect( MockMvcResultMatchers.redirectedUrl("/"));
+        		.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"));
 	}		
 	
 	@Test

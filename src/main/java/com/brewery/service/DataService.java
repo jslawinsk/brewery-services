@@ -7,6 +7,7 @@ import com.brewery.model.Process;
 import com.brewery.model.ResetToken;
 import com.brewery.model.MeasureType;
 import com.brewery.model.Batch;
+import com.brewery.model.DbSync;
 import com.brewery.model.Measurement;
 import com.brewery.model.Sensor;
 import com.brewery.model.SensorType;
@@ -32,6 +33,7 @@ import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataService implements UserDetailsService {
 
     private Logger LOG = LoggerFactory.getLogger(DataService.class);
+    
+    @Value("${dataSynch.enabled}")
+    private boolean dataSynchEnabled;
 
 	private StyleRepository styleRepository;
 	@Autowired
@@ -439,6 +444,11 @@ public class DataService implements UserDetailsService {
         return measurementRepository.getOne( id );
     }
 
+    public Measurement getMeasurement( String dbSynchToken ) {
+        LOG.info("Getting Measurement, SynchToken:" + dbSynchToken );
+        return measurementRepository.findMeasurementBySynchToken( dbSynchToken );
+    }
+    
     public List<Measurement> getRecentMeasurement( Long id ) {
         LOG.info("Getting recent Measurement" );
         return measurementRepository.findMostRecent( id );
@@ -483,6 +493,9 @@ public class DataService implements UserDetailsService {
             	Batch batch = batchRepository.findBatchByName( measurement.getBatch().getName() );
             	measurement.setBatch( batch );
             }
+        	if( measurement.getDbSynchToken() == null || measurement.getDbSynchToken().length() <= 0 ) {
+        		measurement.setDbSynchToken( getSynchToken() );
+        	}
             
             measurementToSave = measurementRepository.save( measurement );
             return measurementToSave;
@@ -505,6 +518,12 @@ public class DataService implements UserDetailsService {
         	}
         	else {
             	foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
+        	}
+        	if( measurementToUpdate.getDbSynchToken() != null && measurementToUpdate.getDbSynchToken().length() > 0 ) {
+        		foundMeasurement.setDbSynchToken( measurementToUpdate.getDbSynchToken() );
+        	}
+        	else {
+        		foundMeasurement.setDbSynchToken( getSynchToken() );
         	}
         	
         	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
@@ -540,13 +559,19 @@ public class DataService implements UserDetailsService {
     					&& baseMeasurement.getValueNumber() == measurement.getValueNumber()
     					&& baseMeasurement.getValueText().equals( measurement.getValueText() ) 
     			) {
-    		    	LOG.info("Delete Measurement:" + measurement );
-    		    	deleteMeasurement( measurement.getId() );
+    		    	if( dataSynchEnabled ) {
+    		    		LOG.info( "Measurement " + measurement.getId() + " scheduled for deletion." );
+    		    		measurement.setDbSynch( DbSync.DELETE );
+    			    	updateMeasurement( measurement );
+    		    	}
+    		    	else {
+        		    	LOG.info("Delete Measurement:" + measurement );
+        		    	deleteMeasurement( measurement.getId() );
+    		    	}
     			}
     		}
 			baseMeasurement = measurement;    				
     	}
-    	
     }
     
 	//

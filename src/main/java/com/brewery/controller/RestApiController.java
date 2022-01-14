@@ -271,7 +271,35 @@ public class RestApiController {
 
     @RequestMapping(path = "measurement", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Measurement updateMeasurement( @RequestBody Measurement measurementToUpdate ) {
-        return dataService.updateMeasurement( measurementToUpdate );
+    	Measurement measurement = new Measurement();
+    	
+    	Batch foundBatch = null;
+    	if( measurementToUpdate.getBatch().getDbSynchToken() != null && measurementToUpdate.getBatch().getDbSynchToken().length() > 0 ) {
+    		foundBatch = dataService.getBatch( measurementToUpdate.getBatch().getDbSynchToken() );
+    	}
+    	else {
+    		foundBatch = measurementToUpdate.getBatch();
+    	}
+
+    	if( measurementToUpdate.getDbSynchToken() != null && measurementToUpdate.getDbSynchToken().length() > 0 ) {
+    		Measurement foundMeasurement = dataService.getMeasurement( measurementToUpdate.getDbSynchToken() );
+    		if( foundMeasurement != null ) {
+    			LOG.info( "updateMeasurement: found by token: " + foundMeasurement );
+    			foundMeasurement.setBatch( foundBatch );
+    			foundMeasurement.setDbSynch( measurementToUpdate.getDbSynch() );
+    			foundMeasurement.setMeasurementTime( measurementToUpdate.getMeasurementTime() );
+    			foundMeasurement.setProcess( measurementToUpdate.getProcess() );
+    			foundMeasurement.setType( measurementToUpdate.getType() );
+    			foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
+    			foundMeasurement.setValueText( measurementToUpdate.getValueText() );
+	        	measurement = dataService.updateMeasurement( foundMeasurement );
+    		}
+    	}
+    	else {
+    		measurementToUpdate.setBatch( foundBatch );        		
+    		measurement = dataService.updateMeasurement( measurementToUpdate );
+    	}
+        return measurement;
     }
 
     @RequestMapping(path = "measurement/{id}", method = RequestMethod.DELETE)
@@ -279,6 +307,15 @@ public class RestApiController {
     	dataService.deleteMeasurement( id );
     }
 
+    @RequestMapping(path = "measurement/synchToken/{token}", method = RequestMethod.DELETE)
+    public void deleteMeasurementRemote( @PathVariable(name = "token") String token ) {
+    	Measurement foundMeasurement= dataService.getMeasurement( token );
+        LOG.info("RestApiController: deleteMeasurementRemote: " + foundMeasurement );    	
+        if( foundMeasurement != null ) {
+        	dataService.deleteMeasurement( foundMeasurement.getId() );
+        }
+    }
+    
     //
     // Sensor table API service methods
     //

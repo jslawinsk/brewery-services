@@ -509,12 +509,22 @@ public class UiController {
         model.addAttribute("batches",  dataService.getAllBatches() );
         model.addAttribute("processes",  dataService.getAllProcesses() );
         model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
-        return "measurementEdit";
+        return "measurementAdd";
     }
-    
+
     @RequestMapping(path = "/measurement", method = RequestMethod.POST)
     public String saveMeasurement( Measurement measurement ) {
         LOG.info("UiController: saveMeasurement Measurement: " + measurement );   
+        Measurement measurementS = dataService.saveMeasurement( measurement );
+        return "redirect:/measurement/batch/" + measurementS.getBatch().getId();
+    }
+    
+    @RequestMapping(path = "/measurement/update", method = RequestMethod.POST)
+    public String updateMeasurement( Measurement measurement ) {
+        LOG.info("UiController: updateMeasurement Measurement: " + measurement );   
+        if( measurement.getDbSynch() != DbSync.ADD ) {
+        	measurement.setDbSynch( DbSync.UPDATE );
+        }
         Measurement measurementS = dataService.saveMeasurement( measurement );
         return "redirect:/measurement/batch/" + measurementS.getBatch().getId();
     }
@@ -556,13 +566,38 @@ public class UiController {
     }
 
     @RequestMapping(path = "/measurement/delete/{id}", method = RequestMethod.GET)
-    public String deleteMeasurement(@PathVariable(name = "id") Long id) {
-    	dataService.deleteMeasurement( id );
-        return "redirect:/";
+    public String deleteMeasurement( RedirectAttributes redirectAttributes, @PathVariable(name = "id") Long id) {
+        Info info = new Info();
+        String message = "";
+
+		Measurement measurement =  dataService.getMeasurement( id );
+    	if( dataSynchEnabled ) {
+    		message = message + "Measurement " + id + " scheduled for deletion.";
+    		measurement.setDbSynch( DbSync.DELETE );
+	    	dataService.updateMeasurement( measurement );
+    	}
+    	else {
+    		message = message + "Measurement " + id + " deleted.";
+            dataService.deleteMeasurement( id );
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
+        return "redirect:/measurement/batch/" + measurement.getBatch().getId();
     }
 
     @RequestMapping(path = "/measurement/duplicatedelete/{id}", method = RequestMethod.GET)
-    public String deleteDuplicateMeasurements(@PathVariable(name = "id") Long id) {
+    public String deleteDuplicateMeasurements( RedirectAttributes redirectAttributes, @PathVariable(name = "id") Long id) {
+        Info info = new Info();
+        String message = "";
+    	if( dataSynchEnabled ) {
+    		message = message + "Duplicate measurements scheduled for deletion.";
+    	}
+    	else {
+    		message = message + "Duplicate deasurements deleted.";
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
+
     	dataService.deleteDuplicateMeasurements( id );
         return "redirect:/measurement/batch/" + id;
     }

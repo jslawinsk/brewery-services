@@ -278,9 +278,8 @@ public class DataSynchThread implements Runnable {
 						}
 		
 			        	//
-			        	//	Synchronize Measurement Table
+			        	//	Synchronize Measurement Table for adding data
 			        	//
-						//Thread.sleep(500);
 						Long batchId = -1L;
 						Double value = -1D;
 						String measureTypeStr = "";
@@ -288,8 +287,8 @@ public class DataSynchThread implements Runnable {
 						
 						List<Measurement> measurements = dataService.getMeasurementsToSynchronize();
 						for( Measurement measurement: measurements ) {
-							LOG.info( "Measurement to Synchronize: " + measurement );
 							if( measurement.getDbSynch() == DbSync.ADD ) {
+								LOG.info( "Measurement to Synchronize: " + measurement );
 								boolean publish = false;
 								if( batchId != measurement.getBatch().getId() 
 										|| value + .5 < measurement.getValueNumber()
@@ -446,9 +445,66 @@ public class DataSynchThread implements Runnable {
 							}
 						}
 						
+			        	//
+			        	//	Synchronize Measurement Table for updating data
+			        	//
+						for( Measurement measurement: measurements ) {
+							if( measurement.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Measurement to Update: " + measurement );
+								if( measurement.getDbSynchToken() != null && measurement.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setContentType(MediaType.APPLICATION_JSON);		
+									headers.setBearerAuth(token);
+								    HttpEntity<Measurement> request = new HttpEntity<>(measurement, headers);
+									
+								    URI uri = new URI( dataSynchUrl + "measurement");
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Measurement local update" );
+										measurement.setDbSynch( DbSync.SYNCHED );
+								    	dataService.updateMeasurement( measurement );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Update Measurement: Invalid DbSynchToken: " + measurement );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Update Measurement: Invalid DbSynchToken: " + measurement;
+								}
+							}
+						}
+						
+						
 	        	//
 	        	// 3rd Phase Process Data Deletion
 	        	//
+			        	//
+			        	//	Synchronize Measurement Table for deleting data
+			        	//
+						for( Measurement measurement: measurements ) {
+							if( measurement.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Measurement to delete: " + measurement );
+								if( measurement.getDbSynchToken() != null && measurement.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setBearerAuth(token);
+								    HttpEntity<Measurement> request = new HttpEntity<>( headers);
+									
+								    URI uri = new URI( dataSynchUrl + "measurement/synchToken/" + measurement.getDbSynchToken() );
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Measurement local delete" );
+								    	dataService.deleteMeasurement( measurement.getId() );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Delete Measurement: Invalid DbSynchToken: " + measurement );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  " Synchronize Delete Measurement: Invalid DbSynchToken: " + measurement;
+								}
+							}
+						}
+						
 			        	//
 			        	//	Synchronize Batch Table for deleting data
 			        	//
@@ -464,7 +520,7 @@ public class DataSynchThread implements Runnable {
 								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
 									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
 								    if( result.getStatusCode() == HttpStatus.OK ) {
-								    	LOG.info( "Synchronize Batch local update" );
+								    	LOG.info( "Synchronize Batch local delete" );
 										batch.setDbSynch( DbSync.SYNCHED );
 								    	dataService.deleteBatch( batch.getId() );
 								    }
