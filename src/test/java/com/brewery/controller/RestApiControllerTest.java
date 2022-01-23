@@ -444,7 +444,13 @@ public class RestApiControllerTest {
 	@WithMockUser( authorities = "API" )
 	public void updateSensor() throws Exception
 	{
+		testBatch.setDbSynchToken( "test" );
+		Mockito.when(dataService.getBatch(  Mockito.any( String.class )) ).thenReturn( testBatch );
+
 		sensor.setId( 1L );
+		sensor.setDbSynchToken( "test" );
+		sensor.setBatch( testBatch );
+		Mockito.when(dataService.getSensor( "test" )).thenReturn( sensor );
 		Mockito.when(dataService.updateSensor( Mockito.any(Sensor.class) )).thenReturn( sensor );
 
         mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/sensor" )

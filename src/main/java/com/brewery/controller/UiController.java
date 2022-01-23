@@ -618,13 +618,23 @@ public class UiController {
         model.addAttribute("batches",  dataService.getAllBatches() );
         model.addAttribute("processes",  dataService.getAllProcesses() );
         model.addAttribute("measureTypes",  dataService.getAllMeasureTypes() );
-        return "sensorEdit";
+        return "sensorAdd";
     }
     
     @RequestMapping(path = "/sensor", method = RequestMethod.POST)
     public String saveSensor( Sensor sensor ) {
         LOG.info("UiController: saveSensor: " + sensor );   
     	dataService.saveSensor( sensor );
+        return "redirect:/sensor/";
+    }
+    
+    @RequestMapping(path = "/sensor/update", method = RequestMethod.POST)
+    public String updateSensor( Sensor sensor ) {
+        LOG.info("UiController: updateSensor: " + sensor );   
+        if( sensor.getDbSynch() != DbSync.ADD ) {
+        	sensor.setDbSynch( DbSync.UPDATE );
+        }
+    	dataService.updateSensor( sensor );
         return "redirect:/sensor/";
     }
     
@@ -708,8 +718,22 @@ public class UiController {
     }
 
     @RequestMapping(path = "/sensor/delete/{id}", method = RequestMethod.GET)
-    public String deleteSensor(@PathVariable(name = "id") Long id) {
-    	dataService.deleteSensor( id );
+    public String deleteSensor( RedirectAttributes redirectAttributes, @PathVariable(name = "id") Long id ) {
+    	
+        Info info = new Info();
+        String message = "";
+        Sensor sensor = dataService.getSensor( id );
+    	if( dataSynchEnabled && sensor.getDbSynchToken() != null && sensor.getDbSynchToken().length() > 0 ) {
+    		message = message + "Sensor " + id + " scheduled for deletion.";
+    		sensor.setDbSynch( DbSync.DELETE );
+	    	dataService.updateSensor( sensor );
+    	}
+    	else {
+    		message = message + "Sensor " + id + " deleted.";
+        	dataService.deleteSensor( id );
+    	}
+        info.setMessage( message );
+        redirectAttributes.addFlashAttribute( "info", info );
         return "redirect:/sensor/";
     }
 

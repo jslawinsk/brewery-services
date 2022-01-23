@@ -247,12 +247,10 @@ public class DataSynchThread implements Runnable {
 						}
 						
 			        	//
-			        	//	Synchronize Sensor Table
+			        	//	Synchronize Sensor Table for adding Data
 			        	//
-						//Thread.sleep(500);
 						List<Sensor> sensors = dataService.getSensorsToSynchronize();
 						for( Sensor sensor: sensors ) {
-							LOG.info( "Sensor to Synchronize: " + sensor );
 							if( sensor.getDbSynch() == DbSync.ADD ) {
 								LOG.info( "Synchronize Add: " + sensor.getName() );
 								HttpHeaders headers = new HttpHeaders();
@@ -474,10 +472,68 @@ public class DataSynchThread implements Runnable {
 							}
 						}
 						
+			        	//
+			        	//	Synchronize Sensor Table for updating Data
+			        	//
+						for( Sensor sensor: sensors ) {
+							if( sensor.getDbSynch() == DbSync.UPDATE ) {
+								LOG.info( "Synchronize Update: " + sensor.getName() );
+								if( sensor.getDbSynchToken() != null && sensor.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setContentType(MediaType.APPLICATION_JSON);		
+									headers.setBearerAuth(token);
+									boolean enabled = sensor.isEnabled();
+									sensor.setEnabled( false );
+								    HttpEntity<Sensor> request = new HttpEntity<>(sensor, headers);
+									
+								    URI uri = new URI( dataSynchUrl + "sensor");
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.PUT, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Sensor local update" );
+										sensor.setEnabled( enabled );
+										sensor.setDbSynch( DbSync.SYNCHED );
+								    	dataService.updateSensor( sensor );
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize Update Sensor: Invalid DbSynchToken: " + sensor );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
+								}
+							}
+						}
 						
 	        	//
 	        	// 3rd Phase Process Data Deletion
 	        	//
+			        	//
+			        	//	Synchronize Sensor Table for deleting Data
+			        	//
+						for( Sensor sensor: sensors ) {
+							if( sensor.getDbSynch() == DbSync.DELETE ) {
+								LOG.info( "Synchronize Delete: " + sensor.getName() );
+								if( sensor.getDbSynchToken() != null && sensor.getDbSynchToken().length() > 0 ) {
+									HttpHeaders headers = new HttpHeaders();
+									headers.setBearerAuth(token);
+								    HttpEntity<Sensor> request = new HttpEntity<>( headers );
+									
+								    URI uri = new URI( dataSynchUrl + "sensor/synchToken/" + sensor.getDbSynchToken() );
+								    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String.class );
+									LOG.info( "Synchronize result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								    if( result.getStatusCode() == HttpStatus.OK ) {
+								    	LOG.info( "Synchronize Sensor local delete" );
+								    	dataService.deleteSensor( sensor.getId() );;
+								    }
+								}
+								else{
+									LOG.error( "ERROR: Synchronize delete Sensor: Invalid DbSynchToken: " + sensor );
+									dataSynchStatus.setUp( false ); 
+									statusMessage = statusMessage +  "Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
+								}
+							}
+						}
+						
 			        	//
 			        	//	Synchronize Measurement Table for deleting data
 			        	//

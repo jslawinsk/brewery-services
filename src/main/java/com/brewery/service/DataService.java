@@ -162,12 +162,7 @@ public class DataService implements UserDetailsService {
         	foundStyle.setBjcpCategory( styleToUpdate.getBjcpCategory() );
         	foundStyle.setDescription( styleToUpdate.getDescription() );
         	foundStyle.setDbSynch( styleToUpdate.getDbSynch() );
-        	if( styleToUpdate.getDbSynchToken() != null && styleToUpdate.getDbSynchToken().length() > 0 ) {
-            	foundStyle.setDbSynchToken( styleToUpdate.getDbSynchToken() );
-        	}
-        	else {
-        		foundStyle.setDbSynchToken( getSynchToken() );
-        	}
+            foundStyle.setDbSynchToken( styleToUpdate.getDbSynchToken() );
             return styleRepository.save( foundStyle );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateStyle: " + e.getMessage());
@@ -400,13 +395,7 @@ public class DataService implements UserDetailsService {
         	if( style == null ) {
             	foundBatch.setStyle( batchToUpdate.getStyle() );        		
         	}
-        	if( batchToUpdate.getDbSynchToken() != null && batchToUpdate.getDbSynchToken().length() > 0 ) {
-        		foundBatch.setDbSynchToken( batchToUpdate.getDbSynchToken() );
-        	}
-        	else {
-        		foundBatch.setDbSynchToken( getSynchToken() );
-        	}
-        	
+        	foundBatch.setDbSynchToken( batchToUpdate.getDbSynchToken() );
         	foundBatch.setActive( batchToUpdate.isActive() );
         	foundBatch.setName( batchToUpdate.getName() );
         	foundBatch.setDescription( batchToUpdate.getDescription() );
@@ -519,13 +508,7 @@ public class DataService implements UserDetailsService {
         	else {
             	foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
         	}
-        	if( measurementToUpdate.getDbSynchToken() != null && measurementToUpdate.getDbSynchToken().length() > 0 ) {
-        		foundMeasurement.setDbSynchToken( measurementToUpdate.getDbSynchToken() );
-        	}
-        	else {
-        		foundMeasurement.setDbSynchToken( getSynchToken() );
-        	}
-        	
+        	foundMeasurement.setDbSynchToken( measurementToUpdate.getDbSynchToken() );
         	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
         	foundMeasurement.setValueText( measurementToUpdate.getValueText() );
         	foundMeasurement.setProcess( measurementToUpdate.getProcess() );
@@ -582,6 +565,11 @@ public class DataService implements UserDetailsService {
         LOG.info("Getting Sensor, id:" + id);
         return sensorRepository.getOne(id);
     }
+
+    public Sensor getSensor( String dbSynchToken ) {
+        LOG.info("Getting Sensor, SynchToken:" + dbSynchToken );
+        return sensorRepository.findSensorBySynchToken( dbSynchToken );
+    }
     
     public List<Sensor> getAllSensors() {
     	return sensorRepository.findAll();
@@ -613,6 +601,9 @@ public class DataService implements UserDetailsService {
             	Batch batch = batchRepository.findBatchByName( sensor.getBatch().getName() );
                 sensor.setBatch( batch );
             }
+        	if( sensor.getDbSynchToken() == null || sensor.getDbSynchToken().length() <= 0 ) {
+        		sensor.setDbSynchToken( getSynchToken() );
+        	}
             
             sensor.setUpdateTime( new Date() );
             sensorToSave = sensorRepository.save(sensor);
@@ -648,6 +639,7 @@ public class DataService implements UserDetailsService {
         	foundSensor.setMeasureType( sensorToUpdate.getMeasureType() );
         	foundSensor.setUpdateTime( new Date() );
         	foundSensor.setDbSynch( sensorToUpdate.getDbSynch() );
+        	foundSensor.setDbSynchToken( sensorToUpdate.getDbSynchToken() );
             return sensorRepository.save( foundSensor );
         } catch (Exception e) {
             LOG.error("DataService: Exception: updateSensor: " + e.getMessage());
