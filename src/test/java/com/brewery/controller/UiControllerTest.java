@@ -568,7 +568,7 @@ public class UiControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/add")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
-	            .andExpect(content().string(containsString("<h2>Edit Sensor</h2>")));
+	            .andExpect(content().string(containsString("<h2>Add Sensor</h2>")));
 	}		
 	
 	@Test

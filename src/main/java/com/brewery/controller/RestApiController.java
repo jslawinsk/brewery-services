@@ -333,13 +333,55 @@ public class RestApiController {
     }
 
     @RequestMapping(path = "sensor", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Sensor updateSensor( @RequestBody Sensor sensorToUpdate ) {
-        return dataService.updateSensor( sensorToUpdate );
+    public Sensor updateSensor( @RequestBody Sensor sensorToUpdate ) {    	
+    	
+    	Sensor sensor = null;
+    	Batch foundBatch = null;
+    	if( sensorToUpdate.getBatch().getDbSynchToken() != null && sensorToUpdate.getBatch().getDbSynchToken().length() > 0 ) {
+			foundBatch = dataService.getBatch( sensorToUpdate.getBatch().getDbSynchToken() );
+		}
+		else {
+			foundBatch = sensorToUpdate.getBatch();
+		}
+    	
+    	if( sensorToUpdate.getDbSynchToken() != null && sensorToUpdate.getDbSynchToken().length() > 0 ) {
+    		Sensor foundSensor = dataService.getSensor( sensorToUpdate.getDbSynchToken() );
+    		if( foundSensor != null ) {
+    			LOG.info( "updateSensor: found by token: " + foundSensor );
+    			foundSensor.setBatch( foundBatch );
+    			foundSensor.setCommunicationType( sensorToUpdate.getCommunicationType() );
+    			foundSensor.setDbSynch( sensorToUpdate.getDbSynch() );
+    			foundSensor.setEnabled( sensorToUpdate.isEnabled() );
+    			foundSensor.setMeasureType( sensorToUpdate.getMeasureType() );
+    			foundSensor.setName( sensorToUpdate.getName() );
+    			foundSensor.setPin( sensorToUpdate.getPin() );
+    			foundSensor.setProcess( sensorToUpdate.getProcess() );
+    			foundSensor.setTrigger( sensorToUpdate.getTrigger() );
+    			foundSensor.setUpdateTime( sensorToUpdate.getUpdateTime() );
+    			foundSensor.setUrl( sensorToUpdate.getUrl() );
+    			foundSensor.setUserId( sensorToUpdate.getUserId() );
+        		sensor = dataService.updateSensor( foundSensor );
+    		}
+    	}
+    	else {
+    		sensorToUpdate.setBatch( foundBatch );        		
+    		sensor = dataService.updateSensor( sensorToUpdate );
+    	}
+        return sensor;
     }
 
     @RequestMapping(path = "sensor/{id}", method = RequestMethod.DELETE)
     public void deleteSensor(@PathVariable( name = "id" ) Long id ) {
     	dataService.deleteSensor( id );
+    }
+    
+    @RequestMapping(path = "sensor/synchToken/{token}", method = RequestMethod.DELETE)
+    public void deleteSensorRemote(@PathVariable( name = "token" ) String token ) {
+		Sensor foundSensor = dataService.getSensor( token );
+        LOG.info("RestApiController: deleteSensorRemote: " + foundSensor );    	
+        if( foundSensor != null ) {
+        	dataService.deleteSensor( foundSensor.getId() );
+        }
     }
     
     //
