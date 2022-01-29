@@ -20,7 +20,7 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
 	 @Query( value = "SELECT * FROM brewery.measurement WHERE batch_id = ?1 ORDER BY start_time DESC", nativeQuery = true )
 	 Page<Measurement> findPageByBatchId( Long id, Pageable pageable );	
 	 
-	 @Query( value = "SELECT * FROM brewery.measurement WHERE db_synch NOT IN ( 'SYNCHED', 'IGNORE' ) ORDER BY batch_id, process_code, type_code, start_time ASC", nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.measurement WHERE db_synch IN ( 'ADD', 'UPDATE', 'DELETE' ) ORDER BY batch_id, process_code, type_code, start_time ASC", nativeQuery = true )
 	 List<Measurement> findMeasurementsToSynchronize( );
 	 
 	 @Query( value = "SELECT DISTINCT ON (type_code) type_code, start_time, id, db_synch, value_number, value_text, batch_id, process_code, db_synch_token FROM brewery.measurement WHERE batch_id = ?1 ORDER BY type_code, start_time DESC LIMIT 10", nativeQuery = true )

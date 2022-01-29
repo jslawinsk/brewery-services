@@ -351,18 +351,6 @@ public class DataService implements UserDetailsService {
     	Batch batchToSave;
         try {
             LOG.info("Saving Batch: " + batch );
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-        	Style style = null;
-        	if( batch.getStyle() != null && batch.getStyle().getDbSynchToken() != null && batch.getStyle().getDbSynchToken().length() > 0 ) {
-        		style = styleRepository.findStyleBySynchToken( batch.getStyle().getDbSynchToken() );
-        		batch.setStyle( style );
-        	}
-            if( style == null && batch.getStyle() !=null && batch.getStyle().getName() != null ) {
-            	style = styleRepository.findStyleByName( batch.getStyle().getName() );
-            	batch.setStyle( style );
-            }
         	if( batch.getDbSynchToken() == null || batch.getDbSynchToken().length() <= 0 ) {
         		batch.setDbSynchToken( getSynchToken() );
         	}
@@ -378,23 +366,7 @@ public class DataService implements UserDetailsService {
         LOG.info("Update Batch: " + batchToUpdate );
     	Batch foundBatch = batchRepository.getOne( batchToUpdate.getId() );
         try {
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-        	Style style = null;
-        	if( batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getDbSynchToken() != null && batchToUpdate.getStyle().getDbSynchToken().length() > 0 ) {
-        		style = getStyle( batchToUpdate.getStyle().getDbSynchToken() );
-                LOG.info("Update Batch Style: " + style );
-            	foundBatch.setStyle( style );
-        	}
-        	if( style == null && batchToUpdate.getStyle() != null && batchToUpdate.getStyle().getName() != null ) {
-        		style = styleRepository.findStyleByName( batchToUpdate.getStyle().getName() );
-                LOG.info("Update Batch Style 2: " + style );
-            	foundBatch.setStyle( style );
-        	}
-        	if( style == null ) {
-            	foundBatch.setStyle( batchToUpdate.getStyle() );        		
-        	}
+            foundBatch.setStyle( batchToUpdate.getStyle() );        		
         	foundBatch.setDbSynchToken( batchToUpdate.getDbSynchToken() );
         	foundBatch.setActive( batchToUpdate.isActive() );
         	foundBatch.setName( batchToUpdate.getName() );
@@ -475,17 +447,9 @@ public class DataService implements UserDetailsService {
     	Measurement measurementToSave;
         try {
             LOG.info("Saving Measurement: " + measurement );
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-            if( measurement.getBatch() != null && measurement.getBatch().getName() != null ) {
-            	Batch batch = batchRepository.findBatchByName( measurement.getBatch().getName() );
-            	measurement.setBatch( batch );
-            }
         	if( measurement.getDbSynchToken() == null || measurement.getDbSynchToken().length() <= 0 ) {
         		measurement.setDbSynchToken( getSynchToken() );
         	}
-            
             measurementToSave = measurementRepository.save( measurement );
             return measurementToSave;
         } catch (Exception e) {
@@ -498,16 +462,7 @@ public class DataService implements UserDetailsService {
     	LOG.info("updateMeasurement:" + measurementToUpdate );
     	Measurement foundMeasurement = measurementRepository.getOne( measurementToUpdate.getId() );
         try {
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-        	if( measurementToUpdate.getBatch() != null &&  measurementToUpdate.getBatch().getName() != null ) {
-        		Batch batch = batchRepository.findBatchByName( measurementToUpdate.getBatch().getName() );
-            	foundMeasurement.setBatch( batch );
-        	}
-        	else {
-            	foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
-        	}
+            foundMeasurement.setBatch( measurementToUpdate.getBatch() );        		
         	foundMeasurement.setDbSynchToken( measurementToUpdate.getDbSynchToken() );
         	foundMeasurement.setValueNumber( measurementToUpdate.getValueNumber() );
         	foundMeasurement.setValueText( measurementToUpdate.getValueText() );
@@ -594,17 +549,9 @@ public class DataService implements UserDetailsService {
     	Sensor sensorToSave;
         try {
             LOG.info("Saving Sensor...");
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-            if( sensor.getBatch() != null && sensor.getBatch().getName() != null ) {
-            	Batch batch = batchRepository.findBatchByName( sensor.getBatch().getName() );
-                sensor.setBatch( batch );
-            }
         	if( sensor.getDbSynchToken() == null || sensor.getDbSynchToken().length() <= 0 ) {
         		sensor.setDbSynchToken( getSynchToken() );
         	}
-            
             sensor.setUpdateTime( new Date() );
             sensorToSave = sensorRepository.save(sensor);
             return sensorToSave;
@@ -617,17 +564,7 @@ public class DataService implements UserDetailsService {
     public Sensor updateSensor( Sensor sensorToUpdate ) {
     	Sensor foundSensor = sensorRepository.getOne( sensorToUpdate.getId() );
         try {
-        	//
-        	//	Can't use primary key for as remote DB may have different value
-        	//
-        	if( sensorToUpdate.getBatch() != null && sensorToUpdate.getBatch().getName() != null ) {
-        		Batch batch = batchRepository.findBatchByName( sensorToUpdate.getBatch().getName() );
-            	foundSensor.setBatch( batch );
-        	}
-        	else {
-            	foundSensor.setBatch( sensorToUpdate.getBatch() );
-        	}
-        	
+            foundSensor.setBatch( sensorToUpdate.getBatch() );
         	foundSensor.setEnabled( sensorToUpdate.isEnabled() );
         	foundSensor.setName( sensorToUpdate.getName() );
         	foundSensor.setUrl( sensorToUpdate.getUrl() );
