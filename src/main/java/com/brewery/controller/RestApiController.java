@@ -201,6 +201,11 @@ public class RestApiController {
 
     @RequestMapping( path = "batch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Batch saveBatch( @RequestBody Batch batchToSave ) {
+    	Style foundStyle = null;
+    	if( batchToSave.getStyle().getDbSynchToken() != null && batchToSave.getStyle().getDbSynchToken().length() > 0 ) {
+    		foundStyle = dataService.getStyle( batchToSave.getStyle().getDbSynchToken() );
+    		batchToSave.setStyle( foundStyle );
+    	}
         return dataService.saveBatch( batchToSave );
     }
 
@@ -266,6 +271,11 @@ public class RestApiController {
     @RequestMapping( path = "measurement", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Measurement saveMeasurement( @RequestBody Measurement measurementToSave ) {
     	LOG.info("RestApiController:saveMeasurement: " + measurementToSave );
+    	Batch foundBatch = null;
+    	if( measurementToSave.getBatch().getDbSynchToken() != null && measurementToSave.getBatch().getDbSynchToken().length() > 0 ) {
+    		foundBatch = dataService.getBatch( measurementToSave.getBatch().getDbSynchToken() );
+    		measurementToSave.setBatch( foundBatch );
+    	}
         return dataService.saveMeasurement( measurementToSave );
     }
 
@@ -329,6 +339,11 @@ public class RestApiController {
 
     @RequestMapping( path = "sensor", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Sensor saveSensor( @RequestBody Sensor sensorToSave ) {
+    	Batch foundBatch = null;
+    	if( sensorToSave.getBatch().getDbSynchToken() != null && sensorToSave.getBatch().getDbSynchToken().length() > 0 ) {
+			foundBatch = dataService.getBatch( sensorToSave.getBatch().getDbSynchToken() );
+			sensorToSave.setBatch( foundBatch );
+		}
         return dataService.saveSensor( sensorToSave );
     }
 
