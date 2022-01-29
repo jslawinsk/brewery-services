@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProcessRepository extends JpaRepository<Process, String> {
 	
-	 @Query( value = "SELECT * FROM brewery.process WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.process WHERE db_synch IN ( 'ADD', 'UPDATE', 'DELETE' )" , nativeQuery = true )
 	 List<Process> findProcessToSynchronize( );	
 	
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MeasureTypeRepository extends JpaRepository<MeasureType, String> {
 
-	 @Query( value = "SELECT * FROM brewery.measure_type WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.measure_type WHERE db_synch IN ( 'ADD', 'UPDATE', 'DELETE' )" , nativeQuery = true )
 	 List<MeasureType> findMeasureTypesToSynchronize( );	
 
 	 @Query( value = "SELECT * FROM brewery.measure_type WHERE graph_data = true" , nativeQuery = true )

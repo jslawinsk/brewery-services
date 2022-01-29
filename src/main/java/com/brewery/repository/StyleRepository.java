@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StyleRepository extends JpaRepository<Style, Long> {
 	
-	 @Query( value = "SELECT * FROM brewery.style WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
+	 @Query( value = "SELECT * FROM brewery.style WHERE db_synch IN ( 'ADD', 'UPDATE', 'DELETE' )" , nativeQuery = true )
 	 List<Style> findStylesToSynchronize( );	
 
 	 @Query( value = "SELECT * FROM brewery.style WHERE name = ?" , nativeQuery = true )

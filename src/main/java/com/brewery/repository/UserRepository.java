@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	User findByUsername(String username);
 	
-	@Query( value = "SELECT * FROM brewery.user WHERE db_synch != 'SYNCHED'" , nativeQuery = true )
+	@Query( value = "SELECT * FROM brewery.user WHERE db_synch IN ( 'ADD', 'UPDATE', 'DELETE' )" , nativeQuery = true )
 	List<User> findUsersToSynchronize( );	
 	
 }
