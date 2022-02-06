@@ -22,6 +22,7 @@ import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -60,7 +61,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith( SpringRunner.class)
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-				properties = { "blueTooth.enabled=false", "wiFi.enabled=false" }
+				properties = { "blueTooth.enabled=false", 
+								"wiFi.enabled=false",
+								"dataSynch.enabled=true" }
 			)
 //@TestPropertySource("classpath:resources/appliaction-local.properties")
 @AutoConfigureMockMvc
@@ -199,7 +202,29 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteStyle() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/delete/1")
+		Style testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.SYNCHED, "TestToken" );
+		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
+		Mockito.when(dataService.getStyleBatchCount( 1L )).thenReturn( 0L );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
+
+        testStyle.setDbSynchToken( "" );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
+
+		Mockito.when(dataService.getStyleBatchCount( 1L )).thenReturn( 1L );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
+
+		Mockito.when(dataService.getStyleBatchCount( 1L )).thenReturn( 10L );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/delete/1")
 				.with(csrf())
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/style"));
@@ -276,6 +301,24 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteProcess() throws Exception
 	{
+		Process process = new Process( "FRM", "Fermentation" );
+		Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
+		Mockito.when(dataService.getProcessSensorCount( "FRM" )).thenReturn( 0L );
+		Mockito.when(dataService.getProcessMeasurementCount( "FRM" )).thenReturn( 0L );
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process/delete/FRM")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/process"));
+
+		Mockito.when(dataService.getProcessSensorCount( "FRM" )).thenReturn( 1L );
+		Mockito.when(dataService.getProcessMeasurementCount( "FRM" )).thenReturn( 1L );
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process/delete/FRM")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/process"));
+
+		Mockito.when(dataService.getProcessSensorCount( "FRM" )).thenReturn( 10L );
+		Mockito.when(dataService.getProcessMeasurementCount( "FRM" )).thenReturn( 10L );
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process/delete/FRM")
 				.with(csrf())
 	            .accept(MediaType.ALL))
@@ -314,12 +357,23 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void updateMeasureType() throws Exception
 	{
-		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measureType/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "ADD"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measureType"));
 
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measureType/update" )
 				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-		        .content(objectMapper.writeValueAsString( measureType ))		
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "SYNCHED"
+		                )
+		            )		        
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/measureType"));
 	}	
@@ -351,6 +405,24 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteMeasureType() throws Exception
 	{
+		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
+		Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
+		Mockito.when(dataService.getMeasureTypeSensorCount( "TMP" )).thenReturn( 0L );
+		Mockito.when(dataService.getMeasureTypeMeasurementCount( "TMP" )).thenReturn( 0L );
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measureType/delete/TMP")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measureType"));
+
+		Mockito.when(dataService.getMeasureTypeSensorCount( "TMP" )).thenReturn( 1L );
+		Mockito.when(dataService.getMeasureTypeMeasurementCount( "TMP" )).thenReturn( 1L );
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measureType/delete/TMP")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measureType"));
+
+		Mockito.when(dataService.getMeasureTypeSensorCount( "TMP" )).thenReturn( 10L );
+		Mockito.when(dataService.getMeasureTypeMeasurementCount( "TMP" )).thenReturn( 10L );
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measureType/delete/TMP")
 				.with(csrf())
 	            .accept(MediaType.ALL))
@@ -384,6 +456,32 @@ public class UiControllerTest {
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
 	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void updateBatch() throws Exception
+	{
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/batch/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "SYNCHED"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+		
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/batch/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "ADD"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+	}	
+	
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
@@ -425,8 +523,9 @@ public class UiControllerTest {
 	public void editBatch() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
-		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.SYNCHED, "testToken" );
 		Mockito.when(dataService.getBatch( 1L )).thenReturn( testBatch );
+		Mockito.when(dataService.getBatchSensorCount( 1L )).thenReturn( 0L );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/edit/1")
 	            .accept(MediaType.ALL))
@@ -438,7 +537,36 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteBatch() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
+		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.SYNCHED, "TestToken" );
+		Mockito.when(dataService.getBatch( 1L )).thenReturn( testBatch );
+		Mockito.when(dataService.getBatchSensorCount( 1L )).thenReturn( 0L );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+		
+		testBatch.setDbSynchToken( "" );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+
+		testBatch.setDbSynchToken( null );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+
+		Mockito.when(dataService.getBatchSensorCount( 1L )).thenReturn( 1L );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
+
+		Mockito.when(dataService.getBatchSensorCount( 1L )).thenReturn( 10L );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/delete/1")
 				.with(csrf())
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/batch"));
@@ -469,13 +597,55 @@ public class UiControllerTest {
 		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 		measurement.setId( 1L );
 		LOG.info( "Test saveMeasurement Measurement: " + measurement );
-		
 		Mockito.when(dataService.saveMeasurement( Mockito.any(Measurement.class) )).thenReturn( measurement );
 
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measurement" )
 				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-		        .content( objectMapper.writeValueAsString( measurement ) )		
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "SYNCHED",
+		                "batch.id", "1"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"))
+				;
+	}	
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void updateMeasurement() throws Exception
+	{
+    	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 20, 200, GraphTypes.GAUGE, DbSync.ADD  );
+		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
+		testBatch.setId( 1L );
+    	Process process = new Process( "FRM", "Fermentation" );
+		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
+		measurement.setId( 1L );
+		LOG.info( "Test updateMeasurement Measurement: " + measurement );
+		Mockito.when(dataService.updateMeasurement( Mockito.any(Measurement.class) )).thenReturn( measurement );
+
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measurement/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "SYNCHED",
+		                "batch.id", "1"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"))
+				;
+
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measurement/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "ADD",
+		                "batch.id", "1"
+		                )
+		            )		        
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"))
 				;
@@ -539,8 +709,15 @@ public class UiControllerTest {
     	Process process = new Process( "FRM", "Fermentation" );
 		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 		measurement.setId( 1L );
+		measurement.setDbSynchToken( "TestToken" );
         Mockito.when(dataService.getMeasurement( 1L )).thenReturn( measurement );
 		
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+        		.andExpect( MockMvcResultMatchers.redirectedUrl("/measurement/batch/1"));
+
+		measurement.setDbSynchToken( "" );
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/delete/1")
 				.with(csrf())
 	            .accept(MediaType.ALL))
@@ -575,15 +752,42 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void saveSensor() throws Exception
 	{
-		Sensor sensor = new Sensor();
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor" )
 				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-		        .content(objectMapper.writeValueAsString( sensor ))		
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "ADD"
+		                )
+		            )		        
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
 	}	
 
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void updateSensor() throws Exception
+	{
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "ADD"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
+
+		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor/update" )
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED )
+	            .content(buildUrlEncodedFormEntity(
+		                "DbSynch", "SYNCHED"
+		                )
+		            )		        
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
+	}	
+	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	public void getAllSensors() throws Exception
@@ -679,7 +883,17 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void deleteSensor() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/delete/1")
+		Sensor sensor = new Sensor();
+		sensor.setDbSynchToken( "TestToken" );
+		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
+
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/delete/1")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));
+
+		sensor.setDbSynchToken( "" );
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/delete/1")
 				.with(csrf())
 	            .accept(MediaType.ALL))
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/sensor/"));

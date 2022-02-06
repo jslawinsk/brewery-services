@@ -418,7 +418,7 @@ public class DataServiceTest {
         Batch batch = dataService.saveBatch( testBatch );
         assertEquals( batch.getName(), "Joe's IPA");
         
-    	Batch batch2 = new Batch( false, true, "Test IPA", "Old School IPA", null, new Date(), DbSync.ADD, "" );
+    	Batch batch2 = new Batch( false, "Test IPA", "Old School IPA", null, new Date(), DbSync.ADD, "" );
         Mockito.when(batchRepository.save( batch2 )).thenReturn( batch2 );
         batch = dataService.saveBatch( batch2 );
         assertEquals( batch.getName(), "Test IPA");
@@ -427,7 +427,7 @@ public class DataServiceTest {
 	@Test
 	public void saveBatchEx() throws Exception
 	{
-    	Batch batch2 = new Batch( false, true, null, null, null, new Date(), DbSync.ADD, "" );
+    	Batch batch2 = new Batch( false, null, null, null, new Date(), DbSync.ADD, "" );
         Mockito.when(batchRepository.save( batch2 )).thenThrow( new IllegalArgumentException("Test") );
         Batch batch = dataService.saveBatch( batch2 );
         assertNull( batch.getName() );
@@ -443,7 +443,7 @@ public class DataServiceTest {
         Batch batch = dataService.updateBatch( testBatch );
         assertEquals( batch.getName(), "Joe's IPA");
 
-    	Batch batch2 = new Batch( false, false, "Test IPA3", "Old School IPA", null, new Date(), DbSync.ADD, "" );
+    	Batch batch2 = new Batch( false, "Test IPA3", "Old School IPA", null, new Date(), DbSync.ADD, "" );
     	batch2.setId(2L);
         Mockito.when(batchRepository.getOne( 2L )).thenReturn( batch2 );
         Mockito.when(batchRepository.save( batch2 )).thenReturn( batch2 );

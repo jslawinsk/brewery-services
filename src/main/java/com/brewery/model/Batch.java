@@ -70,7 +70,7 @@ public class Batch {
 		this.startTime = startTime;
 		this.dbSynch = DbSync.ADD; 
 	}
-	public Batch( boolean active, boolean synched, String name, String description, Style style, Date startTime, DbSync dbSynch, String dbSynchToken ) {
+	public Batch( boolean active, String name, String description, Style style, Date startTime, DbSync dbSynch, String dbSynchToken ) {
 		super();
 		this.active = active;
 		this.name = name;

@@ -234,10 +234,10 @@ public class UiController {
         String message = "";
         
     	Long batchCount = dataService.getStyleBatchCount( id );
+		Style style = dataService.getStyle(id);
         if( batchCount == 0L ) {
-	    	if( dataSynchEnabled ) {
+	    	if( dataSynchEnabled && style.getDbSynchToken() != null && style.getDbSynchToken().length() > 0 ) {
         		message = message + "Style " + id + " scheduled for deletion.";
-	    		Style style = dataService.getStyle(id);
 	            style.setDbSynch( DbSync.DELETE );
 	        	dataService.updateStyle( style );
 	    	}
@@ -473,10 +473,10 @@ public class UiController {
         Info info = new Info();
         String message = "";
     	Long sensorCount = dataService.getBatchSensorCount( id );
+		Batch batch =  dataService.getBatch( id );
         if( sensorCount == 0L ) {
-	    	if( dataSynchEnabled ) {
+	    	if( dataSynchEnabled && batch.getDbSynchToken() != null && batch.getDbSynchToken().length() > 0 ) {
         		message = message + "Batch " + id + " scheduled for deletion.";
-        		Batch batch =  dataService.getBatch( id );
         		batch.setDbSynch( DbSync.DELETE );
 		    	dataService.updateBatch( batch );
 	    	}
@@ -525,7 +525,7 @@ public class UiController {
         if( measurement.getDbSynch() != DbSync.ADD ) {
         	measurement.setDbSynch( DbSync.UPDATE );
         }
-        Measurement measurementS = dataService.saveMeasurement( measurement );
+        Measurement measurementS = dataService.updateMeasurement( measurement );
         return "redirect:/measurement/batch/" + measurementS.getBatch().getId();
     }
     
@@ -571,7 +571,7 @@ public class UiController {
         String message = "";
 
 		Measurement measurement =  dataService.getMeasurement( id );
-    	if( dataSynchEnabled ) {
+    	if( dataSynchEnabled && measurement.getDbSynchToken() != null && measurement.getDbSynchToken().length() > 0 ) {
     		message = message + "Measurement " + id + " scheduled for deletion.";
     		measurement.setDbSynch( DbSync.DELETE );
 	    	dataService.updateMeasurement( measurement );

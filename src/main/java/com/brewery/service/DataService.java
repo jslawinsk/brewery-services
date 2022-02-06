@@ -497,7 +497,7 @@ public class DataService implements UserDetailsService {
     					&& baseMeasurement.getValueNumber() == measurement.getValueNumber()
     					&& baseMeasurement.getValueText().equals( measurement.getValueText() ) 
     			) {
-    		    	if( dataSynchEnabled ) {
+    		    	if( dataSynchEnabled && measurement.getDbSynchToken() != null && measurement.getDbSynchToken().length() > 0 ) {
     		    		LOG.info( "Measurement " + measurement.getId() + " scheduled for deletion." );
     		    		measurement.setDbSynch( DbSync.DELETE );
     			    	updateMeasurement( measurement );
