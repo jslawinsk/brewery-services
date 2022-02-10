@@ -105,6 +105,14 @@ public class DataSynchThreadTest {
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
     	List<Style> styles = new ArrayList<Style>();
     	styles.add( testStyle );
+		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.UPDATE, "TestToken" );
+    	styles.add( testStyle );
+		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.UPDATE, "" );
+    	styles.add( testStyle );
+		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.DELETE, "TestToken" );
+    	styles.add( testStyle );
+		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.DELETE, "" );
+    	styles.add( testStyle );
 		Mockito.when(dataService.getStylesToSynchronize( )).thenReturn( styles );
 		
 		mockServer.expect( requestTo("http://localhost:8080/api/style") )
@@ -113,9 +121,13 @@ public class DataSynchThreadTest {
 		.contentType(MediaType.APPLICATION_JSON )
 		.body(objectMapper.writeValueAsString(testStyle))
 		); 		
-		
+
 		Process process = new Process( "FRM", "Fermentation", false, DbSync.ADD );
     	List<Process> processes = new ArrayList<Process>();
+    	processes.add( process );
+		process = new Process( "FRM", "Fermentation", false, DbSync.UPDATE );
+    	processes.add( process );
+		process = new Process( "FRM", "Fermentation", false, DbSync.DELETE );
     	processes.add( process );
 		Mockito.when(dataService.getProcessesToSynchronize()).thenReturn( processes );
 		
@@ -129,6 +141,10 @@ public class DataSynchThreadTest {
 		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
     	measureTypes.add( measureType );
+		measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.UPDATE  );
+    	measureTypes.add( measureType );
+		measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.DELETE  );
+    	measureTypes.add( measureType );
 		Mockito.when( dataService.getMeasureTypesToSynchronize()).thenReturn( measureTypes );
 
 		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
@@ -141,6 +157,14 @@ public class DataSynchThreadTest {
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
     	List<Batch> batches = new ArrayList<Batch>();
     	batches.add( testBatch );
+		testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.UPDATE, "TestToken" );
+    	batches.add( testBatch );
+		testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.UPDATE, "" );
+    	batches.add( testBatch );
+		testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.DELETE, "TestToken" );
+    	batches.add( testBatch );
+		testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.DELETE, "" );
+    	batches.add( testBatch );
 		Mockito.when(dataService.getBatchesToSynchronize()).thenReturn( batches );
 
 		mockServer.expect( requestTo("http://localhost:8080/api/batch") )
@@ -152,6 +176,14 @@ public class DataSynchThreadTest {
 
 		Sensor sensor = new Sensor();
     	List<Sensor> sensors = new ArrayList<Sensor>();
+    	sensors.add( sensor );
+        sensor = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.UPDATE, "TestToken" );
+    	sensors.add( sensor );
+        sensor = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.UPDATE, "" );
+    	sensors.add( sensor );
+        sensor = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.DELETE, "TestToken" );
+    	sensors.add( sensor );
+        sensor = new Sensor( 2L, false, "test2", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.DELETE, "" );
     	sensors.add( sensor );
 		Mockito.when( dataService.getSensorsToSynchronize() ).thenReturn( sensors );
 		
@@ -166,6 +198,14 @@ public class DataSynchThreadTest {
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
     	measurements.add( new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() ) );
+    	measurement = new Measurement( 70.3, "{\"target\":77.0}", testBatch, process, measureType, new Date(), DbSync.UPDATE, "TestToken" );
+    	measurements.add( measurement );
+    	measurement = new Measurement( 70.3, "{\"target\":77.0}", testBatch, process, measureType, new Date(), DbSync.UPDATE, "" );
+    	measurements.add( measurement );
+    	measurement = new Measurement( 70.3, "{\"target\":77.0}", testBatch, process, measureType, new Date(), DbSync.DELETE, "TestToken" );
+    	measurements.add( measurement );
+    	measurement = new Measurement( 70.3, "{\"target\":77.0}", testBatch, process, measureType, new Date(), DbSync.DELETE, "" );
+    	measurements.add( measurement );
 		Mockito.when( dataService.getMeasurementsToSynchronize() ).thenReturn( measurements );
         
 		mockServer.expect( requestTo("http://localhost:8080/api/measurement") )
@@ -175,6 +215,100 @@ public class DataSynchThreadTest {
 		.body(objectMapper.writeValueAsString( measurement ))
 		); 		
 		
+		//
+		//	Update API Tests
+		//
+		mockServer.expect( requestTo("http://localhost:8080/api/style") )
+	 		.andExpect(method(HttpMethod.PUT))
+			.andRespond(withStatus(HttpStatus.OK  )
+			.contentType(MediaType.APPLICATION_JSON )
+			.body(objectMapper.writeValueAsString(testStyle))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/process") )
+ 		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(process))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
+ 		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(measureType))
+		); 		
+
+		mockServer.expect( requestTo("http://localhost:8080/api/batch") )
+ 		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(testBatch))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/measurement") )
+ 		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString( measurement ))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/sensor") )
+ 		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString( sensor ))
+		); 		
+		
+		//
+		//	Delete API Test
+		//
+		mockServer.expect( requestTo("http://localhost:8080/api/sensor/synchToken/TestToken") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString( sensor ))
+		); 		
+
+		mockServer.expect( requestTo("http://localhost:8080/api/measurement/synchToken/TestToken") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString( measurement ))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/batch/synchToken/TestToken") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(testBatch))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/measureType/TMP") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(measureType))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/process/FRM") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(process))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/style/synchToken/TestToken") )
+ 		.andExpect(method(HttpMethod.DELETE))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(testStyle))
+		); 		
+	
+		
+		//
+		//	Execute Tests
+		//
 		dbSyncThread.run();
 		
 		mockServer.verify();
