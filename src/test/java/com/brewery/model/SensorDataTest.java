@@ -25,5 +25,10 @@ public class SensorDataTest {
 		assertEquals( "ON", sensorData.getHeat() );
 		assertEquals( "OFF", sensorData.getCool() );
 		assertEquals( "OFF", sensorData.getControl() );
+
+		sensorData = new SensorData( 69.0, 70.0, 1.0, 0.0, "AUTO", "AUTO", "ON", "F" );
+		assertEquals( "AUTO", sensorData.getHeat() );
+		assertEquals( "AUTO", sensorData.getCool() );
+		assertEquals( "ON", sensorData.getControl() );
 	}
 }
