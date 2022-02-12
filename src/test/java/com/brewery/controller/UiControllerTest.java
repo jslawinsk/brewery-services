@@ -1315,7 +1315,7 @@ public class UiControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	public void updateUserPw() throws Exception
 	{
-		User user = new User( "test", "test", DbSync.ADD, "TEST" );
+		User user = new User( "test", "test@test.com", "test", DbSync.ADD, "TEST", true );
 		user.setId( 1L );
 		LOG.info( "Test saveNewUser: " + user );
 		

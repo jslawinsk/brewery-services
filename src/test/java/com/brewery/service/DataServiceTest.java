@@ -51,7 +51,7 @@ import com.brewery.repository.UserRepository;
 import com.brewery.repository.VerificationTokenRepository;
 
 @RunWith( SpringRunner.class)
-@SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false" } )
+@SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false", "dataSynch.enabled=true" } )
 public class DataServiceTest {
 
 	
@@ -80,12 +80,13 @@ public class DataServiceTest {
 	@Autowired
 	DataService dataService;
     
-	private Style testStyle = new Style( "IPA", "18a", "Hoppy" );
+	private Style testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.SYNCHED, "TestToken" );
 	private Process process = new Process( "FRM", "Fermentation", false, DbSync.ADD );
 	private MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 	private Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 	private Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
-	private Sensor sensor = new Sensor();
+	private Sensor sensor = new Sensor( 2L, false, "test", "", "", "1234", "BLUETOOTH", "", null, process, measureType, new Date(), DbSync.UPDATE, "TestToken" );
+	
 	private User user = new User( "ADMIN", "admin", DbSync.ADD, UserRoles.ADMIN.toString() );
 	
 	//
@@ -98,6 +99,19 @@ public class DataServiceTest {
         
         Style style = dataService.getStyle( 1L );
         assertEquals( style.getName(), "IPA");
+	}	
+	
+	@Test
+	public void getStyleToken() throws Exception
+	{
+        Mockito.when(styleRepository.findStyleBySynchToken( "TestToken" )).thenReturn( testStyle );
+        
+        Style style = dataService.getStyle( "TestToken" );
+        assertEquals( style.getName(), "IPA");
+        
+        Mockito.when( styleRepository.findStyleBySynchToken( "TestToken" ) ).thenThrow( new IllegalArgumentException("Test") );
+        style = dataService.getStyle( "TestToken" );
+        assertNull( style.getName() );
 	}	
 	
 	@Test
@@ -128,9 +142,10 @@ public class DataServiceTest {
 	public void saveStyle() throws Exception
 	{
         Mockito.when(styleRepository.save( testStyle )).thenReturn( testStyle );
-        
+        testStyle.setDbSynchToken( "" );
         Style style = dataService.saveStyle( testStyle );
         assertEquals( style.getName(), "IPA");
+        testStyle.setDbSynchToken( "TestToken" );
 	}	
 
 	@Test
@@ -175,6 +190,14 @@ public class DataServiceTest {
         verify( styleRepository, times(1)).getOne( -1L );
 	}	
 	
+	@Test
+	public void getStyleBatchCount() throws Exception
+	{
+        Mockito.when(batchRepository.styleCount( 1L )).thenReturn( 0L );
+        
+        Long count = dataService.getStyleBatchCount( 1L );
+        assertEquals( count.longValue(), 0L );
+	}	
 	
 	//
 	//	Process table test methods
@@ -261,6 +284,24 @@ public class DataServiceTest {
         verify( processRepository, times(1)).getOne( null );
 	}	
 
+	@Test
+	public void getProcessSensorCount() throws Exception
+	{
+        Mockito.when(sensorRepository.processCount("FRM" )).thenReturn( 0L );
+        
+        Long count = dataService.getProcessSensorCount( "FRM" );
+        assertEquals( count.longValue(), 0L );
+	}	
+	
+	@Test
+	public void getProcessMeasurementCount() throws Exception
+	{
+        Mockito.when(measurementRepository.processCount("FRM" )).thenReturn( 0L );
+        
+        Long count = dataService.getProcessMeasurementCount( "FRM" );
+        assertEquals( count.longValue(), 0L );
+	}	
+	
 	//
 	//	MeasurementType table test methods
 	//
@@ -360,9 +401,28 @@ public class DataServiceTest {
         verify( measureTypeRepository, times(1)).getOne( null );
 	}	
 	
+	@Test
+	public void getMeasureTypeSensorCount() throws Exception
+	{
+        Mockito.when(sensorRepository.measureTypeCount("TMP" )).thenReturn( 0L );
+        
+        Long count = dataService.getMeasureTypeSensorCount( "TMP" );
+        assertEquals( count.longValue(), 0L );
+	}	
+
+	
+	@Test
+	public void getMeasureTypeMeasurementCount() throws Exception
+	{
+        Mockito.when(measurementRepository.measureTypeCount("TMP" )).thenReturn( 0L );
+        
+        Long count = dataService.getMeasureTypeMeasurementCount( "TMP" );
+        assertEquals( count.longValue(), 0L );
+	}	
+
 	//
-	//	Batch table test methods
 	//
+	//	Batch table test methods	
 	//
 	@Test
 	public void getBatch() throws Exception
@@ -373,6 +433,17 @@ public class DataServiceTest {
         Batch batch = dataService.getBatch( 1L );
         assertEquals( batch.getName(), "Joe's IPA");
 	}	
+
+	@Test
+	public void getBatchToken() throws Exception
+	{
+		testBatch.setId( 1L );
+        Mockito.when(batchRepository.findBatchBySynchToken( "TestToken" )).thenReturn( testBatch );
+        
+        Batch batch = dataService.getBatch( "TestToken" );
+        assertEquals( batch.getName(), "Joe's IPA");
+	}	
+	
 	
 	@Test
 	public void getAllBatches() throws Exception
@@ -473,6 +544,16 @@ public class DataServiceTest {
         verify( batchRepository, times(1)).getOne( -1L );
 	}	
 	
+	@Test
+	public void getBatchSensorCount() throws Exception
+	{
+        Mockito.when(sensorRepository.batchCount( 1L )).thenReturn( 0L );
+        
+        Long count = dataService.getBatchSensorCount( 1L );
+        assertEquals( count.longValue(), 0L );
+	}	
+
+	
 	//
 	//	Measurement table test methods
 	//
@@ -486,6 +567,15 @@ public class DataServiceTest {
         assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
 	}	
 	
+	@Test
+	public void getMeasurementToken() throws Exception
+	{
+        Mockito.when(measurementRepository.findMeasurementBySynchToken( "TestToken" )).thenReturn( measurement );
+        
+        Measurement tmpMeasurement = dataService.getMeasurement( "TestToken" );
+        assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
+	}	
+
 	@Test
 	public void getRecentMeasurement() throws Exception
 	{
@@ -554,9 +644,18 @@ public class DataServiceTest {
 	@Test
 	public void saveMeasurement() throws Exception
 	{
+		measurement.setDbSynchToken( null );
         Mockito.when(measurementRepository.save( measurement )).thenReturn( measurement );
         
         Measurement tmpMeasurement = dataService.saveMeasurement( measurement );
+        assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
+
+		measurement.setDbSynchToken( "" );
+        tmpMeasurement = dataService.saveMeasurement( measurement );
+        assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
+        
+        measurement.setDbSynchToken( "TestToken" );
+        tmpMeasurement = dataService.saveMeasurement( measurement );
         assertEquals( tmpMeasurement.getValueText(), "{\"target\":70.0}" );
 	}	
 
@@ -624,6 +723,10 @@ public class DataServiceTest {
     	measurementData.add(measurement);		
     	measurementData.add(measurement2);		
     	measurementData.add(measurement3);		
+    	measurement3 = new Measurement( 72.3, "{\"target\":74.0}", testBatch, process, measureType, new Date(), DbSync.SYNCHED, "TestToken" );
+    	measurementData.add(measurement3);		
+    	measurement3 = new Measurement( 72.3, "{\"target\":74.0}", testBatch, process, measureType, new Date(), DbSync.SYNCHED, "" );
+    	measurementData.add(measurement3);		
 		
 		Mockito.when(measurementRepository.findByBatchId( 1L )).thenReturn( measurementData );
         dataService.deleteDuplicateMeasurements( 1L );
@@ -638,10 +741,19 @@ public class DataServiceTest {
 	public void getSensor() throws Exception
 	{
 		sensor.setId( 1L );
-		sensor.setName( "test" );
         Mockito.when(sensorRepository.getOne( 1L )).thenReturn( sensor );
         
         Sensor tmpSensor = dataService.getSensor( 1L );
+        assertEquals( tmpSensor.getName(), "test");
+	}	
+	
+	@Test
+	public void getSensorToken() throws Exception
+	{
+		sensor.setId( 1L );
+        Mockito.when(sensorRepository.findSensorBySynchToken( "TestToken" )).thenReturn( sensor );
+        
+        Sensor tmpSensor = dataService.getSensor( "TestToken" );
         assertEquals( tmpSensor.getName(), "test");
 	}	
 	
