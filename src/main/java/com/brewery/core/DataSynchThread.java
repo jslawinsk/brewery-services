@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,9 @@ public class DataSynchThread implements Runnable {
     @Value("${dataSynch.deleteSynched}")
     private boolean deleteSynched;
     
+    @Value("${dataSynch.pullConfig}")
+    private boolean pullConfig;
+    
     @Autowired
     @Qualifier( "restTemplate" )
     private RestTemplate restTemplate;
@@ -90,6 +94,7 @@ public class DataSynchThread implements Runnable {
     public void run() {
         LOG.info("Running DataSynchThread");
         String statusMessage = "";
+        Calendar lastPullConfigDate = null;
         while( true ) {
 			try {
 				Thread.sleep( 1000 * delayMinutes * 60 ); 
@@ -653,6 +658,32 @@ public class DataSynchThread implements Runnable {
 									dataSynchStatus.setUp( false ); 
 									statusMessage = statusMessage +  " Synchronize Delete Style: Invalid DbSynchToken: " + style;
 								}
+							}
+						}
+						
+						if( pullConfig ) {
+							Calendar now = Calendar.getInstance();
+							if( lastPullConfigDate == null || lastPullConfigDate.get( Calendar.DATE) != now.get( Calendar.DATE) ) {
+								LOG.info( "Pull config data" );
+								
+								LOG.info( "Pull MeasureType: " );
+								HttpHeaders headers = new HttpHeaders();
+								headers.setBearerAuth(token);
+							    HttpEntity<MeasureType[]> request = new HttpEntity<>( headers );
+								
+							    URI uri = new URI( dataSynchUrl + "measureType");
+							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, request, String.class );;
+								LOG.info( "Pull result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	LOG.info( "Pull MeasureType: " + result.getBody() );
+							    }
+								
+							    
+							    
+								lastPullConfigDate = Calendar.getInstance();
+							}
+							else {
+								LOG.info( "Pull config data pending" );
 							}
 						}
 						

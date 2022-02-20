@@ -35,6 +35,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -170,6 +171,11 @@ public class RestApiController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = MeasureType.class)})
     public MeasureType getMeasureType(@PathVariable(name = "code") String code) {
         return dataService.getMeasureType( code );
+    }
+    
+    @RequestMapping(path = "measureType", method = RequestMethod.GET)
+    public List<MeasureType> getAllMeasureTypes() {
+    	return ( List<MeasureType> )dataService.getAllMeasureTypes();
     }
 
     @RequestMapping( path = "measureType", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
