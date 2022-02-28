@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.microedition.io.Connector;
@@ -94,7 +95,8 @@ public class DataSynchThread implements Runnable {
     public void run() {
         LOG.info("Running DataSynchThread");
         String statusMessage = "";
-        Calendar lastPullConfigDate = null;
+        Calendar lastPullConfigDate = Calendar.getInstance();
+        lastPullConfigDate.add( Calendar.DATE, -1 );
         while( true ) {
 			try {
 				Thread.sleep( 1000 * delayMinutes * 60 ); 
@@ -663,30 +665,35 @@ public class DataSynchThread implements Runnable {
 						
 						if( pullConfig ) {
 							Calendar now = Calendar.getInstance();
-							if( lastPullConfigDate == null || lastPullConfigDate.get( Calendar.DATE) != now.get( Calendar.DATE) ) {
+							if( lastPullConfigDate.get( Calendar.DATE) != now.get( Calendar.DATE) ) {
 								LOG.info( "Pull config data" );
 								
-								LOG.info( "Pull MeasureType: " );
 								HttpHeaders headers = new HttpHeaders();
 								headers.setBearerAuth(token);
 							    HttpEntity<MeasureType[]> request = new HttpEntity<>( headers );
 								
 							    URI uri = new URI( dataSynchUrl + "measureType");
 							    ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, request, String.class );;
-								LOG.info( "Pull result: " + result.getStatusCodeValue() + " : "  + result.toString() );
+								LOG.info( "Pull MeasureType result: " + result.getStatusCodeValue() );
 							    if( result.getStatusCode() == HttpStatus.OK ) {
-							    	LOG.info( "Pull MeasureType: " + result.getBody() );
+							    	final ObjectMapper objectMapper = new ObjectMapper();
+							    	MeasureType[] measureTypesRemote = objectMapper.readValue( result.getBody(), MeasureType[].class);
+									for( MeasureType measureType: measureTypesRemote ) {
+								    	LOG.info( "Pull MeasureType: " + measureType );
+								    	measureType.setDbSynch( DbSync.SYNCHED );
+								    	MeasureType tempMeasureType = dataService.getMeasureType( measureType.getCode() );
+								        if(tempMeasureType !=null ) {
+									    	LOG.info( "Pull Update MeasureType: " );
+									    	dataService.updateMeasureType( measureType );
+								        } else {
+									    	LOG.info( "Pull Save MeasureType: " );
+									    	dataService.saveMeasureType( measureType );
+								        }								    	
+									}
 							    }
-								
-							    
-							    
 								lastPullConfigDate = Calendar.getInstance();
 							}
-							else {
-								LOG.info( "Pull config data pending" );
-							}
 						}
-						
 		        	}
 		        	else {
 				    	LOG.info( "API User not autheticated" );

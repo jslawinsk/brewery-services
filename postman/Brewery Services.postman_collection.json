@@ -6,6 +6,97 @@
 	},
 	"item": [
 		{
+			"name": "Setup",
+			"item": [
+				{
+					"name": "http://localhost:8080/api/authorize?user=API2&password=api",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"let token = jsonData.token;\r",
+									"pm.environment.set(\"accessToken\", token);\r",
+									"\r",
+									"pm.test(\"Authentication Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:8080/api/authorize?user=API2&password=api",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"authorize"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "API2"
+								},
+								{
+									"key": "password",
+									"value": "api"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Summary Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Summary Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/summary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Style API",
 			"item": [
 				{
@@ -97,6 +188,39 @@
 					"response": []
 				},
 				{
+					"name": "Get All Styles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Style Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/style",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Style",
 					"event": [
 						{
@@ -143,41 +267,6 @@
 							"path": [
 								"api",
 								"style"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Style",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Delete Style Test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/style/synchToken/{{styleSynchToken}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"style",
-								"synchToken",
-								"{{styleSynchToken}}"
 							]
 						}
 					},
@@ -286,6 +375,52 @@
 					"response": []
 				},
 				{
+					"name": "Get All Processes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Process Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/process",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Process",
 					"event": [
 						{
@@ -327,40 +462,6 @@
 							"path": [
 								"api",
 								"process"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Process",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Delete Process Test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/process/TST",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"process",
-								"TST"
 							]
 						}
 					},
@@ -456,6 +557,39 @@
 					"response": []
 				},
 				{
+					"name": "Get All Measure Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get All Measure Types Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measureType",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Measure Type",
 					"event": [
 						{
@@ -497,40 +631,6 @@
 							"path": [
 								"api",
 								"measureType"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Measure Type",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Get Measure Type Test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/measureType/TEST",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"measureType",
-								"TEST"
 							]
 						}
 					},
@@ -677,41 +777,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Delete Batch",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Delete Batch Test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/batch/synchToken/{{batchSynchToken}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"batch",
-								"synchToken",
-								"{{batchSynchToken}}"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -847,41 +912,6 @@
 							"path": [
 								"api",
 								"measurement"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Measurement",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Delete Measurement Test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/measurement/synchToken/{{measurementSynchToken}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"measurement",
-								"synchToken",
-								"{{measurementSynchToken}}"
 							]
 						}
 					},
@@ -1025,7 +1055,12 @@
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
 				{
 					"name": "Delete Sensor",
 					"event": [
@@ -1060,94 +1095,181 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Measurement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Measurement Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measurement/synchToken/{{measurementSynchToken}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measurement",
+								"synchToken",
+								"{{measurementSynchToken}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Batch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Batch Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/batch/synchToken/{{batchSynchToken}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"batch",
+								"synchToken",
+								"{{batchSynchToken}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Measure Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Measure Type Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/measureType/TEST",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"measureType",
+								"TEST"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Process",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Process Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/process/TST",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"process",
+								"TST"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Style",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Style Test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/style/synchToken/{{styleSynchToken}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"style",
+								"synchToken",
+								"{{styleSynchToken}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
-		},
-		{
-			"name": "http://localhost:8080/api/authorize?user=API2&password=api",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData = pm.response.json();\r",
-							"let token = jsonData.token;\r",
-							"pm.environment.set(\"accessToken\", token);\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:8080/api/authorize?user=API2&password=api",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"authorize"
-					],
-					"query": [
-						{
-							"key": "user",
-							"value": "API2"
-						},
-						{
-							"key": "password",
-							"value": "api"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Summary Data",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Get Summary Test\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/summary",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"summary"
-					]
-				}
-			},
-			"response": []
 		}
 	],
 	"auth": {

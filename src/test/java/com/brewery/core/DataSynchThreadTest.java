@@ -8,6 +8,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 								"dataSynch.url=http://localhost:8080/api/",
 								"dataSynch.apiId=BrewAppTest", 
 								"dataSynch.apiPassword=BrewAppTest", 
+								"dataSynch.pullConfig=true",
 								"wiFi.enabled=false"
 				} )
 @RunWith( SpringRunner.class)
@@ -145,8 +147,11 @@ public class DataSynchThreadTest {
     	measureTypes.add( measureType );
 		measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.DELETE  );
     	measureTypes.add( measureType );
+    	MeasureType measureType2 = new MeasureType( "TEST", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.SYNCHED  );
+    	measureTypes.add( measureType2 );
 		Mockito.when( dataService.getMeasureTypesToSynchronize()).thenReturn( measureTypes );
-
+        Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
+		
 		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
  		.andExpect(method(HttpMethod.POST))
 		.andRespond(withStatus(HttpStatus.OK  )
@@ -305,6 +310,13 @@ public class DataSynchThreadTest {
 		.body(objectMapper.writeValueAsString(testStyle))
 		); 		
 	
+		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(measureTypes))
+		); 		
+		
 		
 		//
 		//	Execute Tests

@@ -111,7 +111,7 @@ public class DataServiceTest {
         
         Mockito.when( styleRepository.findStyleBySynchToken( "TestToken" ) ).thenThrow( new IllegalArgumentException("Test") );
         style = dataService.getStyle( "TestToken" );
-        assertNull( style.getName() );
+        assertNull( style );
 	}	
 	
 	@Test
@@ -206,10 +206,18 @@ public class DataServiceTest {
 	@Test
 	public void getProcess() throws Exception
 	{
-        Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
+		Optional<Process> process2 = Optional.ofNullable( new Process( "FRM", "Fermentation", false, DbSync.ADD ) );
+		
+        Mockito.when(processRepository.findById( "FRM" )).thenReturn( process2 );
         
-        Process process = dataService.getProcess( "FRM" );
-        assertEquals( process.getCode(), "FRM");
+        Process tmpProcess = dataService.getProcess( "FRM" );
+        assertEquals( tmpProcess.getCode(), "FRM");
+        
+        Optional<Process> process3 = Optional.empty();
+        Mockito.when(processRepository.findById( "TMP3" )).thenReturn( process3 );
+        tmpProcess = dataService.getProcess( "TMP3" );
+        assertNull( tmpProcess );
+        
 	}	
 	
 	@Test
@@ -309,10 +317,18 @@ public class DataServiceTest {
 	@Test
 	public void getMeasureType() throws Exception
 	{
-        Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
+		Optional<MeasureType> measureType2 = Optional.ofNullable(new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  ));
+		
+        Mockito.when(measureTypeRepository.findById( "TMP" )).thenReturn( measureType2 );
         
         MeasureType tmpMeasureType = dataService.getMeasureType( "TMP" );
         assertEquals( tmpMeasureType.getCode(), "TMP");
+        
+        Optional<MeasureType> measureType3 = Optional.empty();
+        Mockito.when(measureTypeRepository.findById( "TMP3" )).thenReturn( measureType3 );
+        tmpMeasureType = dataService.getMeasureType( "TMP3" );
+        assertNull( tmpMeasureType );
+        
 	}	
 	
 	@Test
