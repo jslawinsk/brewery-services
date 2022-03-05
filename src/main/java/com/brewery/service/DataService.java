@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.EntityNotFoundException;
@@ -128,7 +129,7 @@ public class DataService implements UserDetailsService {
         catch( Exception e ) {
         	LOG.error( "getStyle findStyleBySynchToken: Execption",  e );
         }
-        return new Style();
+        return null;
     }
     
     public List<Style> getAllStyles() {
@@ -191,7 +192,13 @@ public class DataService implements UserDetailsService {
 	//
     public Process getProcess( String code ) {
         LOG.info("Getting Process, code:" + code);
-        return processRepository.getOne( code );
+    	Optional<Process> optionalProcess = processRepository.findById( code );
+        if (optionalProcess.isPresent()) {
+	    	return optionalProcess.get();
+        } else {
+	    	LOG.info( "Process not found" );
+        	return null;
+        }								    	
     }
     
     public List<Process> getAllProcesses() {
@@ -256,7 +263,13 @@ public class DataService implements UserDetailsService {
 	//
     public MeasureType getMeasureType( String code ) {
         LOG.info("Getting MeasureType, code:" + code);
-        return measureTypeRepository.getOne( code );
+    	Optional<MeasureType> optionalMeasureType = measureTypeRepository.findById( code );
+        if (optionalMeasureType.isPresent()) {
+	    	return optionalMeasureType.get();
+        } else {
+	    	LOG.info( "MeasureType not found" );
+        	return null;
+        }								    	
     }
 
     public List<MeasureType> getAllMeasureTypes() {

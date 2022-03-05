@@ -2,7 +2,9 @@ package com.brewery.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.InputConnection;
@@ -25,6 +27,9 @@ class BluetoothUtilTest {
 
 	@Mock
 	StreamConnection streamConnection;
+
+	@Mock
+	InputStream inStream = Mockito.mock( InputStream.class );
 	
 	@Test
 	public void testGetStreamConnection() throws IOException {
@@ -36,6 +41,13 @@ class BluetoothUtilTest {
 			streamConnection = bluetoothUtil.getStreamConnection( "test" );
 			assertThat( streamConnection ).isNull();
 		}
+	}
+	
+	@Test
+	void testGetBufferedReader() throws IOException {
+		BufferedReader bufferedReader;
+		bufferedReader = bluetoothUtil.getBufferedReader( inStream );
+		assertThat( bufferedReader ).isNotNull();
 	}
 
 

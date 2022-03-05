@@ -8,6 +8,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 								"dataSynch.url=http://localhost:8080/api/",
 								"dataSynch.apiId=BrewAppTest", 
 								"dataSynch.apiPassword=BrewAppTest", 
+								"dataSynch.pullConfig=true",
 								"wiFi.enabled=false"
 				} )
 @RunWith( SpringRunner.class)
@@ -113,7 +115,10 @@ public class DataSynchThreadTest {
     	styles.add( testStyle );
 		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.DELETE, "" );
     	styles.add( testStyle );
+    	Style testStyle2 = new Style( "IPA", "18a", "Hoppy", DbSync.SYNCHED, "TestToken2" );
+    	styles.add( testStyle2 );
 		Mockito.when(dataService.getStylesToSynchronize( )).thenReturn( styles );
+        Mockito.when(dataService.getStyle( "TestToken2" )).thenReturn( testStyle2 );
 		
 		mockServer.expect( requestTo("http://localhost:8080/api/style") )
  		.andExpect(method(HttpMethod.POST))
@@ -129,7 +134,10 @@ public class DataSynchThreadTest {
     	processes.add( process );
 		process = new Process( "FRM", "Fermentation", false, DbSync.DELETE );
     	processes.add( process );
+		Process process2 = new Process( "TEST", "Fermentation", false, DbSync.SYNCHED );
+    	processes.add( process2 );
 		Mockito.when(dataService.getProcessesToSynchronize()).thenReturn( processes );
+        Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
 		
 		mockServer.expect( requestTo("http://localhost:8080/api/process") )
  		.andExpect(method(HttpMethod.POST))
@@ -145,8 +153,11 @@ public class DataSynchThreadTest {
     	measureTypes.add( measureType );
 		measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.DELETE  );
     	measureTypes.add( measureType );
+    	MeasureType measureType2 = new MeasureType( "TEST", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.SYNCHED  );
+    	measureTypes.add( measureType2 );
 		Mockito.when( dataService.getMeasureTypesToSynchronize()).thenReturn( measureTypes );
-
+        Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
+		
 		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
  		.andExpect(method(HttpMethod.POST))
 		.andRespond(withStatus(HttpStatus.OK  )
@@ -304,7 +315,30 @@ public class DataSynchThreadTest {
 		.contentType(MediaType.APPLICATION_JSON )
 		.body(objectMapper.writeValueAsString(testStyle))
 		); 		
-	
+
+		//
+		//	Test for pulling configuration data
+		//
+		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(measureTypes))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/process") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(processes))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/style") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(styles))
+		); 		
 		
 		//
 		//	Execute Tests

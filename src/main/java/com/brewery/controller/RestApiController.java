@@ -35,6 +35,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -96,6 +97,13 @@ public class RestApiController {
         return dataService.getStyle(id);
     }
 
+    @RequestMapping(path = "style", method = RequestMethod.GET)
+    @ApiOperation("Gets all styles")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class)})
+    public List<Style> getAllStyles( ) {
+        return dataService.getAllStyles();
+    }
+    
     @RequestMapping( path = "style", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Style saveStyle( @RequestBody Style styleToSave ) {
         return dataService.saveStyle( styleToSave );
@@ -145,6 +153,13 @@ public class RestApiController {
         return dataService.getProcess( code );
     }
 
+    @RequestMapping(path = "process", method = RequestMethod.GET)
+    @ApiOperation("Gets all processes")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class)})
+    public List<Process> getAllProcesses( ) {
+        return dataService.getAllProcesses();
+    }
+    
     @RequestMapping( path = "process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Process saveProcess( @RequestBody Process processToSave ) {
         return dataService.saveProcess( processToSave );
@@ -170,6 +185,11 @@ public class RestApiController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = MeasureType.class)})
     public MeasureType getMeasureType(@PathVariable(name = "code") String code) {
         return dataService.getMeasureType( code );
+    }
+    
+    @RequestMapping(path = "measureType", method = RequestMethod.GET)
+    public List<MeasureType> getAllMeasureTypes() {
+    	return ( List<MeasureType> )dataService.getAllMeasureTypes();
     }
 
     @RequestMapping( path = "measureType", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)

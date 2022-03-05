@@ -143,6 +143,21 @@ public class RestApiControllerTest {
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
 	}	
+
+	@Test
+	@WithMockUser( authorities = "API" )
+	public void getStyles() throws Exception
+	{
+    	List<Style> styles = new ArrayList<Style>();
+		testStyle.setId( 1L );
+    	styles.add( testStyle );
+		Mockito.when(dataService.getAllStyles()).thenReturn( styles );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/style")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString( "{\"id\":1," )));
+	}	
 	
 	@Test
 	@WithMockUser( authorities = "API" )
@@ -222,6 +237,20 @@ public class RestApiControllerTest {
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"FRM\"," )));
 	}	
+
+	@Test
+	@WithMockUser( authorities = "API" )
+	public void getProcesses() throws Exception
+	{
+    	List<Process> processes = new ArrayList<Process>();
+    	processes.add( process );
+        Mockito.when(dataService.getAllProcesses( )).thenReturn( processes );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/process")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString( "{\"code\":\"FRM\"," )));
+	}	
 	
 	@Test
 	@WithMockUser( authorities = "API" )
@@ -272,6 +301,21 @@ public class RestApiControllerTest {
         Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
 
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measureType/TMP")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isOk())
+	            .andExpect(content().string(containsString( "{\"code\":\"TMP\"," )));
+	}	
+
+	@Test
+	@WithMockUser( authorities = "API" )
+	public void getMeasureTypes() throws Exception
+	{
+    	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
+    	measureTypes.add( measureType );
+		
+        Mockito.when(dataService.getAllMeasureTypes( )).thenReturn( measureTypes );
+
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measureType")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"TMP\"," )));
