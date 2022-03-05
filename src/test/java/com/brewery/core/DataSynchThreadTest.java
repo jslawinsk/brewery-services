@@ -115,7 +115,10 @@ public class DataSynchThreadTest {
     	styles.add( testStyle );
 		testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.DELETE, "" );
     	styles.add( testStyle );
+    	Style testStyle2 = new Style( "IPA", "18a", "Hoppy", DbSync.SYNCHED, "TestToken2" );
+    	styles.add( testStyle2 );
 		Mockito.when(dataService.getStylesToSynchronize( )).thenReturn( styles );
+        Mockito.when(dataService.getStyle( "TestToken2" )).thenReturn( testStyle2 );
 		
 		mockServer.expect( requestTo("http://localhost:8080/api/style") )
  		.andExpect(method(HttpMethod.POST))
@@ -131,7 +134,10 @@ public class DataSynchThreadTest {
     	processes.add( process );
 		process = new Process( "FRM", "Fermentation", false, DbSync.DELETE );
     	processes.add( process );
+		Process process2 = new Process( "TEST", "Fermentation", false, DbSync.SYNCHED );
+    	processes.add( process2 );
 		Mockito.when(dataService.getProcessesToSynchronize()).thenReturn( processes );
+        Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
 		
 		mockServer.expect( requestTo("http://localhost:8080/api/process") )
  		.andExpect(method(HttpMethod.POST))
@@ -309,7 +315,10 @@ public class DataSynchThreadTest {
 		.contentType(MediaType.APPLICATION_JSON )
 		.body(objectMapper.writeValueAsString(testStyle))
 		); 		
-	
+
+		//
+		//	Test for pulling configuration data
+		//
 		mockServer.expect( requestTo("http://localhost:8080/api/measureType") )
  		.andExpect(method(HttpMethod.GET))
 		.andRespond(withStatus(HttpStatus.OK  )
@@ -317,6 +326,19 @@ public class DataSynchThreadTest {
 		.body(objectMapper.writeValueAsString(measureTypes))
 		); 		
 		
+		mockServer.expect( requestTo("http://localhost:8080/api/process") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(processes))
+		); 		
+		
+		mockServer.expect( requestTo("http://localhost:8080/api/style") )
+ 		.andExpect(method(HttpMethod.GET))
+		.andRespond(withStatus(HttpStatus.OK  )
+		.contentType(MediaType.APPLICATION_JSON )
+		.body(objectMapper.writeValueAsString(styles))
+		); 		
 		
 		//
 		//	Execute Tests

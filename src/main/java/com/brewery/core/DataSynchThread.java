@@ -372,7 +372,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize Update Style: Invalid DbSynchToken: " + style );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Update Style: Invalid DbSynchToken: " + style;
+									statusMessage = statusMessage +  " Synchronize Update Style: Invalid DbSynchToken: " + style;
 								}
 							}
 						}
@@ -445,7 +445,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize Update Batch: Invalid DbSynchToken: " + batch );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Update Batch: Invalid DbSynchToken: " + batch;
+									statusMessage = statusMessage +  " Synchronize Update Batch: Invalid DbSynchToken: " + batch;
 								}
 							}
 						}
@@ -474,7 +474,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize Update Measurement: Invalid DbSynchToken: " + measurement );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Update Measurement: Invalid DbSynchToken: " + measurement;
+									statusMessage = statusMessage +  " Synchronize Update Measurement: Invalid DbSynchToken: " + measurement;
 								}
 							}
 						}
@@ -506,7 +506,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize Update Sensor: Invalid DbSynchToken: " + sensor );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
+									statusMessage = statusMessage +  " Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
 								}
 							}
 						}
@@ -536,7 +536,7 @@ public class DataSynchThread implements Runnable {
 								else{
 									LOG.error( "ERROR: Synchronize delete Sensor: Invalid DbSynchToken: " + sensor );
 									dataSynchStatus.setUp( false ); 
-									statusMessage = statusMessage +  "Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
+									statusMessage = statusMessage +  " Synchronize Update Sensor: Invalid DbSynchToken: " + sensor;
 								}
 							}
 						}
@@ -691,24 +691,81 @@ public class DataSynchThread implements Runnable {
 								        }								    	
 									}
 							    }
+							    
+								headers = new HttpHeaders();
+								headers.setBearerAuth(token);
+							    HttpEntity<Process[]> request2 = new HttpEntity<>( headers );
+							    uri = new URI( dataSynchUrl + "process");
+							    result = restTemplate.exchange(uri, HttpMethod.GET, request2, String.class );
+								LOG.info( "Pull Process result: " + result.getStatusCodeValue() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	final ObjectMapper objectMapper = new ObjectMapper();
+							    	Process[] processesRemote = objectMapper.readValue( result.getBody(), Process[].class);
+
+									for( Process process: processesRemote ) {
+								    	LOG.info( "Pull Process: " + process );
+								    	process.setDbSynch( DbSync.SYNCHED );
+								    	Process tempProcess = dataService.getProcess( process.getCode() );
+								        if(tempProcess !=null ) {
+									    	LOG.info( "Pull Update Process: " );
+									    	dataService.updateProcess( process );
+								        } else {
+									    	LOG.info( "Pull Save Process: " );
+									    	dataService.saveProcess( process );
+								        }								    	
+									}
+							    }
+							    
+								headers = new HttpHeaders();
+								headers.setBearerAuth(token);
+							    HttpEntity<Style[]> request3 = new HttpEntity<>( headers );
+							    uri = new URI( dataSynchUrl + "style");
+							    result = restTemplate.exchange(uri, HttpMethod.GET, request3, String.class );
+								LOG.info( "Pull Style result: " + result.getStatusCodeValue() );
+							    if( result.getStatusCode() == HttpStatus.OK ) {
+							    	final ObjectMapper objectMapper = new ObjectMapper();
+							    	Style[] stylesRemote = objectMapper.readValue( result.getBody(), Style[].class);
+
+									for( Style style: stylesRemote ) {
+								    	LOG.info( "Pull Style: " + style );
+										if( style.getDbSynchToken() != null && style.getDbSynchToken().length() > 0 ) {
+									    	Style tempStyle = dataService.getStyle( style.getDbSynchToken() );
+									    	style.setDbSynch( DbSync.SYNCHED );
+									        if(tempStyle !=null ) {
+										    	style.setId( tempStyle.getId() );
+										    	LOG.info( "Pull Update Style: " );
+										    	dataService.updateStyle( style );
+									        } else {
+										    	LOG.info( "Pull Save Style: " );
+										    	dataService.saveStyle( style );
+									        }	
+										}
+										else{
+											LOG.error( "ERROR: Synchronize Pull Style: Invalid DbSynchToken: " + style );
+											dataSynchStatus.setUp( false ); 
+											statusMessage = statusMessage +  " Synchronize Pull Style: Invalid DbSynchToken: " + style;
+										}
+									}
+							    }
+							    
 								lastPullConfigDate = Calendar.getInstance();
 							}
 						}
 		        	}
 		        	else {
 				    	LOG.info( "API User not autheticated" );
-				    	statusMessage = statusMessage + "API User not autheticated ";
+				    	statusMessage = statusMessage + " API User not autheticated ";
 				    	dataSynchStatus.setUp( false );
 		        	}
 				}
 				else {
 			    	LOG.info( "API User not found" );
-			    	statusMessage = statusMessage +  "API User not found ";
+			    	statusMessage = statusMessage +  " API User not found ";
 			    	dataSynchStatus.setUp( false );
 				}
 			} catch( Exception e ) {
 				LOG.error( e.getMessage() );
-				statusMessage = statusMessage + "Exception";
+				statusMessage = statusMessage + " Exception";
 				dataSynchStatus.setUp( false );
 			}	
 	        dataSynchStatus.setMessage( statusMessage );
