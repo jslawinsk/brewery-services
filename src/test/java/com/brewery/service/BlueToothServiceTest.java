@@ -1,181 +1,278 @@
 package com.brewery.service;
 
-import static org.hamcrest.CoreMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.bluetooth.UUID;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.brewery.model.Sensor;
+import com.intel.bluetooth.RemoteDeviceHelper;
+
 import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.DataElement;
 import javax.bluetooth.DeviceClass;
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.DiscoveryListener;
 import javax.bluetooth.LocalDevice;
-import javax.bluetooth.ServiceRecord;
 import javax.bluetooth.RemoteDevice;
-
+import javax.bluetooth.ServiceRecord;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
-import javax.microedition.io.StreamConnectionNotifier;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.stubbing.Answer;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.powermock.reflect.Whitebox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.powermock.api.mockito.PowerMockito;
-
-import com.brewery.model.Sensor;
-
-@RunWith(PowerMockRunner.class)
-//@PowerMockRunnerDelegate(SpringRunner.class)
-@PrepareForTest( { BlueToothService.class, Connector.class, InputStreamReader.class, BufferedReader.class, LocalDevice.class } )
-@SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false" } )
-public class BlueToothServiceTest {
+@RunWith( SpringRunner.class)
+@SpringBootTest( 
+				properties = { "blueTooth.enabled=true", "blueTooth.timeout=1" }
+			)
+class BlueToothServiceTest {
 
 	static private Logger LOG = LoggerFactory.getLogger( BlueToothServiceTest.class );
-//	static private Thread serverThread;	
-//	private static final UUID uuid = new UUID(0x2108);
-//	private static final String echoGreeting = "I echo";
-	
+			
+	@SpyBean
+	private BlueToothService blueToothService;
 	
 	@Mock
-	LocalDevice localDevice;
+	LocalDevice localDevice2;
 	
 	@Mock
 	RemoteDevice remoteDevice;
+
+	@Mock
+	RemoteDevice remoteDevice2;
+	
+	@Mock
+	DiscoveryAgent discoveryAgent;
+	
+	@Mock
+	ServiceRecord serviceRecord;
+
+	@Mock
+	ServiceRecord serviceRecord2;
+
+	@Mock
+	ServiceRecord serviceRecord3;
+	
+	@Mock
+	DataElement dataElement;
+	
+	@Mock
+	StreamConnection streamConnection;
+	
+	@Mock 
+	OutputStream outputStream;
+	
+	@Mock
+	InputStream inputStream;
+	
+	@Mock 
+	InputStreamReader inputStreamReader;
+	
+	@Mock
+	BufferedReader bufferedReader;
+
+	@Mock
+	BufferedReader bufferedReader2;
 	
 	@MockBean
 	JavaMailSender mailSender;
 	
-//	@Mock
-//	DiscoveryListener discoveryListener;
-	
-	@Spy
-	BlueToothService blueToothService = new BlueToothService( );
-	
-	@BeforeClass
-    public static void beforeAllTestMethods() throws BluetoothStateException {
-	//	EmulatorTestsHelper.startInProcessServer();
-	//	EmulatorTestsHelper.useThreadLocalEmulator();
-	//	serverThread = EmulatorTestsHelper.runNewEmulatorStack( new EchoServerRunnable());   
+	@BeforeAll
+	static void setUpBeforeClass() throws Exception {
 	}
- 
-	@AfterClass
-	public static void afterAllTestMethods() throws InterruptedException {
-//		if ((serverThread != null) && (serverThread.isAlive())) {
-//			serverThread.interrupt();
-//			serverThread.join();
-//		}
-//		EmulatorTestsHelper.stopInProcessServer();
+
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
 	}
-	
-    @Before
-    public void beforeEachTestMethod() {
-    }
- 
-    @After
-    public void afterEachTestMethod() {
-    }
- 
+
+	@BeforeEach
+	void setUp() throws Exception {
+	}
+
+	@AfterEach
+	void tearDown() throws Exception {
+	}
+
 	@Test
-	public void run() throws Exception
-	{
+	void testRun() throws Exception {
 		LOG.info( "BlueToothServiceTest: run");
-		PowerMockito.mockStatic( LocalDevice.class ); 
-	    
-		// PowerMockito.when( LocalDevice.getLocalDevice() ).thenReturn( localDevice );
-		when( LocalDevice.getLocalDevice() ).thenAnswer((Answer<LocalDevice>) invocation -> localDevice );	    
-	    
-	    Mockito.when( localDevice.getBluetoothAddress() ).thenReturn( "010101010101" );
-	    Mockito.when( localDevice.getFriendlyName() ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
-	    
-//	    PowerMockito.spy(LocalDevice.class);
-//	    PowerMockito.doNothing().when(LocalDevice.class, "getLocalDevice" );
-//	    PowerMockito.doReturn( "010101010101").when( LocalDevice.class, "getLocalDevice");
-//	    PowerMockito.doReturn( "TEST_BLUTOOTH_DEVICE").when( LocalDevice.class, "getFriendlyName");
-	    
-	    Whitebox.setInternalState( blueToothService, "blueToothEnabled", true);
+
 		
-		String[] testStrings = new String[1];
-		blueToothService.run( testStrings );
-        verify( blueToothService, times(1)).run( testStrings );
+		try (MockedStatic<LocalDevice> localDevice = Mockito.mockStatic(LocalDevice.class)) {
+			localDevice.when(() -> LocalDevice.getLocalDevice( )).thenAnswer( (Answer<LocalDevice>) invocation -> localDevice2);
 
-	}	
-	
-	//
-	// TODO: Implement unit test for discovery listener
-	//
-//	@Test
-	public void discoverSensors() throws Exception
-	{
+		    Mockito.when( ((LocalDevice) localDevice2).getBluetoothAddress() ).thenReturn( "010101010101" );
+		    Mockito.when( ((LocalDevice) localDevice2).getFriendlyName() ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+			
+			String[] testStrings = new String[1];
+			blueToothService.run( testStrings );
+	        verify( localDevice2, times(1)).getBluetoothAddress(  );
+		}
 
-		// PowerMockito.mockStatic( DiscoveryListener.class ); 
-		// DiscoveryListener discoveryListener = Mockito.mock(DiscoveryListener.class);
-		// Mockito.doNothing().when(discoveryListener).deviceDiscovered( (RemoteDevice) any( RemoteDevice.class), (DeviceClass) any(DeviceClass.class));
+		try (MockedStatic<LocalDevice> localDevice = Mockito.mockStatic(LocalDevice.class)) {
+			localDevice.when(() -> LocalDevice.getLocalDevice( )).thenThrow( new BluetoothStateException());
 
-	    //RemoteDevice remoteDevice = Mockito.mock( RemoteDevice.class );
-	    
-//	    Mockito.when( remoteDevice.getBluetoothAddress() ).thenReturn( "010101010101" );
+			String[] testStrings = new String[1];
+			blueToothService.run( testStrings );
+	        verify( localDevice2, times(1)).getBluetoothAddress(  );
+		}
+	}
+
+	@Test
+	void testDiscoverSensors() throws Exception {
+		
 	    Mockito.when( remoteDevice.getFriendlyName( false ) ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+
+		try (MockedStatic<LocalDevice> localDevice = Mockito.mockStatic(LocalDevice.class)) {
+			localDevice.when(() -> LocalDevice.getLocalDevice( )).thenAnswer( (Answer<LocalDevice>) invocation -> localDevice2);
+			
+		    Mockito.when( discoveryAgent.startInquiry(Mockito.anyInt(), Mockito.any( DiscoveryListener.class )) ).thenReturn( true );
+		    Mockito.when( ((LocalDevice) localDevice2).getDiscoveryAgent() ).thenReturn( discoveryAgent );
+		    Mockito.when( ((LocalDevice) localDevice2).getBluetoothAddress() ).thenReturn( "010101010101" );
+		    Mockito.when( ((LocalDevice) localDevice2).getFriendlyName() ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+		    
+		    List<RemoteDevice> remoteDevices = new ArrayList<RemoteDevice>();
+		    remoteDevices.add( remoteDevice2 );
+		    remoteDevices.add( remoteDevice );
+		    Mockito.doReturn( remoteDevices ).when( blueToothService ).getRemoteDevices();
+		    
+		    List<Sensor> sensors = blueToothService.discoverSensors();
+		    assertNotNull( sensors );
+		}
+	}
+
+	@Test
+	void testDeviceListener() throws Exception {
+	    
+	    DiscoveryListener deviceListener = blueToothService.getDeviceListener();
+	    deviceListener.deviceDiscovered( remoteDevice, new DeviceClass(0 ));
+        verify( remoteDevice, times(1)).getBluetoothAddress(  );
+        
+		Mockito.when( remoteDevice.getFriendlyName( false )).thenThrow( new IOException( "test") );
+	    deviceListener.deviceDiscovered( remoteDevice, new DeviceClass(0 ));
+	    deviceListener.inquiryCompleted( DiscoveryListener.INQUIRY_COMPLETED );
+	    
+	    ServiceRecord[] servRecord = new ServiceRecord[ 1 ];
+	    deviceListener.servicesDiscovered( 0, servRecord);
+	    deviceListener.serviceSearchCompleted( 0, 0 );
+        verify( remoteDevice, times(2)).getBluetoothAddress(  );
+	}
+
+	@Test
+	void testServiceListener() throws Exception {
+	    
+		Mockito.when( dataElement.getValue() ).thenReturn( "TestDataElement" );
+	    Mockito.when( remoteDevice.getFriendlyName( false ) ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+		Mockito.when( remoteDevice2.getFriendlyName( false )).thenThrow( new IOException( "test") );
+	    
+		Mockito.when( serviceRecord.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false) ).thenReturn( "testURL" );
+		Mockito.when( serviceRecord.getAttributeValue(0x0100) ).thenReturn( dataElement );
+		Mockito.when( serviceRecord.getHostDevice() ).thenReturn( remoteDevice );
+
+		Mockito.when( serviceRecord2.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false) ).thenReturn( null );
+
+		Mockito.when( serviceRecord3.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false) ).thenReturn( "testURL" );
+		Mockito.when( serviceRecord3.getAttributeValue(0x0100) ).thenReturn( null );
+		Mockito.when( serviceRecord3.getHostDevice() ).thenReturn( remoteDevice2 );
 		
-		List<Sensor> sensors = blueToothService.discoverSensors();
+	    ServiceRecord[] servRecords = new ServiceRecord[ 3 ];
+	    servRecords[ 0 ] = serviceRecord2;
+	    servRecords[ 1 ] = serviceRecord3;
+	    servRecords[ 2 ] = serviceRecord;
+	    
+	    DiscoveryListener serviceListener = blueToothService.getServiceListener();
+	    serviceListener.servicesDiscovered( 0, servRecords);
+	    serviceListener.inquiryCompleted( 0 );
+	    serviceListener.deviceDiscovered( remoteDevice, new DeviceClass(0 ));
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.SERVICE_SEARCH_COMPLETED );
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.SERVICE_SEARCH_TERMINATED );
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.SERVICE_SEARCH_ERROR );
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.SERVICE_SEARCH_NO_RECORDS );
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.SERVICE_SEARCH_DEVICE_NOT_REACHABLE );
+	    serviceListener.serviceSearchCompleted( 0, DiscoveryListener.INQUIRY_COMPLETED );
+        verify( remoteDevice, times(2)).getFriendlyName( false );
+	}
+	
+	
+	@Test
+	void testPairSensor() throws Exception {
+
+	    Mockito.when( remoteDevice.getFriendlyName( false ) ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+	    Mockito.when( remoteDevice2.getFriendlyName( false ) ).thenReturn( "TEST" );
+
+		try (MockedStatic<LocalDevice> localDevice = Mockito.mockStatic(LocalDevice.class)) {
+			localDevice.when(() -> LocalDevice.getLocalDevice( )).thenAnswer( (Answer<LocalDevice>) invocation -> localDevice2);
+			
+		    Mockito.when( discoveryAgent.startInquiry(Mockito.anyInt(), Mockito.any( DiscoveryListener.class )) ).thenReturn( true );
+		    Mockito.when( ((LocalDevice) localDevice2).getDiscoveryAgent() ).thenReturn( discoveryAgent );
+		    Mockito.when( ((LocalDevice) localDevice2).getBluetoothAddress() ).thenReturn( "010101010101" );
+		    Mockito.when( ((LocalDevice) localDevice2).getFriendlyName() ).thenReturn( "TEST_BLUTOOTH_DEVICE" );
+
+		    List<RemoteDevice> remoteDevices = new ArrayList<RemoteDevice>();
+		    remoteDevices.add( remoteDevice2 );
+		    remoteDevices.add( remoteDevice );
+		    Mockito.doReturn( remoteDevices ).when( blueToothService ).getRemoteDevices();
+			
+			try (MockedStatic<RemoteDeviceHelper> remoteDeviceHelper = Mockito.mockStatic(RemoteDeviceHelper.class)) {
+				remoteDeviceHelper.when(() -> RemoteDeviceHelper.authenticate( remoteDevice, "1234" )).thenReturn( true );
+				boolean result = blueToothService.pairSensor( "TEST_BLUTOOTH_DEVICE", "1234" );
+				assertTrue( result );
+
+				remoteDeviceHelper.when(() -> RemoteDeviceHelper.authenticate( remoteDevice, "1234" )).thenReturn( false );
+				result = blueToothService.pairSensor( "TEST_BLUTOOTH_DEVICE", "1234" );
+				assertFalse( result );
+			}
+		}
+	}
+
+	@Test
+	void testGetRemoteDevices() {
+		List<RemoteDevice> remoteDevices = blueToothService.getRemoteDevices();
+		assertNotNull( remoteDevices );
 	}
 	
 	@Test
-	public void connect() throws Exception
-	{
-
-		PowerMockito.mockStatic( Connector.class );
-		StreamConnection streamConnection = Mockito.mock( StreamConnection.class );
-		OutputStream outStream = Mockito.mock( OutputStream.class );
-		InputStream inStream = Mockito.mock( InputStream.class );
-		BufferedReader bufferedReader = Mockito.mock( BufferedReader.class );
-		
-		InputStreamReader inr = Mockito.mock(InputStreamReader.class);
-		
-		Mockito.when( streamConnection.openInputStream( ) ).thenReturn( inStream );
-		PowerMockito.whenNew(InputStreamReader.class).withArguments(inStream).thenReturn(inr);
-		PowerMockito.whenNew(BufferedReader.class).withArguments(inr).thenReturn(bufferedReader);
-		
-//		PowerMockito.when( Connector.open( "test" ) ).thenReturn( streamConnection );
-		when( Connector.open( "test" ) ).thenAnswer((Answer<StreamConnection>) invocation -> streamConnection );	    
-		
-		Mockito.when( streamConnection.openOutputStream( ) ).thenReturn( outStream );
-				
-		PowerMockito.when( bufferedReader.readLine( ) ).thenReturn( "Test data" );
-		
-		blueToothService.connect( "test" );
+	void testConnect() throws Exception {
+		try (MockedStatic<Connector> connector = Mockito.mockStatic(Connector.class)) {
+			connector.when(() -> Connector.open( "test" ) ).thenReturn( streamConnection );
+			
+			Mockito.when( streamConnection.openOutputStream( ) ).thenReturn( outputStream );
+			Mockito.when( streamConnection.openInputStream( ) ).thenReturn( inputStream );
+			
+			try( MockedConstruction<BufferedReader> bufferedReader = Mockito.mockConstruction(BufferedReader.class)) {
+				BufferedReader bufferedReader2 = new BufferedReader( new InputStreamReader(inputStream) );
+				Mockito.when( bufferedReader2.readLine( ) ).thenReturn( "Test data" );
+				blueToothService.connect( "test" ); 
+			}			
+		}
 	}
-	
-	
-    
+
 }

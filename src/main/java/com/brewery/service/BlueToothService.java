@@ -38,7 +38,6 @@ import com.brewery.model.Sensor;
 */
 @Service
 public class BlueToothService implements CommandLineRunner {
-    //private static LocalDevice localDevice;
     static LocalDevice localDevice;
     DiscoveryAgent agent;
 
@@ -46,6 +45,9 @@ public class BlueToothService implements CommandLineRunner {
     
     @Value("${blueTooth.enabled}")
     private boolean blueToothEnabled;
+
+    @Value("${blueTooth.timeout}")
+    private long timeout;
 
     @Autowired
     private TaskExecutor taskExecutor;
@@ -65,19 +67,15 @@ public class BlueToothService implements CommandLineRunner {
 	            LOG.info( "Name: "+localDevice.getFriendlyName() );
 
 	        }catch(Exception e){
-	            System.err.println(e.toString());
-	            System.err.println(e.getStackTrace());
-	            e.printStackTrace();
+	            LOG.error( "run", e );
 	        }
         }       
     }
     
     public List<Sensor> discoverSensors(  ) throws IOException, InterruptedException 
     {
-        List<RemoteDevice> remoteDevices = discoverDevices();
-        for( RemoteDevice remoteDevice : remoteDevices ) {
-        	LOG.info( "Device Discovered: " + remoteDevice.getFriendlyName(false) );
-        }
+    	discoverDevices();
+        List<RemoteDevice> remoteDevices = getRemoteDevices();
         List<Sensor> sensors = discoverServices( remoteDevices );
         return sensors;
     }
@@ -86,7 +84,8 @@ public class BlueToothService implements CommandLineRunner {
     {
     	boolean paired = false; 
     	LOG.info( "Pairing Sensors: " +  deviceName );
-        List<RemoteDevice> remoteDevices = discoverDevices();
+    	discoverDevices();
+        List<RemoteDevice> remoteDevices = getRemoteDevices();
         for( RemoteDevice remoteDevice : remoteDevices ) {
         	String remoteName = remoteDevice.getFriendlyName(false);
         	LOG.info( "Device Discovered: " +  remoteName );
@@ -99,55 +98,135 @@ public class BlueToothService implements CommandLineRunner {
         return paired;
     }
     
+	final Object deviceInquiryCompletedEvent = new Object();
+	
+	List<RemoteDevice> remoteDevices = new ArrayList<RemoteDevice>();	
+	public List<RemoteDevice> getRemoteDevices() {
+		return remoteDevices;
+	}
+
+	DiscoveryListener getDeviceListener() {
+    	return deviceListener;
+    }
+	DiscoveryListener deviceListener = new DiscoveryListener() {
+
+		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
+			LOG.info("Device Discovered: " + btDevice.getBluetoothAddress() );    			
+			remoteDevices.add( btDevice );
+			try {
+				LOG.info("     name " + btDevice.getFriendlyName(false));
+            } catch (IOException e ) {
+            	LOG.error( "DiscoveryListener: IOException", e );
+            }
+		}
+
+		public void inquiryCompleted(int discType) {
+			LOG.info("Device Inquiry completed!");
+			synchronized( deviceInquiryCompletedEvent ){
+				deviceInquiryCompletedEvent.notifyAll();
+			}
+		}
+		
+        public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
+        }
+        public void serviceSearchCompleted(int transID, int respCode) {
+        }   		
+	};
+	
     /**
      * Device Discovery
      */
     private List<RemoteDevice> discoverDevices(  ) throws IOException, InterruptedException 
     {
-    	final Object inquiryCompletedEvent = new Object();
 
-    	List<RemoteDevice> remoteDevices = new ArrayList<RemoteDevice>();
+    	remoteDevices = new ArrayList<RemoteDevice>();
         
-    	DiscoveryListener listener = new DiscoveryListener() {
-
-    		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-    			LOG.info("Device " + btDevice.getBluetoothAddress() + " found");    			
-				remoteDevices.add( btDevice );
-    			try {
-    				LOG.info("     name " + btDevice.getFriendlyName(false));
-                } catch (IOException e ) {
-					e.printStackTrace();
-                }
-    		}
-
-    		public void inquiryCompleted(int discType) {
-    			LOG.info("Device Inquiry completed!");
-    			synchronized(inquiryCompletedEvent){
-    				inquiryCompletedEvent.notifyAll();
-    			}
-    		}
-
-            public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
-            }
-            public void serviceSearchCompleted(int transID, int respCode) {
-            }   		
-    	};
-    	
-    	synchronized(inquiryCompletedEvent) {
-    		boolean started = LocalDevice.getLocalDevice().getDiscoveryAgent().startInquiry(DiscoveryAgent.GIAC, listener);
+    	synchronized(deviceInquiryCompletedEvent) {
+    		boolean started = LocalDevice.getLocalDevice().getDiscoveryAgent().startInquiry(DiscoveryAgent.GIAC, deviceListener);
     		if (started) {
     			LOG.info("wait for device inquiry to complete...");
-    			inquiryCompletedEvent.wait();
+    			deviceInquiryCompletedEvent.wait( timeout );
     			LOG.info( remoteDevices.size() +  " device(s) found");
     		}
     	}   	
+
     	return remoteDevices;
     }    
 
     /**
     *
-    * Minimal Services Search example.
+    * Services Search 
     */
+	final Object serviceSearchCompletedEvent = new Object();
+	List<Sensor> sensors = new ArrayList<Sensor>();
+	DiscoveryListener getServiceListener() {
+    	return serviceListener;
+    }
+	DiscoveryListener serviceListener = new DiscoveryListener() {
+
+		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
+		}
+
+		public void inquiryCompleted(int discType) {
+		}
+
+        public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
+
+        	LOG.info( "servicesDiscovered " );
+            for (int i = 0; i < servRecord.length; i++) {
+                String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+                if (url == null) {
+                    continue;
+                }
+                Sensor sensor = new Sensor();
+                sensor.setUrl( url );
+                DataElement serviceName = servRecord[i].getAttributeValue(0x0100);
+                RemoteDevice remoteDevice = servRecord[i].getHostDevice();
+                try {
+                	LOG.info( "Device Service Discovered: " + remoteDevice.getFriendlyName(false) );
+					sensor.setName( remoteDevice.getFriendlyName(false) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					LOG.error( "servicesDiscovered", e);
+				}
+                sensors.add( sensor );
+                if (serviceName != null) {
+                	LOG.info("service " + serviceName.getValue() + " found " + url);
+                } else {
+                	LOG.info("service found " + url);
+                }
+            }
+        }
+
+        public void serviceSearchCompleted(int transID, int respCode) {
+        	LOG.info("service search completed!");
+        	LOG.info( sensors.size() +  " service(s) found");
+			switch (respCode) {
+              case DiscoveryListener.SERVICE_SEARCH_COMPLETED:
+            	  LOG.info( "The service search completed normally");
+            	  break;
+              case DiscoveryListener.SERVICE_SEARCH_TERMINATED:
+            	  LOG.info( "The service search request was cancelled by a call to DiscoveryAgent.cancelServiceSearch(int)");
+            	  break;
+              case DiscoveryListener.SERVICE_SEARCH_ERROR:
+            	  LOG.info( "An error occurred while processing the request");
+            	  break;
+              case DiscoveryListener.SERVICE_SEARCH_NO_RECORDS:
+            	  LOG.info( "No records were found during the service search");
+            	  break;
+              case DiscoveryListener.SERVICE_SEARCH_DEVICE_NOT_REACHABLE:
+            	  LOG.info( "The device specified in the search request could not be reached or the local device could not establish a connection to the remote device");
+            	  break;
+              default:
+            	  LOG.info( "Unknown Response Code - " + respCode);
+            	  break;
+			}    			
+            synchronized(serviceSearchCompletedEvent){
+                serviceSearchCompletedEvent.notifyAll();
+            }
+        }   		
+	};
+    
     private List<Sensor> discoverServices( List<RemoteDevice> remoteDevices ) throws IOException, InterruptedException 
     {
     	final UUID UUID_SDP = new UUID(0x0001);
@@ -166,75 +245,8 @@ public class BlueToothService implements CommandLineRunner {
     	final UUID UUID_ACCESS_POINT = new UUID(0x1116);
     	final UUID UUID_GROUP_NETWORK = new UUID(0x1117);
  
-    	List<Sensor> sensors = new ArrayList<Sensor>();
+    	sensors = new ArrayList<Sensor>();
     	
-    	final Object serviceSearchCompletedEvent = new Object();
-    	
-    	DiscoveryListener listener = new DiscoveryListener() {
-
-    		public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-    		}
-
-    		public void inquiryCompleted(int discType) {
-    		}
-
-            public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
-
-            	LOG.info( "servicesDiscovered " );
-                for (int i = 0; i < servRecord.length; i++) {
-                    String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
-                    if (url == null) {
-                        continue;
-                    }
-                    Sensor sensor = new Sensor();
-                    sensor.setUrl( url );
-                    DataElement serviceName = servRecord[i].getAttributeValue(0x0100);
-                    RemoteDevice remoteDevice = servRecord[i].getHostDevice();
-                    try {
-                    	LOG.info( "Device Service Discovered: " + remoteDevice.getFriendlyName(false) );
-						sensor.setName( remoteDevice.getFriendlyName(false) );
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-                    sensors.add( sensor );
-                    if (serviceName != null) {
-                    	LOG.info("service " + serviceName.getValue() + " found " + url);
-                    } else {
-                    	LOG.info("service found " + url);
-                    }
-                }
-            }
-
-            public void serviceSearchCompleted(int transID, int respCode) {
-            	LOG.info("service search completed!");
-            	LOG.info( sensors.size() +  " service(s) found");
-    			switch (respCode) {
-                  case DiscoveryListener.SERVICE_SEARCH_COMPLETED:
-                	  LOG.info( "The service search completed normally");
-                	  break;
-                  case DiscoveryListener.SERVICE_SEARCH_TERMINATED:
-                	  LOG.info( "The service search request was cancelled by a call to DiscoveryAgent.cancelServiceSearch(int)");
-                	  break;
-                  case DiscoveryListener.SERVICE_SEARCH_ERROR:
-                	  LOG.info( "An error occurred while processing the request");
-                	  break;
-                  case DiscoveryListener.SERVICE_SEARCH_NO_RECORDS:
-                	  LOG.info( "No records were found during the service search");
-                	  break;
-                  case DiscoveryListener.SERVICE_SEARCH_DEVICE_NOT_REACHABLE:
-                	  LOG.info( "The device specified in the search request could not be reached or the local device could not establish a connection to the remote device");
-                	  break;
-                  default:
-                	  LOG.info( "Unknown Response Code - " + respCode);
-                	  break;
-    			}    			
-                synchronized(serviceSearchCompletedEvent){
-                    serviceSearchCompletedEvent.notifyAll();
-                }
-            }   		
-    	};
-
         UUID[] searchUuidSet = new UUID[] { UUID_SDP, 
         		UUID_RFCOMM, 
         		UUID_OBEX, 
@@ -261,11 +273,10 @@ public class BlueToothService implements CommandLineRunner {
         for( RemoteDevice remoteDevice : remoteDevices ) {
             synchronized(serviceSearchCompletedEvent) {
             	LOG.info("search services on " + remoteDevice.getBluetoothAddress() + " " + remoteDevice.getFriendlyName(false));
-            	LocalDevice.getLocalDevice().getDiscoveryAgent().searchServices(attrIDs, searchUuidSet2, remoteDevice, listener);
-            	serviceSearchCompletedEvent.wait();
+            	LocalDevice.getLocalDevice().getDiscoveryAgent().searchServices(attrIDs, searchUuidSet2, remoteDevice, serviceListener );
+            	serviceSearchCompletedEvent.wait( timeout );
             }
         }
- 
         return sensors;
     }    
     
@@ -283,7 +294,6 @@ public class BlueToothService implements CommandLineRunner {
         PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
         pWriter.write("Brew Services\n\r");
         pWriter.flush();
-
 
         //read response
         InputStream inStream=streamConnection.openInputStream();
