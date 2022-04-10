@@ -1,6 +1,5 @@
 package com.brewery.core;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -10,9 +9,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 		"wiFi.scanSeconds=0", "wiFi.enabled=false"
 } )
 @RunWith( SpringRunner.class)
-public class WiFiThreadTest {
+class WiFiThreadTest {
 
 	static private Logger LOG = LoggerFactory.getLogger( WiFiThreadTest.class );
 	
@@ -62,17 +62,16 @@ public class WiFiThreadTest {
 
 	private MockRestServiceServer mockServer;	
 	
-    @Before
-    public void init() {
+	@BeforeEach
+	void setUp() throws Exception {
     	LOG.info( "Initiaizing MockRestServiceServer" );
         RestGatewaySupport gateway = new RestGatewaySupport();
         gateway.setRestTemplate( restTemplate );
         mockServer = MockRestServiceServer.createServer(gateway);
-    }
-	
+	}
 	
 	@Test
-	public void testRun() throws JsonProcessingException {
+	void testRun() throws JsonProcessingException {
 		Sensor sensor = new Sensor();
 		sensor.setName( "TEST" );
 		sensor.setUrl( "http://10.0.0.22/testdata?responseFormat=JSON" );

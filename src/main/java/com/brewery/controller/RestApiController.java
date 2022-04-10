@@ -13,10 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +39,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/")
-@Api(value = "BreweryControllerAPI", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag( name = "Brewery Services REST API", description = "RESTful API for Brewery Services." )
 public class RestApiController {
 
     private DataService dataService;
@@ -68,9 +67,8 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "summary", method = RequestMethod.GET)
-    @ApiOperation(value="Gets brewery summary",
-    		notes="Return summarey data for all active batches. Most recent measurement is included.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class )})
+    @Operation( summary = "Gets brewery summary", 
+    			description = "Return summarey data for all active batches. Most recent measurement is included." )    
     public List<Measurement> getMeasurementSummary( ) {
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	List<Batch> batches = dataService.getActiveBatches();
@@ -91,15 +89,13 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "style/{id}", method = RequestMethod.GET)
-    @ApiOperation("Gets the style with specific id")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Style.class)})
+    @Operation( summary = "Gets the style with specific id")
     public Style getStyle(@PathVariable(name = "id") Long id) {
         return dataService.getStyle(id);
     }
 
     @RequestMapping(path = "style", method = RequestMethod.GET)
-    @ApiOperation("Gets all styles")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class)})
+    @Operation( summary = "Gets all styles")
     public List<Style> getAllStyles( ) {
         return dataService.getAllStyles();
     }
@@ -147,15 +143,13 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "process/{code}", method = RequestMethod.GET)
-    @ApiOperation("Gets the process with specific code")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Process.class)})
+    @Operation( summary = "Gets the process with specific code")
     public Process getProcess(@PathVariable(name = "code") String code) {
         return dataService.getProcess( code );
     }
 
     @RequestMapping(path = "process", method = RequestMethod.GET)
-    @ApiOperation("Gets all processes")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = List.class)})
+    @Operation( summary = "Gets all processes")
     public List<Process> getAllProcesses( ) {
         return dataService.getAllProcesses();
     }
@@ -181,8 +175,7 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "measureType/{code}", method = RequestMethod.GET)
-    @ApiOperation("Gets the MeasureType with specific code")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = MeasureType.class)})
+    @Operation( summary = "Gets the MeasureType with specific code")
     public MeasureType getMeasureType(@PathVariable(name = "code") String code) {
         return dataService.getMeasureType( code );
     }
@@ -213,8 +206,7 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "batch/{id}", method = RequestMethod.GET)
-    @ApiOperation("Gets the batch with specific id")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Batch.class)})
+    @Operation( summary = "Gets the batch with specific id")
     public Batch getBatch(@PathVariable(name = "id") Long id) {
         return dataService.getBatch(id);
     }
@@ -280,8 +272,7 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "measurement/{id}", method = RequestMethod.GET)
-    @ApiOperation("Gets the measurement with specific id")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Measurement.class)})
+    @Operation( summary = "Gets the measurement with specific id")
     public Measurement getMeasurement(@PathVariable(name = "id") Long id,
     			@RequestParam(value="pageNo", defaultValue="0") Integer pageNo 
     		) {
@@ -351,8 +342,7 @@ public class RestApiController {
     //
     //    
     @RequestMapping(path = "sensor/{id}", method = RequestMethod.GET)
-    @ApiOperation("Gets the sensor with specific id")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Sensor.class)})
+    @Operation( summary = "Gets the sensor with specific id")
     public Sensor getSensor(@PathVariable(name = "id") Long id ) {
         return dataService.getSensor( id );
     }

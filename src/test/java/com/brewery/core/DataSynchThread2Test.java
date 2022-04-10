@@ -16,9 +16,13 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.InputConnection;
 import javax.microedition.io.StreamConnection;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -82,16 +86,16 @@ public class DataSynchThread2Test {
 
 	private MockRestServiceServer mockServer;	
 	
-    @Before
-    public void init() {
+	@BeforeEach
+	void setUp() throws Exception {
     	LOG.info( "Initiaizing MockRestServiceServer" );
         RestGatewaySupport gateway = new RestGatewaySupport();
         gateway.setRestTemplate(restTemplate);
         mockServer = MockRestServiceServer.createServer(gateway);
-    }
+	}
 	
 	@Test
-	public void runEdgeCasesTest() throws Exception
+	void runEdgeCasesTest() throws Exception
 	{
 		//
 		//	Test for null user
@@ -127,7 +131,7 @@ public class DataSynchThread2Test {
 	}
 
 	@Test
-	public void runEdgeCasesTest2() throws Exception
+	void runEdgeCasesTest2() throws Exception
 	{
 		//
 		//	Test for heartbeat exception
@@ -161,7 +165,7 @@ public class DataSynchThread2Test {
 	}
 	
 	@Test( )
-	public void runMeasurementsEdgeCasesTest() throws Exception
+	void runMeasurementsEdgeCasesTest() throws Exception
 	{
 		
 		User user = new User( "BrewAppTest", "test", DbSync.ADD, UserRoles.API.toString() );
@@ -218,7 +222,7 @@ public class DataSynchThread2Test {
 	}
 	
 	@Test( )
-	public void runExceptionsTest() throws Exception
+	void runExceptionsTest() throws Exception
 	{
 		
 		User user = new User( "BrewAppTest", "test", DbSync.ADD, UserRoles.API.toString() );

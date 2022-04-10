@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
+import org.hamcrest.CoreMatchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 				properties = { "blueTooth.enabled=false", "wiFi.enabled=false" }
 			)
 @AutoConfigureMockMvc
-public class RestApiControllerTest {
+class RestApiControllerTest {
 
     static private Logger LOG = LoggerFactory.getLogger( RestApiControllerTest.class );
 	
@@ -79,25 +77,12 @@ public class RestApiControllerTest {
 	private Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 	private Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 	private Sensor sensor = new Sensor();
-	
-    @BeforeClass
-    public static void beforeAllTestMethods() {
-    }
- 
-    @Before
-    public void beforeEachTestMethod() {
-    }
- 
-    @After
-    public void afterEachTestMethod() {
-    }
- 	
-	
+		
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void heartBeat() throws Exception
+	void heartBeat() throws Exception
 	{
-		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/heartBeat")
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/heartBeat")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString("ACK")));
@@ -105,7 +90,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getMeasurementSummary() throws Exception
+	void getMeasurementSummary() throws Exception
 	{
 		testBatch.setId( 1L );
     	List<Batch> batches = new ArrayList<Batch>();
@@ -121,7 +106,7 @@ public class RestApiControllerTest {
         Mockito.when(dataService.getActiveBatches()).thenReturn( batches );
         Mockito.when(dataService.getRecentMeasurement( 1L )).thenReturn( measurements );
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/summary")
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/summary")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "\"{\\\"target\\\":70.0}\"," )))
@@ -133,12 +118,12 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getStyle() throws Exception
+	void getStyle() throws Exception
 	{
 		testStyle.setId( 1L );
 		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/style/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/style/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
@@ -146,14 +131,14 @@ public class RestApiControllerTest {
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getStyles() throws Exception
+	void getStyles() throws Exception
 	{
     	List<Style> styles = new ArrayList<Style>();
 		testStyle.setId( 1L );
     	styles.add( testStyle );
 		Mockito.when(dataService.getAllStyles()).thenReturn( styles );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/style")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/style")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
@@ -161,12 +146,12 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveStyle() throws Exception
+	void saveStyle() throws Exception
 	{
 		testStyle.setId( 1L );
 		Mockito.when(dataService.saveStyle( Mockito.any(Style.class) )).thenReturn( testStyle );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/style" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/style" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testStyle ))		
@@ -177,14 +162,14 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateStyle() throws Exception
+	void updateStyle() throws Exception
 	{
 		testStyle.setId( 1L );
 		testStyle.setDbSynchToken( "TestToken" );
 		Mockito.when(dataService.getStyle( "TestToken" )).thenReturn( testStyle );
 		Mockito.when(dataService.updateStyle( Mockito.any(Style.class) )).thenReturn( testStyle );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/style" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/style" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testStyle ))		
@@ -193,7 +178,7 @@ public class RestApiControllerTest {
         		.andExpect(content().string(containsString( "{\"id\":1," )));
 
 		testStyle.setDbSynchToken( "" );
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/style" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/style" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testStyle ))		
@@ -204,22 +189,22 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteStyle() throws Exception
+	void deleteStyle() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/style/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/style/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteStyleRemote() throws Exception
+	void deleteStyleRemote() throws Exception
 	{
 		testStyle.setId( 1L );
 		testStyle.setDbSynchToken( "TestToken" );
 		Mockito.when(dataService.getStyle( "TestToken" )).thenReturn( testStyle );
 
-		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/style/synchToken/TestToken")
+		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/style/synchToken/TestToken")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -228,11 +213,11 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getProcess() throws Exception
+	void getProcess() throws Exception
 	{
         Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/process/FRM")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/process/FRM")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"FRM\"," )));
@@ -240,13 +225,13 @@ public class RestApiControllerTest {
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getProcesses() throws Exception
+	void getProcesses() throws Exception
 	{
     	List<Process> processes = new ArrayList<Process>();
     	processes.add( process );
         Mockito.when(dataService.getAllProcesses( )).thenReturn( processes );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/process")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/process")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"FRM\"," )));
@@ -254,11 +239,11 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveProcess() throws Exception
+	void saveProcess() throws Exception
 	{
 		Mockito.when(dataService.saveProcess( Mockito.any(Process.class) )).thenReturn( process );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/process" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/process" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( process ))		
@@ -269,11 +254,11 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateProcess() throws Exception
+	void updateProcess() throws Exception
 	{
 		Mockito.when(dataService.updateProcess( Mockito.any(Process.class) )).thenReturn( process );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/process" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/process" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( process ))		
@@ -284,9 +269,9 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteProcess() throws Exception
+	void deleteProcess() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/process/FRM")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/process/FRM")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -296,11 +281,11 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getMeasureType() throws Exception
+	void getMeasureType() throws Exception
 	{
         Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measureType/TMP")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/measureType/TMP")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"TMP\"," )));
@@ -308,14 +293,14 @@ public class RestApiControllerTest {
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getMeasureTypes() throws Exception
+	void getMeasureTypes() throws Exception
 	{
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
     	measureTypes.add( measureType );
 		
         Mockito.when(dataService.getAllMeasureTypes( )).thenReturn( measureTypes );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measureType")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/measureType")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"code\":\"TMP\"," )));
@@ -323,11 +308,11 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveMeasureType() throws Exception
+	void saveMeasureType() throws Exception
 	{
 		Mockito.when(dataService.saveMeasureType( Mockito.any(MeasureType.class) )).thenReturn( measureType );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/measureType" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/measureType" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measureType ))		
@@ -338,11 +323,11 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateMeasureType() throws Exception
+	void updateMeasureType() throws Exception
 	{
 		Mockito.when(dataService.updateMeasureType( Mockito.any(MeasureType.class) )).thenReturn( measureType );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/measureType" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/measureType" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measureType ))		
@@ -353,9 +338,9 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteMeasureType() throws Exception
+	void deleteMeasureType() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/measureType/TMP")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/measureType/TMP")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -365,12 +350,12 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getBatch() throws Exception
+	void getBatch() throws Exception
 	{
 		testStyle.setId( 1L );
 		Mockito.when(dataService.getBatch( 1L )).thenReturn( testBatch );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/batch/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/batch/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
@@ -378,7 +363,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveBatch() throws Exception
+	void saveBatch() throws Exception
 	{
 		testStyle.setId( 1L );
 		testStyle.setDbSynchToken( "TestToken" );
@@ -386,7 +371,7 @@ public class RestApiControllerTest {
 
 		Mockito.when(dataService.saveBatch( Mockito.any( Batch.class) )).thenReturn( testBatch );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/batch" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/batch" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testBatch ))		
@@ -397,7 +382,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateBatch() throws Exception
+	void updateBatch() throws Exception
 	{
 		testStyle.setId( 1L );
 		testStyle.setDbSynchToken( "TestToken" );
@@ -408,7 +393,7 @@ public class RestApiControllerTest {
 		Mockito.when(dataService.getBatch( "TestToken" )).thenReturn( testBatch );
 		Mockito.when(dataService.updateBatch( Mockito.any( Batch.class) )).thenReturn( testBatch );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/batch" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/batch" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testBatch ))		
@@ -418,7 +403,7 @@ public class RestApiControllerTest {
 
 		testStyle.setDbSynchToken( "" );
 		testBatch.setDbSynchToken( "" );
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/batch" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/batch" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( testBatch ))		
@@ -429,20 +414,20 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteBatch() throws Exception
+	void deleteBatch() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/batch/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/batch/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteBatchRemote() throws Exception
+	void deleteBatchRemote() throws Exception
 	{
 		testBatch.setDbSynchToken( "TestToken" );
 		Mockito.when(dataService.getBatch( "TestToken" )).thenReturn( testBatch );
-		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/batch/synchToken/TestToken")
+		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/batch/synchToken/TestToken")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -451,12 +436,12 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getMeasurement() throws Exception
+	void getMeasurement() throws Exception
 	{
 		measurement.setId( 1L );
         Mockito.when(dataService.getMeasurement( 1L )).thenReturn( measurement );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/measurement/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/measurement/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
@@ -464,7 +449,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveMeasurement() throws Exception
+	void saveMeasurement() throws Exception
 	{
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
 		testBatch.setId( 1L );
@@ -475,7 +460,7 @@ public class RestApiControllerTest {
 		measurement.setBatch( testBatch );
 		Mockito.when(dataService.saveMeasurement( Mockito.any( Measurement.class ) )).thenReturn( measurement );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/measurement" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/measurement" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measurement ))		
@@ -486,7 +471,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateMeasurement() throws Exception
+	void updateMeasurement() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 20, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -502,7 +487,7 @@ public class RestApiControllerTest {
 		Mockito.when( dataService.updateMeasurement( Mockito.any(Measurement.class) ) ).thenReturn( measurement );
 		Mockito.when( dataService.getBatch(  "test" ) ).thenReturn( testBatch );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/measurement" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/measurement" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measurement ))		
@@ -512,7 +497,7 @@ public class RestApiControllerTest {
 
 		testBatch.setDbSynchToken( "" );
 		measurement.setDbSynchToken( "" );
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/measurement" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/measurement" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( measurement ))		
@@ -523,23 +508,23 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteMeasurement() throws Exception
+	void deleteMeasurement() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/measurement/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/measurement/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteMeasurementRemote() throws Exception
+	void deleteMeasurementRemote() throws Exception
 	{
 		Measurement measurement = new Measurement( 70.3, "{\"target\":70.0}", testBatch, process, measureType, new Date() );
 		measurement.setId( 1L );
 		measurement.setDbSynchToken( "TestToken" );
 		Mockito.when( dataService.getMeasurement( "TestToken" ) ).thenReturn( measurement );
 		
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/measurement/synchToken/TestToken")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/measurement/synchToken/TestToken")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -549,12 +534,12 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void getSensor() throws Exception
+	void getSensor() throws Exception
 	{
 		sensor.setId( 1L );
 		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/sensor/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/sensor/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{\"id\":1," )));
@@ -562,7 +547,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void saveSensor() throws Exception
+	void saveSensor() throws Exception
 	{
 		testBatch.setDbSynchToken( "test" );
 		Mockito.when(dataService.getBatch(  Mockito.any( String.class )) ).thenReturn( testBatch );
@@ -572,7 +557,7 @@ public class RestApiControllerTest {
 		sensor.setBatch( testBatch );
 		Mockito.when(dataService.saveSensor( Mockito.any(Sensor.class) )).thenReturn( sensor );
 
-        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "api/sensor" )
+        mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/api/sensor" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( sensor ))		
@@ -583,7 +568,7 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void updateSensor() throws Exception
+	void updateSensor() throws Exception
 	{
 		testBatch.setDbSynchToken( "TestToken" );
 		Mockito.when(dataService.getBatch( "TestToken" )).thenReturn( testBatch );
@@ -594,7 +579,7 @@ public class RestApiControllerTest {
 		Mockito.when(dataService.getSensor( "TestToken" )).thenReturn( sensor );
 		Mockito.when(dataService.updateSensor( Mockito.any(Sensor.class) )).thenReturn( sensor );
 
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/sensor" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/sensor" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( sensor ))		
@@ -604,7 +589,7 @@ public class RestApiControllerTest {
 
 		testBatch.setDbSynchToken( "" );
 		sensor.setDbSynchToken( "" );
-        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "api/sensor" )
+        mockMvc.perform( MockMvcRequestBuilders.put("http://localhost:" + port + "/api/sensor" )
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(objectMapper.writeValueAsString( sensor ))		
@@ -615,22 +600,22 @@ public class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteSensor() throws Exception
+	void deleteSensor() throws Exception
 	{
-        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/sensor/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/sensor/1")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void deleteSensorRemote() throws Exception
+	void deleteSensorRemote() throws Exception
 	{
 		sensor.setId( 1L );
 		sensor.setDbSynchToken( "TestToken" );
 		Mockito.when(dataService.getSensor( "TestToken" )).thenReturn( sensor );
 
-		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "api/sensor/synchToken/TestToken")
+		mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:" + port + "/api/sensor/synchToken/TestToken")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk());
 	}	
@@ -640,13 +625,13 @@ public class RestApiControllerTest {
 	//
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void login() throws Exception
+	void login() throws Exception
 	{
 		User user = new User( "TEST", "test", DbSync.ADD, UserRoles.ADMIN.toString() );
 		user.setPassword( passwordEncoder.encode( "test" ));
 		Mockito.when(dataService.getUserByName( "TEST" )).thenReturn( user );
 
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "api/authorize?user=TEST&password=test")
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/api/authorize?user=TEST&password=test")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "\"username\":\"TEST\"," )));
@@ -654,7 +639,7 @@ public class RestApiControllerTest {
         //
         //	Test for invalid login
         //
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "api/authorize?user=TEST2&password=test2")
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/api/authorize?user=TEST2&password=test2")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect( content().string(  CoreMatchers.not(containsString( "\"username\":\"TEST2\"," ) ) ))
@@ -664,9 +649,9 @@ public class RestApiControllerTest {
 
 	@Test
 	@WithMockUser( authorities = "API" )
-	public void notAuthenticated() throws Exception
+	void notAuthenticated() throws Exception
 	{
-		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "api/notauthenticated")
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/notauthenticated")
 	            .accept(MediaType.ALL))
 	            .andExpect(status().isOk())
 	            .andExpect(content().string(containsString( "{error: Not Autheticated}" )))

@@ -15,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mockito;
 import org.mockito.MockedStatic;
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 			)
 //@TestPropertySource("classpath:resources/appliaction-local.properties")
 @AutoConfigureMockMvc
-public class UiControllerTest {
+class UiControllerTest {
 
     private Logger LOG = LoggerFactory.getLogger( UiControllerTest.class );
 	
@@ -100,7 +101,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getIndex() throws Exception
+	void getIndex() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
@@ -138,7 +139,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllStyles() throws Exception
+	void getAllStyles() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style")
 	            .accept(MediaType.ALL))
@@ -148,7 +149,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getStyleCreate() throws Exception
+	void getStyleCreate() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/style/add")
 	            .accept(MediaType.ALL))
@@ -158,7 +159,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveStyle() throws Exception
+	void saveStyle() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 
@@ -172,7 +173,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateStyle() throws Exception
+	void updateStyle() throws Exception
 	{
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/style/update" )
 				.with(csrf())
@@ -187,7 +188,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editStyle() throws Exception
+	void editStyle() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
@@ -200,7 +201,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteStyle() throws Exception
+	void deleteStyle() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy", DbSync.SYNCHED, "TestToken" );
 		Mockito.when(dataService.getStyle( 1L )).thenReturn( testStyle );
@@ -235,7 +236,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createProcess() throws Exception
+	void createProcess() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process/add")
 	            .accept(MediaType.ALL))
@@ -245,7 +246,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveProcess() throws Exception
+	void saveProcess() throws Exception
 	{
 		Process process = new Process( "FRM", "Fermentation" );
 
@@ -259,7 +260,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateProcess() throws Exception
+	void updateProcess() throws Exception
 	{
 		Process process = new Process( "FRM", "Fermentation" );
 
@@ -276,7 +277,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllProcesses() throws Exception
+	void getAllProcesses() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/process")
 	            .accept(MediaType.ALL))
@@ -286,7 +287,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editProcess() throws Exception
+	void editProcess() throws Exception
 	{
 		Process process = new Process( "FRM", "Fermentation" );
 		Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
@@ -299,7 +300,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteProcess() throws Exception
+	void deleteProcess() throws Exception
 	{
 		Process process = new Process( "FRM", "Fermentation" );
 		Mockito.when(dataService.getProcess( "FRM" )).thenReturn( process );
@@ -331,7 +332,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createMeasureType() throws Exception
+	void createMeasureType() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measureType/add")
 	            .accept(MediaType.ALL))
@@ -341,7 +342,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveMeasureType() throws Exception
+	void saveMeasureType() throws Exception
 	{
 		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 
@@ -355,7 +356,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateMeasureType() throws Exception
+	void updateMeasureType() throws Exception
 	{
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/measureType/update" )
 				.with(csrf())
@@ -380,7 +381,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllMeasureTypes() throws Exception
+	void getAllMeasureTypes() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measureType")
 	            .accept(MediaType.ALL))
@@ -390,7 +391,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editMeasureType() throws Exception
+	void editMeasureType() throws Exception
 	{
 		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
@@ -403,7 +404,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteMeasureType() throws Exception
+	void deleteMeasureType() throws Exception
 	{
 		MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Mockito.when(dataService.getMeasureType( "TMP" )).thenReturn( measureType );
@@ -434,7 +435,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createBatch() throws Exception
+	void createBatch() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch/add")
 	            .accept(MediaType.ALL))
@@ -444,7 +445,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveBatch() throws Exception
+	void saveBatch() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date() );
@@ -459,7 +460,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateBatch() throws Exception
+	void updateBatch() throws Exception
 	{
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/batch/update" )
 				.with(csrf())
@@ -485,7 +486,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllBatches() throws Exception
+	void getAllBatches() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/batch")
 	            .accept(MediaType.ALL))
@@ -495,7 +496,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getBatchChart() throws Exception
+	void getBatchChart() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
@@ -520,7 +521,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editBatch() throws Exception
+	void editBatch() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.SYNCHED, "testToken" );
@@ -535,7 +536,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteBatch() throws Exception
+	void deleteBatch() throws Exception
 	{
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
 		Batch testBatch = new Batch( true, "Joe's IPA", "Old School IPA", testStyle, new Date(), DbSync.SYNCHED, "TestToken" );
@@ -577,7 +578,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createMeasurement() throws Exception
+	void createMeasurement() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/add/1")
 	            .accept(MediaType.ALL))
@@ -587,7 +588,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveMeasurement() throws Exception
+	void saveMeasurement() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 20, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -614,7 +615,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateMeasurement() throws Exception
+	void updateMeasurement() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 20, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -653,7 +654,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getMeasurementForBatch() throws Exception
+	void getMeasurementForBatch() throws Exception
 	{
 		
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
@@ -680,7 +681,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editMeasurement() throws Exception
+	void editMeasurement() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -700,7 +701,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteMeasurement() throws Exception
+	void deleteMeasurement() throws Exception
 	{
     	MeasureType measureType = new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  );
 		Style testStyle = new Style( "IPA", "18a", "Hoppy" );
@@ -726,7 +727,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteDuplicateMeasurements() throws Exception
+	void deleteDuplicateMeasurements() throws Exception
 	{
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/measurement/duplicatedelete/1")
 				.with(csrf())
@@ -740,7 +741,7 @@ public class UiControllerTest {
 	//
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createSensor() throws Exception
+	void createSensor() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor/add")
 	            .accept(MediaType.ALL))
@@ -750,7 +751,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveSensor() throws Exception
+	void saveSensor() throws Exception
 	{
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor" )
 				.with(csrf())
@@ -765,7 +766,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateSensor() throws Exception
+	void updateSensor() throws Exception
 	{
 		mockMvc.perform( MockMvcRequestBuilders.post("http://localhost:" + port + "/sensor/update" )
 				.with(csrf())
@@ -790,7 +791,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllSensors() throws Exception
+	void getAllSensors() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/sensor")
 	            .accept(MediaType.ALL))
@@ -800,7 +801,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void discoverSensors() throws Exception
+	void discoverSensors() throws Exception
 	{
 		Sensor sensor = new Sensor();
     	List<Sensor> sensors = new ArrayList<>();
@@ -821,7 +822,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void discoverWifiSensors() throws Exception
+	void discoverWifiSensors() throws Exception
 	{
 		
 		Sensor sensor = new Sensor();
@@ -843,7 +844,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void pairSensor() throws Exception
+	void pairSensor() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		sensor.setName( "test" );
@@ -868,7 +869,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editSensor() throws Exception
+	void editSensor() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		Mockito.when(dataService.getSensor( 1L )).thenReturn( sensor );
@@ -881,7 +882,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteSensor() throws Exception
+	void deleteSensor() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		sensor.setDbSynchToken( "TestToken" );
@@ -901,7 +902,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void sensorControlAuto() throws Exception
+	void sensorControlAuto() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		sensor.setName( "test" );
@@ -917,7 +918,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void sensorControlHeat() throws Exception
+	void sensorControlHeat() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		sensor.setName( "test" );
@@ -933,7 +934,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void sensorControlCool() throws Exception
+	void sensorControlCool() throws Exception
 	{
 		Sensor sensor = new Sensor();
 		sensor.setName( "test" );
@@ -951,7 +952,7 @@ public class UiControllerTest {
 	//	User Validation and Password Reset Methods tests 
 	//	
 	@Test
-	public void validateUser() throws Exception
+	void validateUser() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -982,7 +983,7 @@ public class UiControllerTest {
 	}		
 
 	@Test
-	public void getPasswordReset() throws Exception
+	void getPasswordReset() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/password")
 	            .accept(MediaType.ALL))
@@ -991,7 +992,7 @@ public class UiControllerTest {
 	}		
 	
 	@Test
-	public void sendEmailToReset() throws Exception
+	void sendEmailToReset() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1026,7 +1027,7 @@ public class UiControllerTest {
 	}		
 
 	@Test
-	public void getNewPassword() throws Exception
+	void getNewPassword() throws Exception
 	{
         Password password = new Password();
         password.setToken( "test123" );
@@ -1040,7 +1041,7 @@ public class UiControllerTest {
 	}		
 
 	@Test
-	public void saveNewPassword() throws Exception
+	void saveNewPassword() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1101,7 +1102,7 @@ public class UiControllerTest {
 	//	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editProfile() throws Exception
+	void editProfile() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1119,7 +1120,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN", username = "test")
-	public void saveProfile() throws Exception
+	void saveProfile() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:" + port + "/profile")
 				.with(csrf())
@@ -1136,7 +1137,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN", username = "test")
-	public void profilePassword() throws Exception
+	void profilePassword() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1155,7 +1156,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN", username = "test")
-	public void profileUpdatePw() throws Exception
+	void profileUpdatePw() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1194,7 +1195,7 @@ public class UiControllerTest {
 	//	User Methods tests 
 	//
 	@Test
-	public void login() throws Exception
+	void login() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/login")
 	            .accept(MediaType.ALL))
@@ -1204,7 +1205,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void createUser() throws Exception
+	void createUser() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/add")
 	            .accept(MediaType.ALL))
@@ -1214,7 +1215,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveNewUser() throws Exception
+	void saveNewUser() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1259,7 +1260,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void saveUser() throws Exception
+	void saveUser() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1275,7 +1276,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void getAllUsers() throws Exception
+	void getAllUsers() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user")
 	            .accept(MediaType.ALL))
@@ -1285,7 +1286,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editUser() throws Exception
+	void editUser() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1299,7 +1300,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void editUserPassword() throws Exception
+	void editUserPassword() throws Exception
 	{
 		User user = new User( "test", "test", DbSync.ADD, "TEST" );
 		user.setId( 1L );
@@ -1313,7 +1314,7 @@ public class UiControllerTest {
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void updateUserPw() throws Exception
+	void updateUserPw() throws Exception
 	{
 		User user = new User( "test", "test@test.com", "test", DbSync.ADD, "TEST", true );
 		user.setId( 1L );
@@ -1335,7 +1336,7 @@ public class UiControllerTest {
 	
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	public void deleteUser() throws Exception
+	void deleteUser() throws Exception
 	{
         mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/user/delete/1")
 				.with(csrf())

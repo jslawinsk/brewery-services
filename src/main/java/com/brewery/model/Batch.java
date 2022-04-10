@@ -22,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "batch", schema="brewery")
@@ -39,7 +39,7 @@ public class Batch {
 	
 	private String description;
 
-	@ApiModelProperty( value="Status of syncronizing data with another instance of the service" )
+	@Schema( description = "Status of syncronizing data with another instance of the service" )
 	@Enumerated( EnumType.STRING )
 	private DbSync dbSynch;
 	private String dbSynchToken;

@@ -2,6 +2,7 @@ package com.brewery.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -12,8 +13,9 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +54,7 @@ import com.brewery.repository.VerificationTokenRepository;
 
 @RunWith( SpringRunner.class)
 @SpringBootTest( properties = { "blueTooth.enabled=false", "wiFi.enabled=false", "dataSynch.enabled=true" } )
-public class DataServiceTest {
+class DataServiceTest {
 
 	
 	@MockBean
@@ -93,7 +95,7 @@ public class DataServiceTest {
 	//	Style table test methods
 	//
 	@Test
-	public void getStyle() throws Exception
+	void getStyle() throws Exception
 	{
         Mockito.when(styleRepository.getOne( 1L )).thenReturn( testStyle );
         
@@ -102,7 +104,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getStyleToken() throws Exception
+	void getStyleToken() throws Exception
 	{
         Mockito.when(styleRepository.findStyleBySynchToken( "TestToken" )).thenReturn( testStyle );
         
@@ -115,7 +117,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getAllStyles() throws Exception
+	void getAllStyles() throws Exception
 	{
     	List<Style> styles = new ArrayList<Style>();
     	styles.add( testStyle );
@@ -127,7 +129,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getStylesToSynchronize() throws Exception
+	void getStylesToSynchronize() throws Exception
 	{
     	List<Style> styles = new ArrayList<Style>();
     	styles.add( testStyle );
@@ -139,7 +141,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveStyle() throws Exception
+	void saveStyle() throws Exception
 	{
         Mockito.when(styleRepository.save( testStyle )).thenReturn( testStyle );
         testStyle.setDbSynchToken( "" );
@@ -149,7 +151,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveStyleEx() throws Exception
+	void saveStyleEx() throws Exception
 	{
         Mockito.when( styleRepository.save( null ) ).thenThrow( new IllegalArgumentException("Test") );
         Style style = dataService.saveStyle( null );
@@ -157,7 +159,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void updateStyle() throws Exception
+	void updateStyle() throws Exception
 	{
 		testStyle.setId( 1L );
         Mockito.when(styleRepository.getOne( 1L )).thenReturn( testStyle );
@@ -172,7 +174,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteStyle() throws Exception
+	void deleteStyle() throws Exception
 	{
 		testStyle.setId( 1L );
 
@@ -183,7 +185,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void deleteStyleEx() throws Exception
+	void deleteStyleEx() throws Exception
 	{
 		Mockito.when(styleRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteStyle( -1L );
@@ -191,7 +193,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getStyleBatchCount() throws Exception
+	void getStyleBatchCount() throws Exception
 	{
         Mockito.when(batchRepository.styleCount( 1L )).thenReturn( 0L );
         
@@ -204,7 +206,7 @@ public class DataServiceTest {
 	//
 	//
 	@Test
-	public void getProcess() throws Exception
+	void getProcess() throws Exception
 	{
 		Optional<Process> process2 = Optional.ofNullable( new Process( "FRM", "Fermentation", false, DbSync.ADD ) );
 		
@@ -221,7 +223,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getAllProcesses() throws Exception
+	void getAllProcesses() throws Exception
 	{
     	List<Process> processes = new ArrayList<Process>();
     	processes.add( process );
@@ -233,7 +235,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getProcessesToSynchronize() throws Exception
+	void getProcessesToSynchronize() throws Exception
 	{
     	List<Process> processes = new ArrayList<Process>();
     	processes.add( process );
@@ -245,7 +247,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveProcess() throws Exception
+	void saveProcess() throws Exception
 	{
         Mockito.when(processRepository.save( process )).thenReturn( process );
         
@@ -254,7 +256,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveProcessEx() throws Exception
+	void saveProcessEx() throws Exception
 	{
         Mockito.when(processRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
         
@@ -263,7 +265,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void updateProcess() throws Exception
+	void updateProcess() throws Exception
 	{
         Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
         Mockito.when(processRepository.save( process )).thenReturn( process );
@@ -277,7 +279,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteProcess() throws Exception
+	void deleteProcess() throws Exception
 	{
         Mockito.when(processRepository.getOne( "FRM" )).thenReturn( process );
         dataService.deleteProcess( "FRM" );
@@ -285,7 +287,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void deleteProcessEx() throws Exception
+	void deleteProcessEx() throws Exception
 	{
         Mockito.when(processRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteProcess( null );
@@ -293,7 +295,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getProcessSensorCount() throws Exception
+	void getProcessSensorCount() throws Exception
 	{
         Mockito.when(sensorRepository.processCount("FRM" )).thenReturn( 0L );
         
@@ -302,7 +304,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getProcessMeasurementCount() throws Exception
+	void getProcessMeasurementCount() throws Exception
 	{
         Mockito.when(measurementRepository.processCount("FRM" )).thenReturn( 0L );
         
@@ -315,7 +317,7 @@ public class DataServiceTest {
 	//
 	//
 	@Test
-	public void getMeasureType() throws Exception
+	void getMeasureType() throws Exception
 	{
 		Optional<MeasureType> measureType2 = Optional.ofNullable(new MeasureType( "TMP", "Temperature", true, 0, 200, GraphTypes.GAUGE, DbSync.ADD  ));
 		
@@ -332,7 +334,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getAllMeasureTypes() throws Exception
+	void getAllMeasureTypes() throws Exception
 	{
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
     	measureTypes.add( measureType );
@@ -344,7 +346,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasureTypesToSynchronize() throws Exception
+	void getMeasureTypesToSynchronize() throws Exception
 	{
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
     	measureTypes.add( measureType );
@@ -356,7 +358,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getMeasureTypesToGraph() throws Exception
+	void getMeasureTypesToGraph() throws Exception
 	{
     	List<MeasureType> measureTypes = new ArrayList<MeasureType>();
     	measureTypes.add( measureType );
@@ -368,7 +370,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveMeasureType() throws Exception
+	void saveMeasureType() throws Exception
 	{
         Mockito.when(measureTypeRepository.save( measureType )).thenReturn( measureType );
         
@@ -377,7 +379,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveMeasureTypeEx() throws Exception
+	void saveMeasureTypeEx() throws Exception
 	{
         Mockito.when(measureTypeRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
         
@@ -386,7 +388,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void updateMeasureType() throws Exception
+	void updateMeasureType() throws Exception
 	{
         Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
         Mockito.when(measureTypeRepository.save( measureType )).thenReturn( measureType );
@@ -400,7 +402,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteMeasureType() throws Exception
+	void deleteMeasureType() throws Exception
 	{
         Mockito.when(measureTypeRepository.getOne( "TMP" )).thenReturn( measureType );
 
@@ -409,7 +411,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteMeasureTypeEx() throws Exception
+	void deleteMeasureTypeEx() throws Exception
 	{
         Mockito.when(measureTypeRepository.getOne( null )).thenThrow( new EntityNotFoundException("Test") );
 
@@ -418,7 +420,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasureTypeSensorCount() throws Exception
+	void getMeasureTypeSensorCount() throws Exception
 	{
         Mockito.when(sensorRepository.measureTypeCount("TMP" )).thenReturn( 0L );
         
@@ -428,7 +430,7 @@ public class DataServiceTest {
 
 	
 	@Test
-	public void getMeasureTypeMeasurementCount() throws Exception
+	void getMeasureTypeMeasurementCount() throws Exception
 	{
         Mockito.when(measurementRepository.measureTypeCount("TMP" )).thenReturn( 0L );
         
@@ -441,7 +443,7 @@ public class DataServiceTest {
 	//	Batch table test methods	
 	//
 	@Test
-	public void getBatch() throws Exception
+	void getBatch() throws Exception
 	{
 		testBatch.setId( 1L );
         Mockito.when(batchRepository.getOne( 1L )).thenReturn( testBatch );
@@ -451,7 +453,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getBatchToken() throws Exception
+	void getBatchToken() throws Exception
 	{
 		testBatch.setId( 1L );
         Mockito.when(batchRepository.findBatchBySynchToken( "TestToken" )).thenReturn( testBatch );
@@ -462,7 +464,7 @@ public class DataServiceTest {
 	
 	
 	@Test
-	public void getAllBatches() throws Exception
+	void getAllBatches() throws Exception
 	{
     	List<Batch> batches = new ArrayList<Batch>();
     	batches.add( testBatch );
@@ -474,7 +476,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getActiveBatches() throws Exception
+	void getActiveBatches() throws Exception
 	{
     	List<Batch> batches = new ArrayList<Batch>();
     	batches.add( testBatch );
@@ -486,7 +488,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getBatchesToSynchronize() throws Exception
+	void getBatchesToSynchronize() throws Exception
 	{
     	List<Batch> batches = new ArrayList<Batch>();
     	batches.add( testBatch );
@@ -498,7 +500,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveBatch() throws Exception
+	void saveBatch() throws Exception
 	{
         Mockito.when(batchRepository.save( testBatch )).thenReturn( testBatch );
         
@@ -512,7 +514,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveBatchEx() throws Exception
+	void saveBatchEx() throws Exception
 	{
     	Batch batch2 = new Batch( false, null, null, null, new Date(), DbSync.ADD, "" );
         Mockito.when(batchRepository.save( batch2 )).thenThrow( new IllegalArgumentException("Test") );
@@ -521,7 +523,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void updateBatch() throws Exception
+	void updateBatch() throws Exception
 	{
 		testBatch.setId( 1L );
         Mockito.when(batchRepository.getOne( 1L )).thenReturn( testBatch );
@@ -543,7 +545,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteBatch() throws Exception
+	void deleteBatch() throws Exception
 	{
 		testBatch.setId( 1L );
         Mockito.when(batchRepository.getOne( 1L )).thenReturn( testBatch );
@@ -553,7 +555,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteBatchEx() throws Exception
+	void deleteBatchEx() throws Exception
 	{
         Mockito.when(batchRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteBatch( -1L );
@@ -561,7 +563,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getBatchSensorCount() throws Exception
+	void getBatchSensorCount() throws Exception
 	{
         Mockito.when(sensorRepository.batchCount( 1L )).thenReturn( 0L );
         
@@ -575,7 +577,7 @@ public class DataServiceTest {
 	//
 	//
 	@Test
-	public void getMeasurement() throws Exception
+	void getMeasurement() throws Exception
 	{
         Mockito.when(measurementRepository.getOne( 1L )).thenReturn( measurement );
         
@@ -584,7 +586,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasurementToken() throws Exception
+	void getMeasurementToken() throws Exception
 	{
         Mockito.when(measurementRepository.findMeasurementBySynchToken( "TestToken" )).thenReturn( measurement );
         
@@ -593,7 +595,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getRecentMeasurement() throws Exception
+	void getRecentMeasurement() throws Exception
 	{
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
@@ -605,7 +607,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasurementsByBatch() throws Exception
+	void getMeasurementsByBatch() throws Exception
 	{
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
@@ -617,7 +619,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasurementsByBatchType() throws Exception
+	void getMeasurementsByBatchType() throws Exception
 	{
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
@@ -629,7 +631,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasurementsPageByBatch() throws Exception
+	void getMeasurementsPageByBatch() throws Exception
 	{
 		List<Measurement> measurementData = new ArrayList<>();
     	measurementData.add(measurement);		
@@ -646,7 +648,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getMeasurementsToSynchronize() throws Exception
+	void getMeasurementsToSynchronize() throws Exception
 	{
     	List<Measurement> measurements = new ArrayList<Measurement>();
     	measurements.add( measurement );
@@ -658,7 +660,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveMeasurement() throws Exception
+	void saveMeasurement() throws Exception
 	{
 		measurement.setDbSynchToken( null );
         Mockito.when(measurementRepository.save( measurement )).thenReturn( measurement );
@@ -676,7 +678,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveMeasurementEx() throws Exception
+	void saveMeasurementEx() throws Exception
 	{
         Mockito.when(measurementRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
         Measurement tmpMeasurement = dataService.saveMeasurement( null );
@@ -684,7 +686,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void updateMeasurement() throws Exception
+	void updateMeasurement() throws Exception
 	{
 		measurement.setId( 1L );
         Mockito.when(measurementRepository.getOne( 1L )).thenReturn( measurement );
@@ -710,7 +712,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteMeasurement() throws Exception
+	void deleteMeasurement() throws Exception
 	{
 		testStyle.setId( 1L );
 
@@ -720,7 +722,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteMeasurementEx() throws Exception
+	void deleteMeasurementEx() throws Exception
 	{
 		Mockito.when(measurementRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteMeasurement( -1L );
@@ -728,7 +730,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void deleteDuplicateMeasurements() throws Exception
+	void deleteDuplicateMeasurements() throws Exception
 	{
 		
 		Measurement measurement2 = new Measurement( 72.3, "{\"target\":72.0}", testBatch, process, measureType, new Date() );
@@ -754,7 +756,7 @@ public class DataServiceTest {
 	//	Sensor table test methods
 	//
 	@Test
-	public void getSensor() throws Exception
+	void getSensor() throws Exception
 	{
 		sensor.setId( 1L );
         Mockito.when(sensorRepository.getOne( 1L )).thenReturn( sensor );
@@ -764,7 +766,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getSensorToken() throws Exception
+	void getSensorToken() throws Exception
 	{
 		sensor.setId( 1L );
         Mockito.when(sensorRepository.findSensorBySynchToken( "TestToken" )).thenReturn( sensor );
@@ -774,7 +776,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getAllSensors() throws Exception
+	void getAllSensors() throws Exception
 	{
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
@@ -786,7 +788,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getEnabledSensors() throws Exception
+	void getEnabledSensors() throws Exception
 	{
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
@@ -802,7 +804,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getSensorsToSynchronize() throws Exception
+	void getSensorsToSynchronize() throws Exception
 	{
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
@@ -814,7 +816,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveSensor() throws Exception
+	void saveSensor() throws Exception
 	{
 		sensor.setId( 1L );
 		sensor.setName( "test" );
@@ -831,7 +833,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveSensorEx() throws Exception
+	void saveSensorEx() throws Exception
 	{
         Sensor sensor2 = new Sensor( 2L, false, null, null, null, null, null, null, null, null, null, new Date() );
         Mockito.when(sensorRepository.save( sensor2 )).thenThrow( new IllegalArgumentException("Test") );
@@ -840,7 +842,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void updateSensor() throws Exception
+	void updateSensor() throws Exception
 	{
 		sensor.setId( 1L );
 		sensor.setName( "test" );
@@ -861,7 +863,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteSensor() throws Exception
+	void deleteSensor() throws Exception
 	{
 		sensor.setId( 1L );
 
@@ -871,7 +873,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteSensorEx() throws Exception
+	void deleteSensorEx() throws Exception
 	{
 		Mockito.when(sensorRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteSensor( -1L );
@@ -882,7 +884,7 @@ public class DataServiceTest {
 	//	User table test methods
 	//
 	@Test
-	public void loadUserByUsername() throws Exception
+	void loadUserByUsername() throws Exception
 	{
 		user.setValidated( true );
         Mockito.when(userRepository.findByUsername( "ADMIN" )).thenReturn( user );
@@ -891,15 +893,17 @@ public class DataServiceTest {
         assertEquals( userDetails.getUsername(), "ADMIN");
 	}	
 	
-	@Test( expected = UsernameNotFoundException.class )
-	public void loadUserByUsernameEx() throws Exception
+	@Test( )
+	void loadUserByUsernameEx() throws Exception
 	{
         Mockito.when(userRepository.findByUsername( null )).thenReturn( null );
-        dataService.loadUserByUsername( null );
+        assertThrows(
+        		UsernameNotFoundException.class, 
+    			() -> dataService.loadUserByUsername( null ) );        
 	}	
 
 	@Test
-	public void getUser() throws Exception
+	void getUser() throws Exception
 	{
         Mockito.when(userRepository.getOne( 1L )).thenReturn( user );
         
@@ -908,7 +912,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getUserByName() throws Exception
+	void getUserByName() throws Exception
 	{
         Mockito.when(userRepository.findByUsername( "ADMIN" )).thenReturn( user );
         
@@ -917,7 +921,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void getAllUsers() throws Exception
+	void getAllUsers() throws Exception
 	{
     	List<User> users = new ArrayList<User>();
     	users.add( user );
@@ -929,7 +933,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void getUsersToSynchronize() throws Exception
+	void getUsersToSynchronize() throws Exception
 	{
     	List<User> users = new ArrayList<User>();
     	users.add( user );
@@ -941,7 +945,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveUser() throws Exception
+	void saveUser() throws Exception
 	{
         Mockito.when(userRepository.save( user )).thenReturn( user );
         
@@ -950,7 +954,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void saveUserEx() throws Exception
+	void saveUserEx() throws Exception
 	{
         Mockito.when(userRepository.save( null )).thenThrow( new IllegalArgumentException("Test") );
         User userTmp = dataService.saveUser( null );
@@ -958,7 +962,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void updateUser() throws Exception
+	void updateUser() throws Exception
 	{
 		user.setId( 1L );
         Mockito.when(userRepository.getOne( 1L )).thenReturn( user );
@@ -974,7 +978,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteUser() throws Exception
+	void deleteUser() throws Exception
 	{
 		user.setId( 1L );
         Mockito.when(userRepository.getOne( 1L )).thenReturn( user );
@@ -983,7 +987,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void deleteUserEx() throws Exception
+	void deleteUserEx() throws Exception
 	{
         Mockito.when(userRepository.getOne( -1L )).thenThrow( new EntityNotFoundException("Test") );
         dataService.deleteUser( -1L );
@@ -994,7 +998,7 @@ public class DataServiceTest {
 	//	VerificationToken Table test methods
 	//
 	@Test
-	public void getVerificationToken() throws Exception
+	void getVerificationToken() throws Exception
 	{
 		VerificationToken verificationToken= new VerificationToken();
 		verificationToken.setToken( "test123" );
@@ -1005,7 +1009,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void saveVerificationToken() throws Exception
+	void saveVerificationToken() throws Exception
 	{
 		VerificationToken verificationToken= new VerificationToken();
 		verificationToken.setToken( "test123" );
@@ -1020,7 +1024,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void updateVerificationToken() throws Exception
+	void updateVerificationToken() throws Exception
 	{
 		VerificationToken verificationToken = new VerificationToken();
 		verificationToken.setToken( "test123" );
@@ -1038,7 +1042,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteVerificationToken() throws Exception
+	void deleteVerificationToken() throws Exception
 	{
 		VerificationToken verificationToken = new VerificationToken();
 		verificationToken.setToken( "test123" );
@@ -1055,7 +1059,7 @@ public class DataServiceTest {
 	//	ResetToken Table test methods
 	//
 	@Test
-	public void getResetToken() throws Exception
+	void getResetToken() throws Exception
 	{
 		ResetToken resetToken= new ResetToken();
 		resetToken.setToken( "test123" );
@@ -1066,7 +1070,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void saveResetToken() throws Exception
+	void saveResetToken() throws Exception
 	{
 		ResetToken resetToken= new ResetToken();
 		resetToken.setToken( "test123" );
@@ -1081,7 +1085,7 @@ public class DataServiceTest {
 	}	
 
 	@Test
-	public void updateResetToken() throws Exception
+	void updateResetToken() throws Exception
 	{
 		ResetToken resetToken = new ResetToken();
 		resetToken.setToken( "test123" );
@@ -1099,7 +1103,7 @@ public class DataServiceTest {
 	}	
 	
 	@Test
-	public void deleteResetToken() throws Exception
+	void deleteResetToken() throws Exception
 	{
 		ResetToken resetToken = new ResetToken();
 		resetToken.setToken( "test123" );
