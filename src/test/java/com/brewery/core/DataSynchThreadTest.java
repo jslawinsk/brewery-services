@@ -10,9 +10,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 								"wiFi.enabled=false"
 				} )
 @RunWith( SpringRunner.class)
-public class DataSynchThreadTest {
+class DataSynchThreadTest {
 
 	static private Logger LOG = LoggerFactory.getLogger( DataSynchThreadTest.class );
 	
@@ -75,16 +79,16 @@ public class DataSynchThreadTest {
 
 	private MockRestServiceServer mockServer;	
 	
-    @Before
-    public void init() {
+	@BeforeEach
+	void setUp() throws Exception {
     	LOG.info( "Initiaizing MockRestServiceServer" );
         RestGatewaySupport gateway = new RestGatewaySupport();
         gateway.setRestTemplate(restTemplate);
         mockServer = MockRestServiceServer.createServer(gateway);
-    }
-	
+	}
+    
 	@Test
-	public void run() throws Exception
+	void run() throws Exception
 	{
 		User user = new User( "BrewAppTest", "test", DbSync.ADD, UserRoles.API.toString() );
 		user.setToken( "test token" );
