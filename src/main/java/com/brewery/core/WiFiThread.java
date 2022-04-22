@@ -101,12 +101,12 @@ public class WiFiThread implements Runnable {
 		    	        statusMessage = statusMessage + " data retrieved ";
 			        }
 				}    			        
-				wifiStatus.setMessage( statusMessage );
 			} catch( Exception e ) {
-				e.printStackTrace();
+				LOG.error( "WifiThread Execption", e );
 		        statusMessage = statusMessage + ": exeception ";
 		        wifiStatus.setUp( false );
 			}
+			wifiStatus.setMessage( statusMessage );
 			if( scanSeconds == 0 )  break;
         }
     }

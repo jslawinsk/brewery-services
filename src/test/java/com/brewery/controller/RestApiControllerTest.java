@@ -90,6 +90,21 @@ class RestApiControllerTest {
 	
 	@Test
 	@WithMockUser( authorities = "API" )
+	void responseAdviceTest() throws Exception
+	{
+    	List<Batch> batches = new ArrayList<Batch>();
+    	batches.add( null );
+        Mockito.when(dataService.getActiveBatches()).thenReturn( batches );
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/api/summary")
+	            .accept(MediaType.ALL))
+	            .andExpect(status().isBadRequest())
+	            .andExpect(content().string(containsString( "Errors found in request, try again later" )))
+	            ;
+	}	
+	
+	@Test
+	@WithMockUser( authorities = "API" )
 	void getMeasurementSummary() throws Exception
 	{
 		testBatch.setId( 1L );

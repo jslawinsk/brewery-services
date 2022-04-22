@@ -1344,6 +1344,16 @@ class UiControllerTest {
 				.andExpect( MockMvcResultMatchers.redirectedUrl("/user"));
 	}		
 	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void actuatorTest() throws Exception
+	{
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:" + port + "/actuator/health/")
+				.with(csrf())
+	            .accept(MediaType.ALL))
+				.andExpect( status().isOk() );
+	}		
+	
 	
 	
 }
