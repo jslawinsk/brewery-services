@@ -77,6 +77,7 @@ class WiFiThreadTest {
 		sensor.setUrl( "http://10.0.0.22/testdata?responseFormat=JSON" );
     	List<Sensor> sensors = new ArrayList<Sensor>();
     	sensors.add( sensor );
+    	sensors.add( null );
 		Mockito.when( dataService.getEnabledSensors( SensorType.WIFI ) ).thenReturn( sensors );
 		
 		SensorData sensorData = new SensorData();
@@ -87,9 +88,31 @@ class WiFiThreadTest {
 			.contentType(MediaType.APPLICATION_JSON )
 			.body(objectMapper.writeValueAsString( sensorData ))
 		); 		
-		
 		wiFiThread.run();
+		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.WIFI );		
+
+		sensorData = new SensorData();
+		mockServer.reset();
+		mockServer.expect( requestTo("http://10.0.0.22/testdata?responseFormat=JSON") )
+ 			.andExpect(method(HttpMethod.GET))
+ 			.andRespond(withStatus(HttpStatus.OK  )
+			.contentType(MediaType.APPLICATION_JSON )
+			.body(objectMapper.writeValueAsString( sensorData ))
+		); 		
+		wiFiThread.run();
+		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.WIFI );		
+
 		
+    	sensors = new ArrayList<Sensor>();
+    	sensors.add( sensor );
+		Mockito.when( dataService.getEnabledSensors( SensorType.WIFI ) ).thenReturn( sensors );
+		mockServer.reset();
+		mockServer.expect( requestTo("http://10.0.0.22/testdata?responseFormat=JSON") )
+ 			.andExpect(method(HttpMethod.GET))
+ 			.andRespond(withStatus(HttpStatus.OK  )
+			.contentType(MediaType.APPLICATION_JSON )
+		); 		
+		wiFiThread.run();
 		verify( dataService, atLeast(1)).getEnabledSensors( SensorType.WIFI );		
 	}
 

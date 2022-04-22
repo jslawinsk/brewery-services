@@ -36,6 +36,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
@@ -97,7 +98,7 @@ public class BreweryApplication implements CommandLineRunner {
     
     @Autowired
     private TaskExecutor taskExecutor;
-
+    
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -113,6 +114,9 @@ public class BreweryApplication implements CommandLineRunner {
 
     @Autowired
     private DataSynchStatus dataSynchStatus;
+    
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Override
 	public void run(String... strings) throws Exception {
@@ -159,7 +163,7 @@ public class BreweryApplication implements CommandLineRunner {
 			User user = new User( "ADMIN", "admin@breweryservices.com", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString(), true );
 			userRepository.save( user );
 		}
-		else if ( createTestAdmin ) {
+		if ( createTestAdmin ) {
 			User user = new User( "ADMIN", "admin@breweryservices.com", new BCryptPasswordEncoder().encode( "admin" ), DbSync.ADD, UserRoles.ADMIN.toString(), true );
 			userRepository.save( user );
 		}
