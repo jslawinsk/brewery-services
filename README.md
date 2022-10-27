@@ -1,3 +1,9 @@
+# EOL Notice - This project has been refactored
+
+This project has been refactored to the my domain project to allow to log data for other than breweries. An update will be delivered to migrate date to the My Domain project.
+
+https://github.com/jslawinsk/myDomain
+
 # Brewery-Services-spring-rest-api and Web UI Interface
 
 Brewery Services Spring REST API Project and Web UI interface. Allows to retrieve data from various types of sensors and present data. Measurement data may also be entered manually. The API also provide for restful calls to receive data. Optionally the bluetooth interface may be used to automatically log sensor data.
